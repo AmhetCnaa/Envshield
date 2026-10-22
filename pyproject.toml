@@ -3,14 +3,22 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "envshield"
-version = "0.1.0"
-description = "Enterprise-grade, open-source security and environment auditing CLI tool."
+name = "envshield-cli"
+version = "0.2.0"
+description = "Zero-disk secret engine & runtime injection for developers"
 readme = "README.md"
 requires-python = ">=3.9"
+keywords = ["secrets", "cli", "security", "aes-gcm", "env-vault"]
 dependencies = [
     "rich>=13.0.0",
+    "cryptography>=42.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/envshield/envshield"
+Documentation = "https://github.com/envshield/envshield#readme"
+Repository = "https://github.com/envshield/envshield.git"
+Issues = "https://github.com/envshield/envshield/issues"
 
 [project.scripts]
 envshield = "envshield.cli.main:main"
@@ -21,7 +29,12 @@ dev = [
     "pytest-cov>=4.0",
     "pytest-mock>=3.10",
     "ruff>=0.1.0",
+    "build>=1.0.0",
+    "twine>=5.0.0",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/envshield"]
 
 [tool.ruff]
 line-length = 100
