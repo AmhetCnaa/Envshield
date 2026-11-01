@@ -42,11 +42,17 @@ def execute_with_env(
 
         return execute_interactive(command, secrets, redact=redact)
 
-    with ObfuscatedSecretStore(secrets) as secret_store:
+    # Note: ObfuscatedSecretStore masks and wipes the caller's `secrets` dict in-place
+    # (`clear_source=True`). When `redact=False`, zero cleartext copies remain in parent RAM
+    # during `proc.wait()`. When `redact=True`, `SecretRedactor` holds compiled patterns
+    # during stream sanitization and deterministically clears them via `redactor.close()` in `finally`.
+    with ObfuscatedSecretStore(secrets, clear_source=True) as secret_store:
         merged_env = os.environ.copy()
-        merged_env.update(secret_store.reveal_all())
+        revealed = secret_store.reveal_all()
+        merged_env.update(revealed)
 
         if not redact:
+            revealed.clear()
             try:
                 result = subprocess.run(command, env=merged_env, check=False)
                 return result.returncode
@@ -54,10 +60,12 @@ def execute_with_env(
                 merged_env.clear()
                 gc.collect()
 
-        redactor = SecretRedactor(secret_store.reveal_all())
+        redactor = SecretRedactor(revealed)
+        revealed.clear()
 
         # If no secrets need redaction, direct execution is fastest
         if not redactor.pattern:
+            redactor.close()
             try:
                 result = subprocess.run(command, env=merged_env, check=False)
                 return result.returncode
@@ -105,6 +113,8 @@ def execute_with_env(
             sys.stderr.write(f"envshield error executing command: {exc}\n")
             return 1
         finally:
+            redactor.close()
             merged_env.clear()
             gc.collect()
+
 

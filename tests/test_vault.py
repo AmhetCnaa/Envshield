@@ -131,14 +131,19 @@ def test_execute_with_env_subprocess_injection(capfd):
 
     exit_code = execute_with_env(command, secrets)
     assert exit_code == 0
+    # Caller dictionary should be cleared in-place by ObfuscatedSecretStore(clear_source=True)
+    assert len(secrets) == 0
 
     out, _ = capfd.readouterr()
     assert "[REDACTED:TEST_KEY]" in out
 
-    exit_code_raw = execute_with_env(command, secrets, redact=False)
+    secrets_raw = {"TEST_KEY": "CONFIDENTIAL_INJECTED_VALUE_42"}
+    exit_code_raw = execute_with_env(command, secrets_raw, redact=False)
     assert exit_code_raw == 0
+    assert len(secrets_raw) == 0
     out_raw, _ = capfd.readouterr()
     assert "CONFIDENTIAL_INJECTED_VALUE_42" in out_raw
+
 
 
 def test_execute_with_env_empty_and_nonzero():

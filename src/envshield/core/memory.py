@@ -7,6 +7,8 @@ import sys
 from types import TracebackType
 from typing import Self
 
+_CORE_DUMPS_DISABLED: bool = False
+
 
 def _get_buffer_address(data: bytes | bytearray) -> int | None:
     """Extracts the raw virtual memory address of a bytearray or bytes buffer."""
@@ -17,30 +19,41 @@ def _get_buffer_address(data: bytes | bytearray) -> int | None:
     return None
 
 
-def disable_core_dumps() -> bool:
+def disable_core_dumps(strict_ptrace: bool = False) -> bool:
     """
-    Hardens the current process against memory dump leaks:
+    Hardens the current process against memory dump leaks (singleton execution per process):
       - POSIX: sets RLIMIT_CORE to (0, 0) to prevent core dumps on crash/SIGSEGV.
-      - Linux: invokes prctl(PR_SET_DUMPABLE, 0) to restrict ptrace attachment.
+      - Linux: optionally invokes prctl(PR_SET_DUMPABLE, 0) when `strict_ptrace=True` or
+        `ENVSHIELD_STRICT_PTRACE=1` (kept opt-in so rootless containers and /proc/self/fd
+        PTY operations do not suffer root:root ownership side effects).
       - Windows: sets SEM_NOGPFAULTERRORBOX | SEM_FAILCRITICALERRORS to suppress WER dumps.
     """
+    global _CORE_DUMPS_DISABLED
+    if _CORE_DUMPS_DISABLED:
+        return True
+
     try:
         if sys.platform == "win32":
             kernel32 = ctypes.windll.kernel32
             # SEM_FAILCRITICALERRORS (0x0001) | SEM_NOGPFAULTERRORBOX (0x0002)
             kernel32.SetErrorMode(0x0001 | 0x0002)
+            _CORE_DUMPS_DISABLED = True
             return True
 
         import resource
 
         resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
-        if sys.platform.startswith("linux"):
+        if sys.platform.startswith("linux") and (
+            strict_ptrace or os.environ.get("ENVSHIELD_STRICT_PTRACE") == "1"
+        ):
             libc = ctypes.CDLL(None)
             # PR_SET_DUMPABLE = 4
             libc.prctl(4, 0, 0, 0, 0)
+        _CORE_DUMPS_DISABLED = True
         return True
     except Exception:
         return False
+
 
 
 def lock_memory(data: bytes | bytearray) -> bool:
@@ -131,11 +144,14 @@ class SecureBuffer:
     def __init__(self, data: bytes | bytearray | str) -> None:
         disable_core_dumps()
         if isinstance(data, str):
-            raw = data.encode("utf-8")
+            self._buf = bytearray(data, "utf-8")
+        elif isinstance(data, bytearray):
+            # Copy directly from mutable bytearray without creating an intermediate immutable `bytes` object
+            self._buf = bytearray(data)
+            secure_wipe(data)
         else:
-            raw = bytes(data)
+            self._buf = bytearray(data)
 
-        self._buf = bytearray(raw)
         self._locked = lock_memory(self._buf)
 
     @property
@@ -148,11 +164,19 @@ class SecureBuffer:
     def to_str(self) -> str:
         return self._buf.decode("utf-8")
 
-    def wipe(self) -> None:
-        if self._locked:
+    def wipe(self, unlock_page: bool = False) -> None:
+        """
+        Zeroes the underlying bytearray via ctypes.memset FIRST while the page is still
+        locked in physical RAM.
+        Note on OS Page Granularity: Because VirtualUnlock / munlock operate on 4 KB pages
+        and Python's pymalloc co-locates small bytearray objects on shared pages, calling
+        munlock on one buffer prematurely unlocks sibling buffers on the same 4 KB page.
+        Therefore `unlock_page` defaults to False until full store teardown.
+        """
+        secure_wipe(self._buf)
+        if self._locked and unlock_page:
             unlock_memory(self._buf)
             self._locked = False
-        secure_wipe(self._buf)
         gc.collect()
 
     def __enter__(self) -> Self:
@@ -164,7 +188,7 @@ class SecureBuffer:
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
     ) -> None:
-        self.wipe()
+        self.wipe(unlock_page=True)
 
 
 class ObfuscatedSecretStore:
@@ -174,14 +198,18 @@ class ObfuscatedSecretStore:
     heap while the parent supervisor waits for child processes to finish.
     """
 
-    def __init__(self, secrets: dict[str, str]) -> None:
+    def __init__(self, secrets: dict[str, str], clear_source: bool = False) -> None:
         disable_core_dumps()
         self._entries: dict[str, tuple[SecureBuffer, SecureBuffer]] = {}
         for k, v in secrets.items():
-            raw_bytes = v.encode("utf-8")
-            pad = os.urandom(len(raw_bytes))
-            masked = bytearray(b ^ p for b, p in zip(raw_bytes, pad, strict=True))
-            self._entries[k] = (SecureBuffer(masked), SecureBuffer(pad))
+            raw_buf = bytearray(v, "utf-8")
+            pad_buf = bytearray(os.urandom(len(raw_buf)))
+            masked_buf = bytearray(b ^ p for b, p in zip(raw_buf, pad_buf, strict=True))
+            secure_wipe(raw_buf)
+            self._entries[k] = (SecureBuffer(masked_buf), SecureBuffer(pad_buf))
+
+        if clear_source:
+            secrets.clear()
 
     def reveal(self, key: str) -> str | None:
         """Unmasks a single secret on-demand."""
@@ -202,12 +230,24 @@ class ObfuscatedSecretStore:
         return {k: (self.reveal(k) or "") for k in self._entries}
 
     def wipe_all(self) -> None:
-        """Zeroes both the masked payloads and the one-time pads in physical RAM."""
+        """
+        Two-phase teardown to respect 4 KB OS page granularity:
+          Phase 1: Cryptographically zero-wipe all buffers while all shared 4 KB pages remain locked.
+          Phase 2: Unlock the physical RAM pages after every secret on those pages has been zeroed.
+        """
         for masked_buf, pad_buf in self._entries.values():
-            masked_buf.wipe()
-            pad_buf.wipe()
+            masked_buf.wipe(unlock_page=False)
+            pad_buf.wipe(unlock_page=False)
+        for masked_buf, pad_buf in self._entries.values():
+            if masked_buf._locked:
+                unlock_memory(masked_buf.buffer)
+                masked_buf._locked = False
+            if pad_buf._locked:
+                unlock_memory(pad_buf.buffer)
+                pad_buf._locked = False
         self._entries.clear()
         gc.collect()
+
 
     def __enter__(self) -> Self:
         return self

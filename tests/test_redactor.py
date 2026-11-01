@@ -106,3 +106,33 @@ def test_secret_redactor_base64_and_urlencoded_variants() -> None:
     assert redacted.count("[REDACTED:DB_SECRET]") == 2
 
 
+def test_secret_redactor_no_nested_double_redaction() -> None:
+    """
+    Verify that when a secret contains 'REDACTED' or 'KEY' or sits near the sliding window
+    boundary, `redact_chunk` never double-redacts `[REDACTED:KEY]` into `[REDACTED:[REDACTED:KEY]]`.
+    """
+    secrets = {
+        "TOKEN_A": "REDACTED",
+        "LONG_KEY": "super_long_secret_value_for_lookahead_window_99999",
+    }
+    redactor = SecretRedactor(secrets)
+
+    # First chunk contains a complete match for TOKEN_A ("REDACTED") without a trailing newline,
+    # while LONG_KEY forces a 49-char lookahead window.
+    chunk1 = "Status: REDACTED is the token, waiting for more..."
+    chunk2 = " and here is the rest of the stream!\n"
+
+    out1 = redactor.redact_chunk(chunk1, is_eof=False)
+    out2 = redactor.redact_chunk(chunk2, is_eof=True)
+    full = out1 + out2
+
+    assert "[REDACTED:[REDACTED:" not in full
+    assert full.count("[REDACTED:TOKEN_A]") == 1
+    assert "Status: [REDACTED:TOKEN_A] is the token, waiting for more... and here is the rest of the stream!\n" == full
+
+    redactor.close()
+    assert len(redactor.val_to_key) == 0
+    assert redactor.pattern is None
+
+
+

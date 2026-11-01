@@ -95,8 +95,11 @@ class SecretRedactor:
     def redact_chunk(self, chunk: str, is_eof: bool = False) -> str:
         """
         Stateful sliding-window chunk redactor.
-        Handles secrets that are split across two consecutive read() chunks by holding back
-        a lookahead tail of (max_secret_len - 1) characters when no newline boundary is present.
+        Handles secrets split across two consecutive read() chunks by holding back
+        a lookahead tail of (max_secret_len - 1) raw characters when no newline boundary is present.
+        Prevents double-redaction (nested [REDACTED:[REDACTED:KEY]]) by immediately emitting
+        through the end of any completed match and only keeping unredacted raw tail characters
+        in `_pending_buffer`.
         """
         if not self.pattern:
             return chunk
@@ -107,31 +110,42 @@ class SecretRedactor:
         if is_eof or not combined:
             return self.redact_text(combined)
 
-        # First redact any complete matches already visible in `combined`
-        redacted = self.redact_text(combined)
+        if combined.endswith("\n"):
+            return self.redact_text(combined)
 
-        # If the chunk ends with a newline, flush everything immediately for interactive responsiveness
-        if redacted.endswith("\n"):
-            return redacted
-
-        # Otherwise, retain up to (max_secret_len - 1) characters in the sliding lookahead window
-        # in case a secret is currently split across the end of this chunk and the start of the next.
         lookahead = max(0, self.max_secret_len - 1)
-        if lookahead > 0 and len(redacted) > lookahead:
-            # Avoid splitting inside an already formatted [REDACTED:...] tag
-            safe_cutoff = len(redacted) - lookahead
-            last_open_bracket = redacted.rfind("[REDACTED:", 0, len(redacted))
-            if last_open_bracket != -1 and last_open_bracket < safe_cutoff:
-                close_bracket = redacted.find("]", last_open_bracket)
-                if close_bracket != -1 and close_bracket >= safe_cutoff:
-                    safe_cutoff = close_bracket + 1
+        if lookahead == 0:
+            return self.redact_text(combined)
 
-            emit = redacted[:safe_cutoff]
-            self._pending_buffer = redacted[safe_cutoff:]
-            return emit
+        # Find all complete secret matches in `combined` on the raw text first
+        out_parts: list[str] = []
+        last_end = 0
+        for match in self.pattern.finditer(combined):
+            start, end = match.span()
+            out_parts.append(combined[last_end:start])
+            key_name = self.val_to_key.get(match.group(0), "SECRET")
+            out_parts.append(f"[REDACTED:{key_name}]")
+            last_end = end
 
-        self._pending_buffer = redacted
-        return ""
+        # `unmatched_tail` is strictly the raw suffix after the last matched secret.
+        # It never contains any `[REDACTED:...]` markers, eliminating nested double-redaction!
+        unmatched_tail = combined[last_end:]
+
+        if len(unmatched_tail) > lookahead:
+            safe_raw_cutoff = len(unmatched_tail) - lookahead
+            out_parts.append(unmatched_tail[:safe_raw_cutoff])
+            self._pending_buffer = unmatched_tail[safe_raw_cutoff:]
+        else:
+            self._pending_buffer = unmatched_tail
+
+        return "".join(out_parts)
+
+    def close(self) -> None:
+        """Clears in-memory plaintext lookup tables and compiled regex patterns on exit."""
+        self.val_to_key.clear()
+        self.pattern = None
+        self._pending_buffer = ""
+
 
     def stream_pipe(
         self,

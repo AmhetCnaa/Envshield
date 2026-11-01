@@ -53,7 +53,11 @@ def test_obfuscated_secret_store():
         "AWS_SECRET_KEY": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
         "DB_PASS": "hunter2_ultra_secret",
     }
-    with ObfuscatedSecretStore(raw_secrets) as store:
+    caller_copy = dict(raw_secrets)
+    with ObfuscatedSecretStore(caller_copy, clear_source=True) as store:
+        # Caller dict is immediately cleared to eliminate lingering cleartext references
+        assert len(caller_copy) == 0
+
         # Ensure raw bytes in memory are XOR-masked and do NOT equal plaintext
         cipher_buf, pad_buf = store._entries["AWS_SECRET_KEY"]
         assert cipher_buf.to_bytes() != raw_secrets["AWS_SECRET_KEY"].encode("utf-8")
@@ -67,5 +71,6 @@ def test_obfuscated_secret_store():
 
     # After context exit, all internal buffers are zero-wiped and cleared
     assert len(store._entries) == 0
+
 
 

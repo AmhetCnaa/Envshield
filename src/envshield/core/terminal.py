@@ -206,14 +206,21 @@ def execute_interactive(
     merged_env.update(secrets)
 
     redactor = SecretRedactor(secrets) if redact else None
+    secrets.clear()
 
-    if os.name != "nt" and HAS_PTY and is_interactive_tty():
-        return _execute_posix_pty(command, merged_env, redactor=redactor)
+    try:
+        if os.name != "nt" and HAS_PTY and is_interactive_tty():
+            return _execute_posix_pty(command, merged_env, redactor=redactor)
 
-    if os.name == "nt" and is_interactive_tty():
-        return _execute_windows_interactive(command, merged_env)
+        if os.name == "nt" and is_interactive_tty():
+            return _execute_windows_interactive(command, merged_env)
 
-    # Fallback to standard runner
-    from envshield.core.runner import execute_with_env
+        # Fallback to standard runner
+        from envshield.core.runner import execute_with_env
 
-    return execute_with_env(command, secrets, redact=redact)
+        return execute_with_env(command, merged_env, redact=redact)
+    finally:
+        if redactor is not None:
+            redactor.close()
+        merged_env.clear()
+
