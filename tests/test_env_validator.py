@@ -1,5 +1,5 @@
-import pytest
 from envshield.scanners.env_validator import infer_type, parse_env_file
+
 
 def test_infer_type_empty():
     assert infer_type("") == "empty"

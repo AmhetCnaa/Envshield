@@ -302,3 +302,141 @@ def test_cli_scan_subcommand(mock_exit, tmp_path: Path, monkeypatch):
     with pytest.raises(SystemExit) as exc:
         main(["scan", str(tmp_path)])
     assert exc.value.code == 0
+
+def test_legacy_v1_vault_backwards_compatibility(tmp_path: Path):
+    """Verifies that legacy v1 format (salt + nonce + ct) continues to unseal seamlessly."""
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+    from envshield.core.vault import derive_key, unseal_to_memory
+
+    salt = b"1234567890123456"
+    nonce = b"123456789012"
+    key = derive_key("v1password", salt)
+    aesgcm = AESGCM(key)
+    ct = aesgcm.encrypt(nonce, b"V1_LEGACY_KEY=legacy_val\n", None)
+
+    v1_file = tmp_path / "legacy.env.enc"
+    v1_file.write_bytes(salt + nonce + ct)
+
+    secrets = unseal_to_memory(v1_file, "v1password")
+    assert secrets["V1_LEGACY_KEY"] == "legacy_val"
+
+
+def test_team_ssh_recipient_vault(tmp_path: Path):
+    """Verifies sealing for multiple SSH recipients and unsealing with each private key."""
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519, rsa
+
+    # 1. Generate team keys
+    rsa_priv = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    rsa_pub_ssh = rsa_priv.public_key().public_bytes(
+        serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH
+    ).decode("utf-8")
+    rsa_priv_file = tmp_path / "team_member1_rsa"
+    rsa_priv_file.write_bytes(
+        rsa_priv.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.PKCS8,
+            serialization.NoEncryption(),
+        )
+    )
+
+    ed_priv = ed25519.Ed25519PrivateKey.generate()
+    ed_pub_ssh = ed_priv.public_key().public_bytes(
+        serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH
+    ).decode("utf-8")
+    ed_priv_file = tmp_path / "team_member2_ed25519"
+    ed_priv_file.write_bytes(
+        ed_priv.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.OpenSSH,
+            serialization.NoEncryption(),
+        )
+    )
+
+    env_file = tmp_path / "team.env"
+    env_file.write_text("TEAM_SECRET=all_hands_deck\n", encoding="utf-8")
+    enc_file = tmp_path / "team.env.enc"
+
+    # 2. Seal with both recipients, no password
+    seal_file(env_file, enc_file, recipients=[rsa_pub_ssh, ed_pub_ssh])
+
+    # 3. Unseal with member 1 (RSA)
+    secrets1 = unseal_to_memory(enc_file, identity_path=rsa_priv_file)
+    assert secrets1["TEAM_SECRET"] == "all_hands_deck"
+
+    # 4. Unseal with member 2 (Ed25519)
+    secrets2 = unseal_to_memory(enc_file, identity_path=ed_priv_file)
+    assert secrets2["TEAM_SECRET"] == "all_hands_deck"
+
+
+def test_hybrid_vault_password_and_recipients(tmp_path: Path):
+    """Verifies a vault with both password and recipient slots can be unlocked by either."""
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    ed_priv = ed25519.Ed25519PrivateKey.generate()
+    ed_pub_ssh = ed_priv.public_key().public_bytes(
+        serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH
+    ).decode("utf-8")
+    ed_priv_file = tmp_path / "member_ed"
+    ed_priv_file.write_bytes(
+        ed_priv.private_bytes(
+            serialization.Encoding.PEM,
+            serialization.PrivateFormat.OpenSSH,
+            serialization.NoEncryption(),
+        )
+    )
+
+    env_file = tmp_path / "hybrid.env"
+    env_file.write_text("HYBRID_KEY=multi_auth\n", encoding="utf-8")
+    enc_file = tmp_path / "hybrid.env.enc"
+
+    seal_file(env_file, enc_file, password="master_pass", recipients=[ed_pub_ssh])
+
+    # Unlock via password
+    assert unseal_to_memory(enc_file, password="master_pass")["HYBRID_KEY"] == "multi_auth"
+
+    # Unlock via recipient private key (without password)
+    assert unseal_to_memory(enc_file, identity_path=ed_priv_file)["HYBRID_KEY"] == "multi_auth"
+
+
+@mock.patch("sys.exit", side_effect=my_exit)
+def test_cli_key_commands(mock_exit, tmp_path: Path):
+    """Tests 'envshield key set', 'envshield key get', and 'envshield key delete' CLI commands."""
+    mock_store = {}
+
+    with (
+        mock.patch("keyring.set_password", side_effect=lambda s, n, v: mock_store.update({n: v})),
+        mock.patch("keyring.get_password", side_effect=lambda s, n: mock_store.get(n)),
+        mock.patch("keyring.delete_password", side_effect=lambda s, n: mock_store.pop(n, None)),
+    ):
+        with mock.patch("getpass.getpass", return_value="mysecretpass"), pytest.raises(SystemExit) as e1:
+            main(["key", "set", "prod_key"])
+        assert e1.value.code == 0
+
+        with pytest.raises(SystemExit) as e2:
+            main(["key", "get", "prod_key"])
+        assert e2.value.code == 0
+
+        with pytest.raises(SystemExit) as e3:
+            main(["key", "delete", "prod_key"])
+        assert e3.value.code == 0
+
+
+@mock.patch("sys.exit", side_effect=my_exit)
+def test_cli_diff_command(mock_exit, tmp_path: Path, monkeypatch):
+    """Tests 'envshield diff' CLI command."""
+    monkeypatch.chdir(tmp_path)
+    file_a = tmp_path / ".env"
+    file_a.write_text("A=1\nB=2\n", encoding="utf-8")
+    enc_file = tmp_path / ".env.enc"
+    seal_file(file_a, enc_file, password="diff_pass")
+
+    # Change unencrypted file
+    file_a.write_text("A=1\nB=999\n", encoding="utf-8")
+
+    monkeypatch.setenv("ENVSHIELD_KEY", "diff_pass")
+    with pytest.raises(SystemExit) as e:
+        main(["diff", str(file_a), str(enc_file)])
+    assert e.value.code == 0

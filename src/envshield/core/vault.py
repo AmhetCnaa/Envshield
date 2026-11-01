@@ -2,14 +2,28 @@ from __future__ import annotations
 
 import base64
 import binascii
+import json
 import os
+import struct
+from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
 from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
+from envshield.core.formats import detect_format, parse_secrets
+from envshield.core.memory import SecureBuffer, secure_wipe
+from envshield.core.recipients import (
+    Recipient,
+    decrypt_dek_with_identity,
+    encrypt_dek_for_recipient,
+    find_default_identities,
+)
+
+V2_MAGIC: bytes = b"ENVS\x02"
 SALT_SIZE: int = 16
 NONCE_SIZE: int = 12
 KEY_SIZE: int = 32
@@ -21,7 +35,7 @@ class AuthError(Exception):
 
 
 class InvalidKey(AuthError):
-    """Raised when an invalid key or password is provided."""
+    """Raised when an invalid key, private key, or password is provided."""
 
 
 def derive_key(password: str, salt: bytes) -> bytes:
@@ -38,110 +52,9 @@ def derive_key(password: str, salt: bytes) -> bytes:
     return kdf.derive(password.encode("utf-8"))
 
 
-def parse_env_content(content: str) -> dict[str, str]:
-    """
-    Parses .env file content strictly in memory without writing to disk.
-    Supports comments (#), empty lines, optional 'export ', and quoted values.
-    """
-    env_vars: dict[str, str] = {}
-    for line in content.splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        if line.startswith("export "):
-            line = line[len("export ") :].strip()
-        if "=" in line:
-            key, val = line.split("=", 1)
-            key = key.strip()
-            val = val.strip()
-            # Strip matching surrounding quotes
-            if (val.startswith('"') and val.endswith('"')) or (
-                val.startswith("'") and val.endswith("'")
-            ):
-                val = val[1:-1]
-            env_vars[key] = val
-    return env_vars
-
-
-def seal_file(source_path: Path | str, target_path: Path | str, password: str) -> None:
-    """
-    Reads source_path, encrypts its content using AES-256-GCM with a key derived from password,
-    and writes [salt (16B) + nonce (12B) + ciphertext] directly to target_path.
-    """
-    source = Path(source_path)
-    target = Path(target_path)
-
-    if not source.is_file():
-        raise FileNotFoundError(f"Source file not found: {source}")
-
-    plaintext = source.read_bytes()
-    salt = os.urandom(SALT_SIZE)
-    nonce = os.urandom(NONCE_SIZE)
-
-    key = derive_key(password, salt)
-    aesgcm = AESGCM(key)
-    ciphertext = aesgcm.encrypt(nonce, plaintext, None)
-
-    payload = salt + nonce + ciphertext
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(payload)
-
-
-def _decrypt_payload(payload: bytes, password: str) -> bytes:
-    """
-    Internal helper to decrypt [salt (16B) + nonce (12B) + ciphertext] using AES-GCM.
-    """
-    min_length = SALT_SIZE + NONCE_SIZE + 16  # 16-byte GCM authentication tag
-    if len(payload) < min_length:
-        raise AuthError(f"Invalid payload: data too short (minimum {min_length} bytes required).")
-
-    salt = payload[:SALT_SIZE]
-    nonce = payload[SALT_SIZE : SALT_SIZE + NONCE_SIZE]
-    ciphertext = payload[SALT_SIZE + NONCE_SIZE :]
-
-    key = derive_key(password, salt)
-    aesgcm = AESGCM(key)
-
-    try:
-        return aesgcm.decrypt(nonce, ciphertext, None)
-    except InvalidTag as exc:
-        raise InvalidKey("Authentication failed: invalid password or corrupted data.") from exc
-
-
-def unseal_to_memory(source_path: Path | str, password: str) -> dict[str, str]:
-    """
-    Reads an encrypted environment file (.env.enc), decrypts it in RAM using AES-GCM,
-    and parses it into a dictionary of KEY=VALUE pairs.
-    Zero-disk writes: plaintext is never written to disk.
-    """
-    source = Path(source_path)
-    if not source.is_file():
-        raise FileNotFoundError(f"Encrypted file not found: {source}")
-
-    raw_bytes = source.read_bytes()
-    decrypted_bytes: bytes
-
-    try:
-        decrypted_bytes = _decrypt_payload(raw_bytes, password)
-    except (InvalidKey, AuthError) as original_err:
-        # Fallback support for base64 encoded payload
-        try:
-            candidate = base64.b64decode(raw_bytes, validate=True)
-            decrypted_bytes = _decrypt_payload(candidate, password)
-        except (binascii.Error, ValueError, AuthError):
-            raise original_err from None
-
-    try:
-        content = decrypted_bytes.decode("utf-8")
-    except UnicodeDecodeError as exc:
-        raise AuthError("Decrypted payload is not valid UTF-8 text.") from exc
-
-    return parse_env_content(content)
-
-
 def shred_file(path: Path | str, passes: int = 3) -> None:
     """
-    Securely overwrites and removes a file to prevent recovery from disk.
+    Securely overwrites and removes a file to prevent forensic recovery.
     Overwrites with random bytes in multiple passes followed by zeros before deletion.
     """
     target = Path(path)
@@ -162,3 +75,231 @@ def shred_file(path: Path | str, passes: int = 3) -> None:
             os.fsync(f.fileno())
 
     target.unlink()
+
+
+def seal_file(
+    source_path: Path | str,
+    target_path: Path | str,
+    password: str | None = None,
+    recipients: Sequence[str | Recipient] | None = None,
+    format_type: str = "auto",
+) -> None:
+    """
+    Encrypts source_path into target_path using AES-256-GCM envelope encryption.
+    Supports single password, team SSH recipients, or hybrid (both).
+    """
+    source = Path(source_path)
+    target = Path(target_path)
+
+    if not source.is_file():
+        raise FileNotFoundError(f"Source file not found: {source}")
+
+    if not password and not recipients:
+        raise ValueError("At least one password or recipient public key must be provided.")
+
+    plaintext = source.read_bytes()
+    dek = bytearray(os.urandom(KEY_SIZE))
+    payload_nonce = os.urandom(NONCE_SIZE)
+
+    # Encrypt the plaintext payload with DEK using AES-256-GCM
+    aesgcm = AESGCM(bytes(dek))
+    ciphertext = aesgcm.encrypt(payload_nonce, plaintext, None)
+
+    slots: list[dict[str, Any]] = []
+
+    # 1. Password slot (if password provided)
+    if password:
+        salt = os.urandom(SALT_SIZE)
+        slot_nonce = os.urandom(NONCE_SIZE)
+        kek = derive_key(password, salt)
+        slot_aesgcm = AESGCM(kek)
+        encrypted_dek = slot_aesgcm.encrypt(slot_nonce, bytes(dek), None)
+
+        slots.append(
+            {
+                "type": "password",
+                "salt": base64.b64encode(salt).decode("utf-8"),
+                "nonce": base64.b64encode(slot_nonce).decode("utf-8"),
+                "encrypted_dek": base64.b64encode(encrypted_dek).decode("utf-8"),
+                "iterations": PBKDF2_ITERATIONS,
+            }
+        )
+
+    # 2. Recipient slots (if recipients provided)
+    if recipients:
+        for r_spec in recipients:
+            recipient = (
+                r_spec if isinstance(r_spec, Recipient) else Recipient.from_string(str(r_spec))
+            )
+            slot_info = encrypt_dek_for_recipient(bytes(dek), recipient)
+            slots.append(slot_info)
+
+    # Wipe DEK from memory after sealing
+    secure_wipe(dek)
+
+    detected_fmt = detect_format(source) if format_type == "auto" else format_type
+    header_data = {
+        "version": 2,
+        "format": detected_fmt,
+        "slots": slots,
+        "payload_nonce": base64.b64encode(payload_nonce).decode("utf-8"),
+    }
+    header_bytes = json.dumps(header_data, separators=(",", ":")).encode("utf-8")
+
+    # Layout: [V2_MAGIC (6B)] + [header_len (4B)] + [header_bytes] + [ciphertext + tag]
+    payload = V2_MAGIC + struct.pack(">I", len(header_bytes)) + header_bytes + ciphertext
+
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(payload)
+
+
+def _decrypt_v1_payload(payload: bytes, password: str) -> bytes:
+    """Decrypts legacy v1 format: [salt(16B) + nonce(12B) + ciphertext + tag]."""
+    min_length = SALT_SIZE + NONCE_SIZE + 16
+    if len(payload) < min_length:
+        raise AuthError(f"Invalid payload: data too short (minimum {min_length} bytes required).")
+
+    salt = payload[:SALT_SIZE]
+    nonce = payload[SALT_SIZE : SALT_SIZE + NONCE_SIZE]
+    ciphertext = payload[SALT_SIZE + NONCE_SIZE :]
+
+    key = derive_key(password, salt)
+    aesgcm = AESGCM(key)
+
+    try:
+        return aesgcm.decrypt(nonce, ciphertext, None)
+    except InvalidTag as exc:
+        raise InvalidKey("Authentication failed: invalid password or corrupted data.") from exc
+
+
+def unseal_raw_payload(
+    source_path: Path | str,
+    password: str | None = None,
+    identity_path: str | Path | None = None,
+) -> tuple[str, str]:
+    """
+    Decrypts the encrypted vault in RAM.
+    Returns a tuple of (plaintext_content, detected_format).
+    Plaintext is kept in memory and never written to disk.
+    """
+    source = Path(source_path)
+    if not source.is_file():
+        raise FileNotFoundError(f"Encrypted file not found: {source}")
+
+    raw_bytes = source.read_bytes()
+
+    # Base64 envelope fallback check
+    if not raw_bytes.startswith(V2_MAGIC) and len(raw_bytes) > 28:
+        try:
+            candidate = base64.b64decode(raw_bytes, validate=True)
+            if candidate.startswith(V2_MAGIC) or len(candidate) >= 44:
+                raw_bytes = candidate
+        except (binascii.Error, ValueError):
+            pass
+
+    # Check for V2 Envelope format
+    if raw_bytes.startswith(V2_MAGIC):
+        if len(raw_bytes) < len(V2_MAGIC) + 4:
+            raise AuthError("Invalid V2 vault: truncated header length.")
+
+        header_len = struct.unpack(">I", raw_bytes[len(V2_MAGIC) : len(V2_MAGIC) + 4])[0]
+        header_start = len(V2_MAGIC) + 4
+        header_end = header_start + header_len
+
+        if len(raw_bytes) < header_end + 16:
+            raise AuthError("Invalid V2 vault: corrupted header or missing ciphertext.")
+
+        try:
+            header_json = json.loads(raw_bytes[header_start:header_end].decode("utf-8"))
+        except Exception as exc:
+            raise AuthError(f"Invalid V2 vault header: {exc}") from exc
+
+        ciphertext = raw_bytes[header_end:]
+        payload_nonce = base64.b64decode(header_json["payload_nonce"])
+        slots: list[dict[str, Any]] = header_json.get("slots", [])
+        fmt = header_json.get("format", "env")
+
+        dek: bytearray | None = None
+
+        # 1. Try specified identity private key
+        if identity_path:
+            for slot in slots:
+                if slot.get("type") in ("ssh-rsa", "ssh-ed25519", "x25519"):
+                    decrypted_dek = decrypt_dek_with_identity(slot, identity_path)
+                    if decrypted_dek:
+                        dek = bytearray(decrypted_dek)
+                        break
+
+        # 2. Try default SSH identities in ~/.ssh/
+        if dek is None and not identity_path:
+            default_ids = find_default_identities()
+            for ident in default_ids:
+                for slot in slots:
+                    if slot.get("type") in ("ssh-rsa", "ssh-ed25519", "x25519"):
+                        decrypted_dek = decrypt_dek_with_identity(slot, ident)
+                        if decrypted_dek:
+                            dek = bytearray(decrypted_dek)
+                            break
+                if dek is not None:
+                    break
+
+        # 3. Try password slot if available and password provided
+        if dek is None and password:
+            for slot in slots:
+                if slot.get("type") == "password":
+                    salt = base64.b64decode(slot["salt"])
+                    slot_nonce = base64.b64decode(slot["nonce"])
+                    enc_dek = base64.b64decode(slot["encrypted_dek"])
+                    kek = derive_key(password, salt)
+                    slot_aesgcm = AESGCM(kek)
+                    try:
+                        decrypted_dek = slot_aesgcm.decrypt(slot_nonce, enc_dek, None)
+                        dek = bytearray(decrypted_dek)
+                        break
+                    except InvalidTag:
+                        continue
+
+        if dek is None:
+            raise InvalidKey(
+                "Authentication failed: no matching private key or valid password for this vault."
+            )
+
+        with SecureBuffer(bytes(dek)) as sec_dek:
+            aesgcm = AESGCM(sec_dek.to_bytes())
+            try:
+                decrypted_bytes = aesgcm.decrypt(payload_nonce, ciphertext, None)
+            except InvalidTag as exc:
+                raise InvalidKey("Authentication failed: payload tag mismatch.") from exc
+
+        try:
+            return decrypted_bytes.decode("utf-8"), fmt
+        except UnicodeDecodeError as exc:
+            raise AuthError("Decrypted payload is not valid UTF-8 text.") from exc
+
+    # Legacy V1 format fallback
+    if not password:
+        raise InvalidKey("Password required to unseal legacy v1 vault.")
+
+    try:
+        decrypted_bytes = _decrypt_v1_payload(raw_bytes, password)
+    except (InvalidKey, AuthError) as original_err:
+        raise original_err from None
+
+    try:
+        return decrypted_bytes.decode("utf-8"), "env"
+    except UnicodeDecodeError as exc:
+        raise AuthError("Decrypted payload is not valid UTF-8 text.") from exc
+
+
+def unseal_to_memory(
+    source_path: Path | str,
+    password: str | None = None,
+    identity_path: str | Path | None = None,
+) -> dict[str, str]:
+    """
+    Reads an encrypted environment file (.env.enc), decrypts it in RAM,
+    and parses it into a dictionary of KEY=VALUE pairs.
+    Zero-disk writes: plaintext is never written to disk.
+    """
+    content, fmt = unseal_raw_payload(source_path, password, identity_path)
+    return parse_secrets(content, format_type=fmt, path_hint=str(source_path))

@@ -4,21 +4,22 @@ build-backend = "hatchling.build"
 
 [project]
 name = "envshield-cli"
-version = "0.2.0"
+version = "0.3.0"
 description = "Zero-disk secret engine & runtime injection for developers"
 readme = "README.md"
 requires-python = ">=3.9"
-keywords = ["secrets", "cli", "security", "aes-gcm", "env-vault"]
+keywords = ["secrets", "cli", "security", "aes-gcm", "env-vault", "ssh-keys", "zero-disk"]
 dependencies = [
     "rich>=13.0.0",
     "cryptography>=42.0.0",
+    "keyring>=24.0.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/envshield/envshield"
-Documentation = "https://github.com/envshield/envshield#readme"
-Repository = "https://github.com/envshield/envshield.git"
-Issues = "https://github.com/envshield/envshield/issues"
+Homepage = "https://github.com/AmhetCnaa/Envshield"
+Documentation = "https://github.com/AmhetCnaa/Envshield#readme"
+Repository = "https://github.com/AmhetCnaa/Envshield.git"
+Issues = "https://github.com/AmhetCnaa/Envshield/issues"
 
 [project.scripts]
 envshield = "envshield.cli.main:main"
@@ -31,6 +32,7 @@ dev = [
     "ruff>=0.1.0",
     "build>=1.0.0",
     "twine>=5.0.0",
+    "pyinstaller>=6.0.0",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -39,6 +41,9 @@ packages = ["src/envshield"]
 [tool.ruff]
 line-length = 100
 target-version = "py39"
+
+[tool.ruff.lint]
+ignore = ["BLE001", "TRY002", "TRY003", "PLW1510", "SIM117", "S110"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=src/envshield --cov-report=term-missing --cov-report=xml"

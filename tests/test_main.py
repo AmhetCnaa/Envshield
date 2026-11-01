@@ -1,10 +1,12 @@
 def my_exit(code=0): raise SystemExit(code)
-import pytest
-import sys
 from unittest import mock
+
+import pytest
+
 from envshield.cli.main import main, scan_file
 from envshield.core.models import ScanResult
 from envshield.scanners.regex import RegexScanner
+
 
 def test_scan_file(tmp_path):
     result = ScanResult()
@@ -21,9 +23,8 @@ def test_main_no_args_clean(mock_print, mock_exit, tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     (tmp_path / "dummy.txt").write_text("hello")
     
-    with pytest.raises(SystemExit) as e:
-        with mock.patch("sys.argv", ["envshield", str(tmp_path)]):
-            main()
+    with pytest.raises(SystemExit) as e, mock.patch("sys.argv", ["envshield", str(tmp_path)]):
+        main()
     assert e.value.code == 0
 
 @mock.patch("sys.exit", side_effect=my_exit)
@@ -32,9 +33,8 @@ def test_main_issues_found(mock_print, mock_exit, tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     (tmp_path / "test.py").write_text("AKIAIOSFODNN7EXAMPLE\n")
     
-    with pytest.raises(SystemExit) as e:
-        with mock.patch("sys.argv", ["envshield", str(tmp_path)]):
-            main()
+    with pytest.raises(SystemExit) as e, mock.patch("sys.argv", ["envshield", str(tmp_path)]):
+        main()
     assert e.value.code == 1
     
 @mock.patch("sys.exit", side_effect=my_exit)
@@ -87,7 +87,6 @@ def test_main_env_validation(mock_print, mock_exit, tmp_path, monkeypatch):
     (tmp_path / ".env.example").write_text("PORT=8080\n")
     (tmp_path / ".env").write_text("PORT=abc\n")
     
-    with pytest.raises(SystemExit) as e:
-        with mock.patch("sys.argv", ["envshield", str(tmp_path)]):
-            main()
+    with pytest.raises(SystemExit) as e, mock.patch("sys.argv", ["envshield", str(tmp_path)]):
+        main()
     assert e.value.code == 1

@@ -1,6 +1,8 @@
-from unittest import mock
 import subprocess
+from unittest import mock
+
 from envshield.utils.git import get_staged_files, install_pre_commit_hook
+
 
 @mock.patch("subprocess.run", side_effect=subprocess.CalledProcessError(1, "cmd"))
 def test_get_staged_files_error(mock_run):
