@@ -80,21 +80,27 @@
 
             <!-- Navigation Links with Scroll Spy Highlight -->
             <div class="hidden lg:flex items-center gap-1 text-xs font-medium text-slate-400">
-                <a href="#architecture" data-nav="architecture" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Architecture</a>
-                <a href="#demo" data-nav="demo" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Runtime Trace</a>
-                <a href="#features" data-nav="features" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Primitives</a>
-                <a href="#comparison" data-nav="comparison" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Benchmarks</a>
-                <a href="#calculator" data-nav="calculator" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Economics</a>
-                <a href="#pricing" data-nav="pricing" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Licensing</a>
-                <a href="#quickstart" data-nav="quickstart" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Quickstart</a>
-                <a href="#faq" data-nav="faq" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">FAQ</a>
+                <a href="#architecture" data-nav="architecture" data-i18n="nav_arch" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Architecture</a>
+                <a href="#demo" data-nav="demo" data-i18n="nav_trace" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Runtime Trace</a>
+                <a href="#features" data-nav="features" data-i18n="nav_primitives" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Primitives</a>
+                <a href="#comparison" data-nav="comparison" data-i18n="nav_benchmarks" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Benchmarks</a>
+                <a href="#calculator" data-nav="calculator" data-i18n="nav_economics" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Economics</a>
+                <a href="#pricing" data-nav="pricing" data-i18n="nav_licensing" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Licensing</a>
+                <a href="#quickstart" data-nav="quickstart" data-i18n="nav_quickstart" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Quickstart</a>
+                <a href="#faq" data-nav="faq" data-i18n="nav_faq" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">FAQ</a>
             </div>
 
-            <!-- Right Actions & Command Palette Trigger -->
+            <!-- Right Actions, Language Switcher & Command Palette Trigger -->
             <div class="flex items-center gap-2.5">
+                <!-- Sleek Language Switcher (EN / TR) -->
+                <div class="flex items-center p-0.5 rounded-lg bg-white/[0.04] border border-white/10 font-mono text-[11px]" title="Dil Seçimi / Language Switcher">
+                    <button onclick="setLanguage('en')" id="lang-btn-en" class="px-2 py-0.5 rounded-md bg-white/10 text-white font-semibold transition" title="English">EN</button>
+                    <button onclick="setLanguage('tr')" id="lang-btn-tr" class="px-2 py-0.5 rounded-md text-slate-400 hover:text-white transition" title="Türkçe">TR</button>
+                </div>
+
                 <button onclick="toggleCmdModal()" class="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 text-xs text-slate-400 hover:text-white transition font-mono" title="Open Command Palette (Ctrl+K)">
                     <i data-lucide="terminal" class="w-3.5 h-3.5 text-slate-400"></i>
-                    <span>Command</span>
+                    <span data-i18n="nav_cmd">Command</span>
                     <kbd class="px-1.5 py-0.5 text-[10px] rounded bg-white/10 text-slate-300">⌘K</kbd>
                 </button>
 
@@ -105,7 +111,7 @@
                 </a>
 
                 <a href="#pricing" class="btn-primary px-3.5 py-1.5 text-xs inline-flex items-center gap-1">
-                    <span>Get License</span>
+                    <span data-i18n="nav_license_btn">Get License</span>
                     <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
                 </a>
             </div>
@@ -127,15 +133,15 @@
                     <!-- Left Column: High-Density Engineering Pitch -->
                     <div class="lg:col-span-6 space-y-6">
                         <div class="reveal inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 text-xs text-slate-300 font-mono" style="--delay: 0ms;">
-                            <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold text-[10px]">AUDIT PASSED</span>
-                            <span>145/145 invariant tests · RFC 9180 HPKE · mlock()</span>
+                            <span data-i18n="hero_audit_badge" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold text-[10px]">AUDIT PASSED</span>
+                            <span data-i18n="hero_audit_text">145/145 invariant tests · RFC 9180 HPKE · mlock()</span>
                         </div>
 
-                        <h1 data-kinetic class="kinetic-heading text-4xl sm:text-5xl font-extrabold tracking-[-0.035em] text-white leading-[1.08]">
+                        <h1 data-kinetic data-kinetic-id="hero_title" class="kinetic-heading text-4xl sm:text-5xl font-extrabold tracking-[-0.035em] text-white leading-[1.08]">
                             Zero-disk secret execution for paranoid engineering teams.
                         </h1>
 
-                        <p class="reveal text-sm sm:text-base text-slate-400 leading-relaxed font-normal" style="--delay: 180ms;">
+                        <p data-i18n-html="hero_desc" class="reveal text-sm sm:text-base text-slate-400 leading-relaxed font-normal" style="--delay: 180ms;">
                             Stop leaving plaintext <code class="text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded">.env</code> files on developer NVMe drives or coupling production boots to third-party SaaS uptime. Envshield unseals AES-256-GCM envelopes directly into page-locked volatile RAM, sanitizes child PTY streams in flight, and mounts stealth <code class="text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded">/dev/shm</code> descriptors into Docker.
                         </p>
 
@@ -157,7 +163,7 @@
                                 </div>
                                 <button onclick="copyInstallCmd()" class="ml-3 px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5 flex-shrink-0">
                                     <i data-lucide="copy" class="w-3.5 h-3.5" id="copy-icon"></i>
-                                    <span id="copy-btn-text">Copy</span>
+                                    <span id="copy-btn-text" data-i18n="hero_copy_text">Copy</span>
                                 </button>
                             </div>
                         </div>
@@ -166,10 +172,10 @@
                         <div class="reveal flex flex-wrap items-center gap-3 pt-1" style="--delay: 340ms;">
                             <a href="#demo" class="btn-primary px-5 py-2.5 text-xs sm:text-sm inline-flex items-center gap-2">
                                 <i data-lucide="terminal" class="w-4 h-4"></i>
-                                <span>Explore Runtime Trace</span>
+                                <span data-i18n="hero_btn_trace">Explore Runtime Trace</span>
                             </a>
                             <a href="#architecture" class="btn-secondary px-5 py-2.5 text-xs sm:text-sm font-medium inline-flex items-center gap-2">
-                                <span>Inspect Architecture</span>
+                                <span data-i18n="hero_btn_arch">Inspect Architecture</span>
                                 <i data-lucide="arrow-down-right" class="w-4 h-4 text-slate-400"></i>
                             </a>
                         </div>
@@ -190,7 +196,7 @@
                                 <div class="flex items-center justify-between font-mono text-[11px]">
                                     <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-black/70 border border-white/10 backdrop-blur-md">
                                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                                        <span class="text-slate-200 font-semibold">ZERO-DISK SIGNAL TOPOLOGY</span>
+                                        <span data-i18n="hero_hud_topology" class="text-slate-200 font-semibold">ZERO-DISK SIGNAL TOPOLOGY</span>
                                     </div>
                                     <span id="cursor-coords" class="px-2.5 py-1 rounded-md bg-black/70 border border-white/10 text-sky-400">
                                         X: 0480 · Y: 0210
@@ -243,8 +249,8 @@
 
                                 <!-- Bottom Interactive Hint Bar -->
                                 <div class="flex items-center justify-between font-mono text-[11px] bg-black/75 border border-white/10 rounded-xl px-3.5 py-2 backdrop-blur-md">
-                                    <span class="text-slate-400">Move cursor to bend field · <strong class="text-white font-normal">Click to emit verification pulse</strong></span>
-                                    <span class="text-emerald-400 font-semibold">LIVE FIELD</span>
+                                    <span data-i18n-html="hero_canvas_hint" class="text-slate-400">Move cursor to bend field · <strong class="text-white font-normal">Click to emit verification pulse</strong></span>
+                                    <span data-i18n="hero_live_field" class="text-emerald-400 font-semibold">LIVE FIELD</span>
                                 </div>
                             </div>
                         </div>
@@ -254,24 +260,24 @@
                 <!-- Bottom 4-Column Architectural Telemetry Ribbon -->
                 <div class="mt-10 pt-8 border-t border-white/[0.07] grid grid-cols-2 lg:grid-cols-4 gap-6 font-mono">
                     <div class="reveal space-y-1" style="--delay: 100ms;">
-                        <div class="text-[11px] text-slate-500" data-scramble="01 // FILESYSTEM FOOTPRINT">01 // FILESYSTEM FOOTPRINT</div>
-                        <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">0 Bytes <span class="text-xs font-normal text-emerald-400">verified</span></div>
-                        <div class="text-xs text-slate-400 font-sans">No temp files, swap pages, or SSD inodes</div>
+                        <div class="text-[11px] text-slate-500" data-scramble="01 // FILESYSTEM FOOTPRINT" data-i18n-scramble="telemetry_1_scramble">01 // FILESYSTEM FOOTPRINT</div>
+                        <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">0 Bytes <span data-i18n="telemetry_1_badge" class="text-xs font-normal text-emerald-400">verified</span></div>
+                        <div data-i18n="telemetry_1_desc" class="text-xs text-slate-400 font-sans">No temp files, swap pages, or SSD inodes</div>
                     </div>
                     <div class="reveal space-y-1" style="--delay: 200ms;">
-                        <div class="text-[11px] text-slate-500" data-scramble="02 // UNSEAL LATENCY">02 // UNSEAL LATENCY</div>
+                        <div class="text-[11px] text-slate-500" data-scramble="02 // UNSEAL LATENCY" data-i18n-scramble="telemetry_2_scramble">02 // UNSEAL LATENCY</div>
                         <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">0.14 ms <span class="text-xs font-normal text-sky-400">p99</span></div>
-                        <div class="text-xs text-slate-400 font-sans">Local AES-256-GCM + X25519 HKDF</div>
+                        <div data-i18n="telemetry_2_desc" class="text-xs text-slate-400 font-sans">Local AES-256-GCM + X25519 HKDF</div>
                     </div>
                     <div class="reveal space-y-1" style="--delay: 300ms;">
-                        <div class="text-[11px] text-slate-500" data-scramble="03 // PTY STREAM PROXY">03 // PTY STREAM PROXY</div>
-                        <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">4096 B <span class="text-xs font-normal text-indigo-400">lookahead</span></div>
-                        <div class="text-xs text-slate-400 font-sans">UTF-8 boundary & Base64 leak masking</div>
+                        <div class="text-[11px] text-slate-500" data-scramble="03 // PTY STREAM PROXY" data-i18n-scramble="telemetry_3_scramble">03 // PTY STREAM PROXY</div>
+                        <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">4096 B <span data-i18n="telemetry_3_badge" class="text-xs font-normal text-indigo-400">lookahead</span></div>
+                        <div data-i18n="telemetry_3_desc" class="text-xs text-slate-400 font-sans">UTF-8 boundary & Base64 leak masking</div>
                     </div>
                     <div class="reveal space-y-1" style="--delay: 400ms;">
-                        <div class="text-[11px] text-slate-500" data-scramble="04 // SAAS DEPENDENCY">04 // SAAS DEPENDENCY</div>
-                        <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">100% <span class="text-xs font-normal text-emerald-400">air-gapped</span></div>
-                        <div class="text-xs text-slate-400 font-sans">Immune to external cloud API outages</div>
+                        <div class="text-[11px] text-slate-500" data-scramble="04 // SAAS DEPENDENCY" data-i18n-scramble="telemetry_4_scramble">04 // SAAS DEPENDENCY</div>
+                        <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">100% <span data-i18n="telemetry_4_badge" class="text-xs font-normal text-emerald-400">air-gapped</span></div>
+                        <div data-i18n="telemetry_4_desc" class="text-xs text-slate-400 font-sans">Immune to external cloud API outages</div>
                     </div>
                 </div>
             </div>
@@ -284,12 +290,12 @@
             <!-- Section Header with Scroll-Triggered Kinetic Text -->
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="01 // Defense-in-Depth Architecture">01 // Defense-in-Depth Architecture</div>
-                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="01 // Defense-in-Depth Architecture" data-i18n-scramble="arch_scramble">01 // Defense-in-Depth Architecture</div>
+                    <h2 data-kinetic data-kinetic-id="arch_title" class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                         Engineered against real kernel & process attack vectors.
                     </h2>
                 </div>
-                <p class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
+                <p data-i18n="arch_desc" class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
                     Every claim is backed by verifiable system calls. Hover or interact with the modules below to inspect how Envshield isolates credentials in memory.
                 </p>
             </div>
@@ -308,8 +314,8 @@
                             </span>
                             <span class="text-xs font-mono text-slate-500">VirtualLock() / mlock() + PR_SET_DUMPABLE=0</span>
                         </div>
-                        <h3 class="text-xl font-bold text-white tracking-tight">Two-Phase Page-Locked Volatile Memory</h3>
-                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-2xl">
+                        <h3 data-i18n="bento1_title" class="text-xl font-bold text-white tracking-tight">Two-Phase Page-Locked Volatile Memory</h3>
+                        <p data-i18n-html="bento1_desc" class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-2xl">
                             Plaintext secrets never exist as immutable Python <code class="text-slate-200 font-mono">str</code> or <code class="text-slate-200 font-mono">bytes</code> objects in the parent wait loop. Envshield locks 4KB-aligned virtual memory pages so the OS kernel never swaps secrets to NVMe, and executes deterministic <code class="text-slate-200 font-mono">ctypes.memset</code> zeroing before unlocking pages on exit.
                         </p>
                     </div>
@@ -341,10 +347,10 @@
                                 <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
                                 redactor.py
                             </span>
-                            <span class="text-xs font-mono text-slate-500">Chunk-Boundary Safe</span>
+                            <span data-i18n="bento2_badge" class="text-xs font-mono text-slate-500">Chunk-Boundary Safe</span>
                         </div>
-                        <h3 class="text-lg font-bold text-white tracking-tight">Sliding-Window PTY Sanitizer</h3>
-                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                        <h3 data-i18n="bento2_title" class="text-lg font-bold text-white tracking-tight">Sliding-Window PTY Sanitizer</h3>
+                        <p data-i18n-html="bento2_desc" class="text-xs sm:text-sm text-slate-400 leading-relaxed">
                             Intercepts child <code class="text-slate-200 font-mono">stdout</code>/<code class="text-slate-200 font-mono">stderr</code> pipes and pseudo-terminals. Holds a <code class="text-slate-200 font-mono">max_secret_len - 1</code> lookahead tail so secrets split across 4096-byte read chunks—or encoded in Base64/URL—are masked before hitting terminal logs.
                         </p>
                     </div>
@@ -352,15 +358,15 @@
                     <!-- Visual Stream Chunk Diagram -->
                     <div class="relative z-10 mt-6 rounded-xl bg-[#05070a] border border-white/10 p-3.5 font-mono text-[11px] space-y-2.5">
                         <div class="text-slate-500 flex justify-between">
-                            <span>RAW PIPE CHUNK #14</span>
-                            <span class="text-amber-400">SPLIT DETECTED</span>
+                            <span data-i18n="bento2_raw_chunk">RAW PIPE CHUNK #14</span>
+                            <span data-i18n="bento2_split" class="text-amber-400">SPLIT DETECTED</span>
                         </div>
                         <div class="p-2 rounded bg-white/[0.02] border border-white/5 text-slate-400 truncate">
                             Auth: Bearer <span class="text-rose-400 line-through">sk_live_51N9xK2...</span>
                         </div>
                         <div class="flex items-center justify-center text-slate-500 text-[10px] gap-1">
                             <i data-lucide="arrow-down" class="w-3 h-3 text-sky-400"></i>
-                            <span>finditer() + lookahead flush</span>
+                            <span data-i18n="bento2_flush">finditer() + lookahead flush</span>
                         </div>
                         <div class="p-2 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 truncate">
                             Auth: Bearer <strong>[REDACTED:STRIPE_KEY]</strong>
@@ -377,10 +383,10 @@
                                 <i data-lucide="container" class="w-3.5 h-3.5"></i>
                                 docker_bridge.py
                             </span>
-                            <span class="text-xs font-mono text-slate-500">0o400 TOCTOU-Free</span>
+                            <span data-i18n="bento3_badge" class="text-xs font-mono text-slate-500">0o400 TOCTOU-Free</span>
                         </div>
-                        <h3 class="text-lg font-bold text-white tracking-tight">Docker <code class="font-mono text-base">/dev/shm</code> Stealth Mount</h3>
-                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                        <h3 data-i18n-html="bento3_title" class="text-lg font-bold text-white tracking-tight">Docker <code class="font-mono text-base">/dev/shm</code> Stealth Mount</h3>
+                        <p data-i18n-html="bento3_desc" class="text-xs sm:text-sm text-slate-400 leading-relaxed">
                             Passing <code class="text-slate-200 font-mono">docker run -e KEY=VAL</code> exposes secrets to any local user via <code class="text-slate-200 font-mono">ps aux</code> and <code class="text-slate-200 font-mono">docker inspect</code>. Envshield mounts an ephemeral RAM-backed <code class="text-slate-200 font-mono">/dev/shm</code> volume to <code class="text-slate-200 font-mono">/run/secrets</code> with atomic <code class="text-slate-200 font-mono">0o400</code> permissions.
                         </p>
                     </div>
@@ -389,7 +395,7 @@
                     <div class="relative z-10 mt-6 rounded-xl bg-[#05070a] border border-white/10 p-3.5 font-mono text-[11px] space-y-2">
                         <div class="flex items-center justify-between text-slate-400">
                             <span>$ docker inspect app | jq .Env</span>
-                            <span class="text-emerald-400">0 LEAKS</span>
+                            <span data-i18n="bento3_leaks" class="text-emerald-400">0 LEAKS</span>
                         </div>
                         <pre class="text-slate-300 bg-white/[0.02] p-2 rounded border border-white/5 overflow-x-auto"><code>[
   "PATH=/usr/local/bin",
@@ -397,7 +403,7 @@
 ]</code></pre>
                         <div class="text-[10px] text-slate-500 flex justify-between pt-1">
                             <span>/run/secrets/.env</span>
-                            <span class="text-emerald-400">shredded on container exit</span>
+                            <span data-i18n="bento3_shred" class="text-emerald-400">shredded on container exit</span>
                         </div>
                     </div>
                 </div>
@@ -411,10 +417,10 @@
                                 <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
                                 recipients.py & decoy.py
                             </span>
-                            <span class="text-xs font-mono text-slate-500">Ed25519 → X25519 + Active Deception</span>
+                            <span data-i18n="bento4_badge" class="text-xs font-mono text-slate-500">Ed25519 → X25519 + Active Deception</span>
                         </div>
-                        <h3 class="text-xl font-bold text-white tracking-tight">GitHub SSH Envelope v2 & Canary Honeypot Telemetry</h3>
-                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-2xl">
+                        <h3 data-i18n="bento4_title" class="text-xl font-bold text-white tracking-tight">GitHub SSH Envelope v2 & Canary Honeypot Telemetry</h3>
+                        <p data-i18n-html="bento4_desc" class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-2xl">
                             Share vaults across your team without a central server or shared master password. Envshield converts teammates' GitHub <code class="text-slate-200 font-mono">ssh-ed25519</code> public keys into X25519 ephemeral key-encryption-keys via RFC 9180 HKDF transcript binding. If an attacker attempts an unauthorized unseal, Envshield injects fake Canary credentials and fires a silent SIEM alert.
                         </p>
                     </div>
@@ -423,7 +429,7 @@
                     <div class="relative z-10 mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
                         <div class="rounded-xl bg-[#05070a] border border-white/10 p-3.5 space-y-2">
                             <div class="text-[11px] text-slate-500 flex justify-between">
-                                <span>AUTHORIZED ENVELOPE RECIPIENTS</span>
+                                <span data-i18n="bento4_recipients">AUTHORIZED ENVELOPE RECIPIENTS</span>
                                 <span class="text-emerald-400">AAD BOUND</span>
                             </div>
                             <div class="space-y-1.5 text-[11px]">
@@ -444,8 +450,8 @@
 
                         <div class="rounded-xl bg-[#05070a] border border-white/10 p-3.5 flex flex-col justify-between space-y-2">
                             <div class="flex items-center justify-between">
-                                <span class="text-[11px] text-slate-500">HONEYPOT DECOY SIMULATOR</span>
-                                <button onclick="triggerCanaryDemo()" class="px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-[10px] font-semibold transition">
+                                <span data-i18n="bento4_honeypot" class="text-[11px] text-slate-500">HONEYPOT DECOY SIMULATOR</span>
+                                <button onclick="triggerCanaryDemo()" data-i18n="bento4_btn_test" class="px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-[10px] font-semibold transition">
                                     Test Bad Key
                                 </button>
                             </div>
@@ -465,12 +471,12 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="02 // Live Runtime Verification">02 // Live Runtime Verification</div>
-                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="02 // Live Runtime Verification" data-i18n-scramble="demo_scramble">02 // Live Runtime Verification</div>
+                    <h2 data-kinetic data-kinetic-id="demo_title" class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                         Interactive CLI & execution trace.
                     </h2>
                 </div>
-                <p class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
+                <p data-i18n-html="demo_desc" class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
                     Switch between operational traces or type commands directly into the interactive shell prompt (<code class="text-slate-200 font-mono">help</code>, <code class="text-slate-200 font-mono">seal</code>, <code class="text-slate-200 font-mono">run</code>, <code class="text-slate-200 font-mono">audit</code>, <code class="text-slate-200 font-mono">clear</code>).
                 </p>
             </div>
@@ -487,11 +493,11 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-1 bg-black/50 p-1 rounded-xl border border-white/[0.06] text-[11px]">
-                        <button onclick="switchTerminalDemo('run')" id="tab-run" class="px-2.5 py-1 rounded-lg bg-white/10 text-white font-semibold transition">01 · PTY Redact</button>
-                        <button onclick="switchTerminalDemo('docker')" id="tab-docker" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">02 · Docker Stealth</button>
-                        <button onclick="switchTerminalDemo('team')" id="tab-team" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">03 · GitHub SSH</button>
-                        <button onclick="switchTerminalDemo('audit')" id="tab-audit" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">04 · SOC 2 Audit</button>
-                        <button onclick="switchTerminalDemo('sentinel')" id="tab-sentinel" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">05 · AST Sentinel</button>
+                        <button onclick="switchTerminalDemo('run')" id="tab-run" data-i18n="tab_run" class="px-2.5 py-1 rounded-lg bg-white/10 text-white font-semibold transition">01 · PTY Redact</button>
+                        <button onclick="switchTerminalDemo('docker')" id="tab-docker" data-i18n="tab_docker" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">02 · Docker Stealth</button>
+                        <button onclick="switchTerminalDemo('team')" id="tab-team" data-i18n="tab_team" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">03 · GitHub SSH</button>
+                        <button onclick="switchTerminalDemo('audit')" id="tab-audit" data-i18n="tab_audit" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">04 · SOC 2 Audit</button>
+                        <button onclick="switchTerminalDemo('sentinel')" id="tab-sentinel" data-i18n="tab_sentinel" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">05 · AST Sentinel</button>
                     </div>
                 </div>
 
@@ -503,8 +509,8 @@
                 <!-- Interactive Command Input Prompt -->
                 <form onsubmit="handleTerminalSubmit(event)" class="bg-[#07090e] px-6 py-3 border-t border-white/[0.06] flex items-center gap-2.5">
                     <span class="text-emerald-400 font-bold select-none">envshield@vault:~$</span>
-                    <input type="text" id="terminal-input" class="flex-1 bg-transparent text-xs sm:text-sm text-white placeholder-slate-600 focus:outline-none font-mono" placeholder="Type a command (e.g. help, status, seal, audit, clear) and press Enter...">
-                    <button type="submit" class="px-2.5 py-1 rounded bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-[11px] text-slate-300 transition">
+                    <input type="text" id="terminal-input" data-i18n-placeholder="terminal_placeholder" class="flex-1 bg-transparent text-xs sm:text-sm text-white placeholder-slate-600 focus:outline-none font-mono" placeholder="Type a command (e.g. help, status, seal, audit, clear) and press Enter...">
+                    <button type="submit" data-i18n="terminal_run_btn" class="px-2.5 py-1 rounded bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-[11px] text-slate-300 transition">
                         Run ↵
                     </button>
                 </form>
@@ -514,14 +520,14 @@
                     <div class="flex items-center gap-4">
                         <span class="inline-flex items-center gap-1.5 text-emerald-400">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                            PTY proxy active (UTF-8 incremental decoder)
+                            <span data-i18n="terminal_footer_pty">PTY proxy active (UTF-8 incremental decoder)</span>
                         </span>
                         <span class="hidden sm:inline text-slate-700">|</span>
                         <span class="hidden sm:inline">clear_source=True · redactor.close() verified</span>
                     </div>
                     <button onclick="replayCurrentScenario()" class="text-slate-400 hover:text-white inline-flex items-center gap-1.5 transition">
                         <i data-lucide="rotate-ccw" class="w-3 h-3 text-emerald-400"></i>
-                        <span>Replay Trace</span>
+                        <span data-i18n="terminal_footer_replay">Replay Trace</span>
                     </button>
                 </div>
             </div>
@@ -533,12 +539,12 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="03 // Production Primitives">03 // Production Primitives</div>
-                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="03 // Production Primitives" data-i18n-scramble="features_scramble">03 // Production Primitives</div>
+                    <h2 data-kinetic data-kinetic-id="features_title" class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                         Built for local speed and CI/CD scale.
                     </h2>
                 </div>
-                <p class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
+                <p data-i18n="features_desc" class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
                     Every workflow—from git pre-commit hooks to multi-cloud KMS envelopes—operates with zero external daemon overhead.
                 </p>
             </div>
@@ -548,11 +554,11 @@
                 <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 80ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span>01 / CLOUD KMS BRIDGE</span>
+                        <span data-i18n="prim1_label">01 / CLOUD KMS BRIDGE</span>
                         <i data-lucide="cloud-cog" class="w-4 h-4 text-emerald-400"></i>
                     </div>
-                    <h3 class="relative z-10 text-base font-bold text-white">Hybrid Local SSH + Cloud KMS</h3>
-                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 data-i18n="prim1_title" class="relative z-10 text-base font-bold text-white">Hybrid Local SSH + Cloud KMS</h3>
+                    <p data-i18n="prim1_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         Developers unlock envelopes offline in 0.14ms via local SSH keys. CI/CD runners (GitHub Actions, GitLab) unseal the exact same file via AWS KMS, GCP KMS, or Azure Key Vault using IAM OIDC.
                     </p>
                 </div>
@@ -561,11 +567,11 @@
                 <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 160ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span>02 / SELF-HEALING HOOK</span>
+                        <span data-i18n="prim2_label">02 / SELF-HEALING HOOK</span>
                         <i data-lucide="git-commit" class="w-4 h-4 text-sky-400"></i>
                     </div>
-                    <h3 class="relative z-10 text-base font-bold text-white">Pre-Commit Auto-Seal & Shred</h3>
-                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 data-i18n="prim2_title" class="relative z-10 text-base font-bold text-white">Pre-Commit Auto-Seal & Shred</h3>
+                    <p data-i18n-html="prim2_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         If a plaintext <code class="text-slate-200 font-mono">.env</code> is accidentally staged, Envshield intercepts the commit, seals it into an authenticated AES-256-GCM envelope, multi-pass shreds the plaintext file, and continues cleanly.
                     </p>
                 </div>
@@ -574,11 +580,11 @@
                 <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 240ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span>03 / ZERO-DISK EDITOR</span>
+                        <span data-i18n="prim3_label">03 / ZERO-DISK EDITOR</span>
                         <i data-lucide="file-lock-2" class="w-4 h-4 text-indigo-400"></i>
                     </div>
-                    <h3 class="relative z-10 text-base font-bold text-white">RAM-Disk Sandboxed Editing</h3>
-                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 data-i18n="prim3_title" class="relative z-10 text-base font-bold text-white">RAM-Disk Sandboxed Editing</h3>
+                    <p data-i18n-html="prim3_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         Running <code class="text-slate-200 font-mono">envshield edit</code> materializes temporary buffers exclusively inside <code class="text-slate-200 font-mono">/dev/shm</code> (Linux RAM tmpfs) and passes anti-swap flags (<code class="text-slate-200 font-mono">-n -i NONE</code>) to Vim/Nano so no backup files touch disk.
                     </p>
                 </div>
@@ -587,11 +593,11 @@
                 <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 320ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span>04 / TAMPER-EVIDENT LEDGER</span>
+                        <span data-i18n="prim4_label">04 / TAMPER-EVIDENT LEDGER</span>
                         <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-400"></i>
                     </div>
-                    <h3 class="relative z-10 text-base font-bold text-white">HMAC-SHA256 Chained Audit Log</h3>
-                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 data-i18n="prim4_title" class="relative z-10 text-base font-bold text-white">HMAC-SHA256 Chained Audit Log</h3>
+                    <p data-i18n-html="prim4_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         Every unseal, edit, and canary event is appended to an HMAC-chained JSONL ledger verified via constant-time <code class="text-slate-200 font-mono">hmac.compare_digest</code>. Export executive SOC 2 / ISO 27001 HTML certificates in one command.
                     </p>
                 </div>
@@ -600,11 +606,11 @@
                 <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 400ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span>05 / STATIC AST SENTINEL</span>
+                        <span data-i18n="prim5_label">05 / STATIC AST SENTINEL</span>
                         <i data-lucide="radar" class="w-4 h-4 text-amber-400"></i>
                     </div>
-                    <h3 class="relative z-10 text-base font-bold text-white">Secret Drift & Dead Key Detection</h3>
-                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 data-i18n="prim5_title" class="relative z-10 text-base font-bold text-white">Secret Drift & Dead Key Detection</h3>
+                    <p data-i18n="prim5_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         Scans Python, TypeScript, Go, Rust, and Dockerfiles to detect missing keys referenced in code, unused orphan variables in vaults, and schema drift between staging and production profiles.
                     </p>
                 </div>
@@ -613,11 +619,11 @@
                 <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 480ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span>06 / ATOMIC PERSISTENCE</span>
+                        <span data-i18n="prim6_label">06 / ATOMIC PERSISTENCE</span>
                         <i data-lucide="hard-drive" class="w-4 h-4 text-sky-400"></i>
                     </div>
-                    <h3 class="relative z-10 text-base font-bold text-white">Crash-Safe Atomic Vault Writes</h3>
-                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 data-i18n="prim6_title" class="relative z-10 text-base font-bold text-white">Crash-Safe Atomic Vault Writes</h3>
+                    <p data-i18n-html="prim6_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         Vault updates write to an isolated sibling descriptor, flush hardware buffers via <code class="text-slate-200 font-mono">os.fsync()</code>, execute atomic POSIX/NTFS <code class="text-slate-200 font-mono">os.replace()</code>, and sync the parent directory descriptor.
                     </p>
                 </div>
@@ -630,12 +636,12 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="04 // Technical Benchmark">04 // Technical Benchmark</div>
-                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="04 // Technical Benchmark" data-i18n-scramble="comp_scramble">04 // Technical Benchmark</div>
+                    <h2 data-kinetic data-kinetic-id="comp_title" class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                         Architectural comparison against industry tools.
                     </h2>
                 </div>
-                <p class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
+                <p data-i18n="comp_desc" class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
                     Evaluated across memory isolation, process argument exposure, stream sanitization, and operational sovereignty.
                 </p>
             </div>
@@ -644,7 +650,7 @@
                 <table class="w-full text-left text-xs sm:text-sm border-collapse">
                     <thead>
                         <tr class="border-b border-white/10 bg-white/[0.02] font-mono text-[11px] uppercase tracking-wider text-slate-400">
-                            <th class="py-4 px-5">Security Invariant</th>
+                            <th data-i18n="comp_th_invariant" class="py-4 px-5">Security Invariant</th>
                             <th class="py-4 px-5 text-white font-bold bg-emerald-500/[0.06] border-x border-emerald-500/20">envshield v0.4</th>
                             <th class="py-4 px-5">Doppler CLI</th>
                             <th class="py-4 px-5">HashiCorp Vault</th>
@@ -654,64 +660,64 @@
                     </thead>
                     <tbody class="divide-y divide-white/[0.06] text-slate-300">
                         <tr class="hover:bg-white/[0.015] transition">
-                            <td class="py-3.5 px-5 font-semibold text-white">Page-Locked Volatile RAM (<code class="font-mono text-xs text-slate-400">mlock</code>)</td>
-                            <td class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
+                            <td data-i18n-html="comp_row1_name" class="py-3.5 px-5 font-semibold text-white">Page-Locked Volatile RAM (<code class="font-mono text-xs text-slate-400">mlock</code>)</td>
+                            <td data-i18n="comp_row1_env" class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
                                 Verified · 4KB aligned
                             </td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-400">Standard heap</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-emerald-400">Supported (Server)</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-400">Standard heap</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-rose-400">Often writes disk</td>
+                            <td data-i18n="comp_row1_heap" class="py-3.5 px-5 font-mono text-xs text-slate-400">Standard heap</td>
+                            <td data-i18n="comp_row1_srv" class="py-3.5 px-5 font-mono text-xs text-emerald-400">Supported (Server)</td>
+                            <td data-i18n="comp_row1_heap" class="py-3.5 px-5 font-mono text-xs text-slate-400">Standard heap</td>
+                            <td data-i18n="comp_row1_disk" class="py-3.5 px-5 font-mono text-xs text-rose-400">Often writes disk</td>
                         </tr>
                         <tr class="hover:bg-white/[0.015] transition">
-                            <td class="py-3.5 px-5 font-semibold text-white">Live PTY / Pipe Stream Redaction</td>
-                            <td class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
+                            <td data-i18n="comp_row2_name" class="py-3.5 px-5 font-semibold text-white">Live PTY / Pipe Stream Redaction</td>
+                            <td data-i18n="comp_row2_env" class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
                                 Sliding lookahead + Base64
                             </td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">None in local CLI</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">None</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">Partial stdout</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">None</td>
+                            <td data-i18n="comp_row2_cli" class="py-3.5 px-5 font-mono text-xs text-slate-500">None in local CLI</td>
+                            <td data-i18n="comp_row2_none" class="py-3.5 px-5 font-mono text-xs text-slate-500">None</td>
+                            <td data-i18n="comp_row2_partial" class="py-3.5 px-5 font-mono text-xs text-slate-500">Partial stdout</td>
+                            <td data-i18n="comp_row2_none" class="py-3.5 px-5 font-mono text-xs text-slate-500">None</td>
                         </tr>
                         <tr class="hover:bg-white/[0.015] transition">
-                            <td class="py-3.5 px-5 font-semibold text-white">Docker <code class="font-mono text-xs text-slate-400">inspect</code> & <code class="font-mono text-xs text-slate-400">ps aux</code> Immunity</td>
+                            <td data-i18n-html="comp_row3_name" class="py-3.5 px-5 font-semibold text-white">Docker <code class="font-mono text-xs text-slate-400">inspect</code> & <code class="font-mono text-xs text-slate-400">ps aux</code> Immunity</td>
                             <td class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
                                 /dev/shm 0o400 + -e KEY
                             </td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-rose-400">Leaks in inspect</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-amber-400">Requires sidecar</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-rose-400">Leaks in inspect</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-rose-400">Plaintext env</td>
+                            <td data-i18n="comp_row3_inspect" class="py-3.5 px-5 font-mono text-xs text-rose-400">Leaks in inspect</td>
+                            <td data-i18n="comp_row3_sidecar" class="py-3.5 px-5 font-mono text-xs text-amber-400">Requires sidecar</td>
+                            <td data-i18n="comp_row3_inspect" class="py-3.5 px-5 font-mono text-xs text-rose-400">Leaks in inspect</td>
+                            <td data-i18n="comp_row3_plaintext" class="py-3.5 px-5 font-mono text-xs text-rose-400">Plaintext env</td>
                         </tr>
                         <tr class="hover:bg-white/[0.015] transition">
-                            <td class="py-3.5 px-5 font-semibold text-white">Zero-Server GitHub SSH Distribution</td>
-                            <td class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
+                            <td data-i18n="comp_row4_name" class="py-3.5 px-5 font-semibold text-white">Zero-Server GitHub SSH Distribution</td>
+                            <td data-i18n="comp_row4_env" class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
                                 Native RFC 9180 HPKE
                             </td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">Central SaaS cloud</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">Central Vault cluster</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">Proprietary cloud</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-300">Manual Age / PGP</td>
+                            <td data-i18n="comp_row4_saas" class="py-3.5 px-5 font-mono text-xs text-slate-500">Central SaaS cloud</td>
+                            <td data-i18n="comp_row4_cluster" class="py-3.5 px-5 font-mono text-xs text-slate-500">Central Vault cluster</td>
+                            <td data-i18n="comp_row4_prop" class="py-3.5 px-5 font-mono text-xs text-slate-500">Proprietary cloud</td>
+                            <td data-i18n="comp_row4_age" class="py-3.5 px-5 font-mono text-xs text-slate-300">Manual Age / PGP</td>
                         </tr>
                         <tr class="hover:bg-white/[0.015] transition">
-                            <td class="py-3.5 px-5 font-semibold text-white">Deceptive Canary Honeypots</td>
-                            <td class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
+                            <td data-i18n="comp_row5_name" class="py-3.5 px-5 font-semibold text-white">Deceptive Canary Honeypots</td>
+                            <td data-i18n="comp_row5_env" class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
                                 Built-in SIEM webhook
                             </td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
                         </tr>
                         <tr class="hover:bg-white/[0.015] transition">
-                            <td class="py-3.5 px-5 font-semibold text-white">Offline / Air-Gapped Continuity</td>
-                            <td class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
+                            <td data-i18n="comp_row6_name" class="py-3.5 px-5 font-semibold text-white">Offline / Air-Gapped Continuity</td>
+                            <td data-i18n="comp_row6_env" class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
                                 100% Autonomous
                             </td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-rose-400">API outage halts CI</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-amber-400">Cluster dependent</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-rose-400">Cloud account req.</td>
-                            <td class="py-3.5 px-5 font-mono text-xs text-emerald-400">100% Autonomous</td>
+                            <td data-i18n="comp_row6_api" class="py-3.5 px-5 font-mono text-xs text-rose-400">API outage halts CI</td>
+                            <td data-i18n="comp_row6_dep" class="py-3.5 px-5 font-mono text-xs text-amber-400">Cluster dependent</td>
+                            <td data-i18n="comp_row6_req" class="py-3.5 px-5 font-mono text-xs text-rose-400">Cloud account req.</td>
+                            <td data-i18n="comp_row6_env" class="py-3.5 px-5 font-mono text-xs text-emerald-400">100% Autonomous</td>
                         </tr>
                     </tbody>
                 </table>
@@ -727,11 +733,11 @@
                 <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                     <div class="lg:col-span-7 space-y-6">
                         <div>
-                            <div class="text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="05 // Infrastructure Economics">05 // Infrastructure Economics</div>
-                            <h2 data-kinetic class="kinetic-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                            <div class="text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="05 // Infrastructure Economics" data-i18n-scramble="calc_scramble">05 // Infrastructure Economics</div>
+                            <h2 data-kinetic data-kinetic-id="calc_title" class="kinetic-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
                                 Eliminate per-seat SaaS tax & cluster ops.
                             </h2>
-                            <p class="text-xs sm:text-sm text-slate-400 mt-2">
+                            <p data-i18n="calc_desc" class="text-xs sm:text-sm text-slate-400 mt-2">
                                 Envshield runs deterministically inside your existing Git and CI/CD pipelines with zero hosted database servers, zero Consul/Raft clusters, and zero egress fees.
                             </p>
                         </div>
@@ -739,7 +745,7 @@
                         <div class="space-y-5 pt-2">
                             <div>
                                 <div class="flex justify-between items-center mb-2">
-                                    <label class="text-xs font-mono uppercase text-slate-400">Engineering Headcount</label>
+                                    <label data-i18n="calc_headcount" class="text-xs font-mono uppercase text-slate-400">Engineering Headcount</label>
                                     <span id="team-size-display" class="font-mono text-white font-bold text-sm bg-white/[0.06] px-2.5 py-1 rounded border border-white/10">25 engineers</span>
                                 </div>
                                 <input type="range" id="team-size-slider" min="5" max="150" value="25" step="5" oninput="calculateSavings()" class="pro-slider">
@@ -752,7 +758,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-mono uppercase text-slate-400 mb-2">Benchmark Against</label>
+                                <label data-i18n="calc_benchmark" class="block text-xs font-mono uppercase text-slate-400 mb-2">Benchmark Against</label>
                                 <select id="competitor-select" onchange="calculateSavings()" class="w-full bg-[#06080c] border border-white/15 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono focus:outline-none focus:border-emerald-400">
                                     <option value="doppler">Doppler Team / Enterprise ($29 / seat / month)</option>
                                     <option value="vault">HashiCorp Vault Enterprise ($14,500/yr base + ops)</option>
@@ -765,29 +771,29 @@
                     <div class="lg:col-span-5 bg-[#05070a] rounded-xl border border-white/10 p-6 space-y-5 font-mono">
                         <div class="flex items-center justify-between border-b border-white/[0.07] pb-4">
                             <div>
-                                <div class="text-[11px] text-slate-500">ANNUAL SAAS / OPS RECOVERED</div>
+                                <div data-i18n="calc_recovered_label" class="text-[11px] text-slate-500">ANNUAL SAAS / OPS RECOVERED</div>
                                 <div id="savings-display" class="text-3xl sm:text-4xl font-extrabold text-emerald-400 mt-1">$8,700 / yr</div>
                             </div>
-                            <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-semibold">100% Local</span>
+                            <span data-i18n="calc_local_badge" class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-semibold">100% Local</span>
                         </div>
 
                         <div class="space-y-2.5 text-xs">
                             <div class="flex justify-between text-slate-400">
-                                <span>Incumbent Annual Spend:</span>
+                                <span data-i18n="calc_incumbent">Incumbent Annual Spend:</span>
                                 <span id="comp-cost" class="text-rose-400 font-semibold">$8,700 / yr</span>
                             </div>
                             <div class="flex justify-between text-slate-400">
-                                <span>Envshield Community (AGPLv3):</span>
+                                <span data-i18n="calc_community">Envshield Community (AGPLv3):</span>
                                 <span class="text-emerald-400 font-semibold">$0 / yr</span>
                             </div>
                             <div class="flex justify-between text-slate-400">
-                                <span>Envshield Commercial Team:</span>
+                                <span data-i18n="calc_commercial">Envshield Commercial Team:</span>
                                 <span id="env-team-cost" class="text-white font-semibold">$5,700 / yr</span>
                             </div>
                         </div>
 
                         <a href="#pricing" class="btn-primary w-full py-2.5 text-xs flex items-center justify-center gap-1.5">
-                            <span>View Licensing Tiers</span>
+                            <span data-i18n="calc_btn_tiers">View Licensing Tiers</span>
                             <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                         </a>
                     </div>
@@ -801,20 +807,20 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                 <div>
-                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="06 // Dual-Licensing Model">06 // Dual-Licensing Model</div>
-                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="06 // Dual-Licensing Model" data-i18n-scramble="pricing_scramble">06 // Dual-Licensing Model</div>
+                    <h2 data-kinetic data-kinetic-id="pricing_title" class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                         Built for Open Source & Enterprise.
                     </h2>
-                    <p class="reveal text-xs sm:text-sm text-slate-400 mt-2 max-w-xl" style="--delay: 150ms;">
+                    <p data-i18n="pricing_desc" class="reveal text-xs sm:text-sm text-slate-400 mt-2 max-w-xl" style="--delay: 150ms;">
                         Free forever under GNU AGPLv3 for open-source projects and individual developers. Commercial EULA exemptions available for proprietary enterprise teams.
                     </p>
                 </div>
 
                 <!-- Billing Cycle Toggle -->
                 <div class="reveal inline-flex items-center p-1 rounded-xl bg-[#06080c] border border-white/10 font-mono text-xs self-start" style="--delay: 200ms;">
-                    <button onclick="setBilling('monthly')" id="bill-monthly" class="px-3 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition">Monthly</button>
+                    <button onclick="setBilling('monthly')" id="bill-monthly" data-i18n="bill_monthly" class="px-3 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition">Monthly</button>
                     <button onclick="setBilling('annual')" id="bill-annual" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5">
-                        <span>Annual</span>
+                        <span data-i18n="bill_annual">Annual</span>
                         <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400">-20%</span>
                     </button>
                 </div>
@@ -826,31 +832,26 @@
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
-                            <span class="text-slate-400">01 // OPEN SOURCE</span>
+                            <span data-i18n="tier1_sub" class="text-slate-400">01 // OPEN SOURCE</span>
                             <span class="px-2 py-0.5 rounded bg-white/[0.06] text-slate-300 border border-white/10">GNU AGPLv3</span>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-white">Community</h3>
+                            <h3 data-i18n="tier1_title" class="text-xl font-bold text-white">Community</h3>
                             <div class="mt-2 flex items-baseline gap-1 font-mono">
                                 <span class="text-4xl font-extrabold text-white">$0</span>
-                                <span class="text-xs text-slate-500">/ forever</span>
+                                <span data-i18n="tier1_period" class="text-xs text-slate-500">/ forever</span>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
+                        <p data-i18n="tier1_desc" class="text-xs text-slate-400 leading-relaxed">
                             Full cryptographic engine for indie hackers, researchers, and open-source repositories compatible with AGPLv3.
                         </p>
-                        <ul class="space-y-2.5 text-xs text-slate-300 pt-4 border-t border-white/[0.07]">
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Page-locked volatile RAM unsealing</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Live PTY & pipe stream redactor</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Docker /dev/shm stealth volume bridge</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> GitHub SSH public key team envelopes</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Self-healing git pre-commit hook</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> AWS, GCP & Azure Cloud KMS envelopes</li>
+                        <ul id="tier1-features-list" class="space-y-2.5 text-xs text-slate-300 pt-4 border-t border-white/[0.07]">
+                            <!-- Populated dynamically by i18n -->
                         </ul>
                     </div>
                     <a href="https://github.com/AmhetCnaa/Envshield" target="_blank" class="relative z-10 btn-secondary w-full py-2.5 text-xs font-semibold text-center flex items-center justify-center gap-2">
                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                        <span>Install via PyPI / GitHub</span>
+                        <span data-i18n="tier1_btn">Install via PyPI / GitHub</span>
                     </a>
                 </div>
 
@@ -859,30 +860,25 @@
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
-                            <span class="text-emerald-400 font-semibold">02 // COMMERCIAL LICENSE</span>
-                            <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold">MOST POPULAR</span>
+                            <span data-i18n="tier2_sub" class="text-emerald-400 font-semibold">02 // COMMERCIAL LICENSE</span>
+                            <span data-i18n="tier2_popular" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold">MOST POPULAR</span>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-white">Team Edition</h3>
+                            <h3 data-i18n="tier2_title" class="text-xl font-bold text-white">Team Edition</h3>
                             <div class="mt-2 flex items-baseline gap-1 font-mono">
                                 <span id="team-price-val" class="text-4xl font-extrabold text-white">$19</span>
                                 <span id="team-price-period" class="text-xs text-slate-400">/ developer / mo</span>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
+                        <p data-i18n="tier2_desc" class="text-xs text-slate-400 leading-relaxed">
                             Commercial AGPLv3 waiver for closed-source proprietary products, SaaS companies, and commercial CI/CD pipelines.
                         </p>
-                        <ul class="space-y-2.5 text-xs text-slate-200 pt-4 border-t border-white/[0.07]">
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> <strong>Full Commercial AGPLv3 Copyleft Waiver</strong></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Proprietary & closed-source deployment rights</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Real-time Canary SIEM webhooks (Slack/Datadog)</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> AST Secret Drift & Dead Variable Sentinel</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> GitHub Organization batch key sync</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i> Priority 24-hour engineering support SLA</li>
+                        <ul id="tier2-features-list" class="space-y-2.5 text-xs text-slate-200 pt-4 border-t border-white/[0.07]">
+                            <!-- Populated dynamically by i18n -->
                         </ul>
                     </div>
                     <a href="mailto:licensing@envshield.security?subject=Envshield%20Team%20Commercial%20License" class="relative z-10 btn-primary w-full py-2.5 text-xs font-semibold text-center flex items-center justify-center gap-2">
-                        <span>Acquire Commercial License</span>
+                        <span data-i18n="tier2_btn">Acquire Commercial License</span>
                         <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
                     </a>
                 </div>
@@ -892,31 +888,26 @@
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
-                            <span class="text-sky-400">03 // ORGANIZATION</span>
-                            <span class="px-2 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20">CUSTOM SLA</span>
+                            <span data-i18n="tier3_sub" class="text-sky-400">03 // ORGANIZATION</span>
+                            <span data-i18n="tier3_sla" class="px-2 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20">CUSTOM SLA</span>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-white">Enterprise</h3>
+                            <h3 data-i18n="tier3_title" class="text-xl font-bold text-white">Enterprise</h3>
                             <div class="mt-2 flex items-baseline gap-1 font-mono">
                                 <span class="text-4xl font-extrabold text-white">$999+</span>
-                                <span class="text-xs text-slate-500">/ year contract</span>
+                                <span data-i18n="tier3_period" class="text-xs text-slate-500">/ year contract</span>
                             </div>
                         </div>
-                        <p class="text-xs text-slate-400 leading-relaxed">
+                        <p data-i18n="tier3_desc" class="text-xs text-slate-400 leading-relaxed">
                             Site-wide commercial licensing for regulated organizations requiring SOC 2 / ISO 27001 attestation and HSM backing.
                         </p>
-                        <ul class="space-y-2.5 text-xs text-slate-300 pt-4 border-t border-white/[0.07]">
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-sky-400 flex-shrink-0"></i> <strong>Unlimited seats, runners & repositories</strong></li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-sky-400 flex-shrink-0"></i> Executive SOC 2 Type II / ISO 27001 HTML reports</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-sky-400 flex-shrink-0"></i> Hardware HSM & PKCS#11 key module support</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-sky-400 flex-shrink-0"></i> Dedicated Slack / Teams security channel</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-sky-400 flex-shrink-0"></i> 1-hour critical incident response SLA</li>
-                            <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-sky-400 flex-shrink-0"></i> Custom vendor procurement & IP indemnity</li>
+                        <ul id="tier3-features-list" class="space-y-2.5 text-xs text-slate-300 pt-4 border-t border-white/[0.07]">
+                            <!-- Populated dynamically by i18n -->
                         </ul>
                     </div>
                     <a href="mailto:licensing@envshield.security?subject=Envshield%20Enterprise%20Site%20License" class="relative z-10 btn-secondary w-full py-2.5 text-xs font-semibold text-center flex items-center justify-center gap-2">
                         <i data-lucide="building-2" class="w-3.5 h-3.5"></i>
-                        <span>Contact Enterprise Sales</span>
+                        <span data-i18n="tier3_btn">Contact Enterprise Sales</span>
                     </a>
                 </div>
             </div>
@@ -928,12 +919,12 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="07 // Zero-Friction Onboarding">07 // Zero-Friction Onboarding</div>
-                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="07 // Zero-Friction Onboarding" data-i18n-scramble="qs_scramble">07 // Zero-Friction Onboarding</div>
+                    <h2 data-kinetic data-kinetic-id="qs_title" class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                         Up and running in 3 commands.
                     </h2>
                 </div>
-                <p class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
+                <p data-i18n="qs_desc" class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
                     No accounts to register, no background agents to configure. Initialize a cryptographic vault in your repo in under 30 seconds.
                 </p>
             </div>
@@ -944,11 +935,11 @@
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between font-mono text-xs">
-                            <span class="text-emerald-400 font-semibold">STEP 01 // INSTALL</span>
+                            <span data-i18n="qs_step1_badge" class="text-emerald-400 font-semibold">STEP 01 // INSTALL</span>
                             <span class="text-slate-500">~3 seconds</span>
                         </div>
-                        <h3 class="text-base font-bold text-white">Install Standalone CLI</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
+                        <h3 data-i18n="qs_step1_title" class="text-base font-bold text-white">Install Standalone CLI</h3>
+                        <p data-i18n-html="qs_step1_desc" class="text-xs text-slate-400 leading-relaxed">
                             Install globally via <code class="text-slate-200 font-mono">pip</code>, <code class="text-slate-200 font-mono">uv</code>, or <code class="text-slate-200 font-mono">pipx</code>. Zero external C daemon dependencies required.
                         </p>
                     </div>
@@ -962,11 +953,11 @@
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between font-mono text-xs">
-                            <span class="text-sky-400 font-semibold">STEP 02 // SEAL VAULT</span>
+                            <span data-i18n="qs_step2_badge" class="text-sky-400 font-semibold">STEP 02 // SEAL VAULT</span>
                             <span class="text-slate-500">AES-256-GCM</span>
                         </div>
-                        <h3 class="text-base font-bold text-white">Seal & Shred Plaintext</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
+                        <h3 data-i18n="qs_step2_title" class="text-base font-bold text-white">Seal & Shred Plaintext</h3>
+                        <p data-i18n-html="qs_step2_desc" class="text-xs text-slate-400 leading-relaxed">
                             Encrypts <code class="text-slate-200 font-mono">.env</code> into an authenticated AAD-bound <code class="text-slate-200 font-mono">.env.enc</code> envelope and multi-pass shreds the plaintext original.
                         </p>
                     </div>
@@ -980,11 +971,11 @@
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between font-mono text-xs">
-                            <span class="text-indigo-400 font-semibold">STEP 03 // EXECUTE</span>
+                            <span data-i18n="qs_step3_badge" class="text-indigo-400 font-semibold">STEP 03 // EXECUTE</span>
                             <span class="text-slate-500">0 Bytes on Disk</span>
                         </div>
-                        <h3 class="text-base font-bold text-white">Run Process Under Shield</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">
+                        <h3 data-i18n="qs_step3_title" class="text-base font-bold text-white">Run Process Under Shield</h3>
+                        <p data-i18n-html="qs_step3_desc" class="text-xs text-slate-400 leading-relaxed">
                             Unseals into locked volatile RAM, injects into child process environment, and actively masks accidental secret prints.
                         </p>
                     </div>
@@ -1001,8 +992,8 @@
         <div class="container">
             <div class="max-w-3xl mx-auto">
                 <div class="mb-10">
-                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="08 // Security & Licensing FAQ">08 // Security & Licensing FAQ</div>
-                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="08 // Security & Licensing FAQ" data-i18n-scramble="faq_scramble">08 // Security & Licensing FAQ</div>
+                    <h2 data-kinetic data-kinetic-id="faq_title" class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                         Technical questions, answered directly.
                     </h2>
                 </div>
@@ -1011,10 +1002,10 @@
                     <!-- FAQ 1 -->
                     <div class="reveal spotlight-card" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)">
                         <button onclick="toggleFaq(0)" class="relative z-10 w-full p-5 text-left flex items-center justify-between gap-4">
-                            <span class="text-sm sm:text-base font-bold text-white">What is Envshield's exact OS threat model? Can root dump memory?</span>
+                            <span data-i18n="faq_q1" class="text-sm sm:text-base font-bold text-white">What is Envshield's exact OS threat model? Can root dump memory?</span>
                             <i data-lucide="chevron-down" id="faq-icon-0" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
                         </button>
-                        <div id="faq-body-0" class="relative z-10 px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-white/[0.06] pt-4">
+                        <div id="faq-body-0" data-i18n-html="faq_a1" class="relative z-10 px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-white/[0.06] pt-4">
                             If an adversary has compromised kernel ring 0 or root on a host, any running process can theoretically be inspected. Envshield is engineered to defeat the five highest-probability real-world breach vectors: (1) plaintext <code class="text-slate-200 font-mono">.env</code> files persisted on SSDs/backups, (2) OS swap-file paging via <code class="text-slate-200 font-mono">mlock()</code>/<code class="text-slate-200 font-mono">VirtualLock()</code>, (3) non-root adjacent process ptrace/core-dumps via <code class="text-slate-200 font-mono">prctl(PR_SET_DUMPABLE, 0)</code>, (4) world-readable <code class="text-slate-200 font-mono">/proc/&lt;pid&gt;/cmdline</code> and <code class="text-slate-200 font-mono">docker inspect</code> leaks, and (5) accidental traceback credential prints to CI/CD logs.
                         </div>
                     </div>
@@ -1022,10 +1013,10 @@
                     <!-- FAQ 2 -->
                     <div class="reveal spotlight-card" style="--delay: 180ms;" onmousemove="handleSpotlight(event, this)">
                         <button onclick="toggleFaq(1)" class="relative z-10 w-full p-5 text-left flex items-center justify-between gap-4">
-                            <span class="text-sm sm:text-base font-bold text-white">How does GitHub SSH team sharing work without a central server?</span>
+                            <span data-i18n="faq_q2" class="text-sm sm:text-base font-bold text-white">How does GitHub SSH team sharing work without a central server?</span>
                             <i data-lucide="chevron-down" id="faq-icon-1" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
                         </button>
-                        <div id="faq-body-1" class="hidden relative z-10 px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-white/[0.06] pt-4">
+                        <div id="faq-body-1" data-i18n-html="faq_a2" class="hidden relative z-10 px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-white/[0.06] pt-4">
                             When you execute <code class="text-slate-200 font-mono">envshield team add alice --github</code>, Envshield fetches Alice's public <code class="text-slate-200 font-mono">ssh-ed25519</code> or <code class="text-slate-200 font-mono">ssh-rsa</code> key over HTTPS, validates curve membership, converts Ed25519 points birationally to Curve25519 (X25519), and wraps the vault's Data Encryption Key (DEK) using RFC 9180 HPKE transcript-bound HKDF-SHA256. The updated <code class="text-slate-200 font-mono">.env.enc</code> is committed to Git; Alice unlocks it locally using <code class="text-slate-200 font-mono">~/.ssh/id_ed25519</code>.
                         </div>
                     </div>
@@ -1033,10 +1024,10 @@
                     <!-- FAQ 3 -->
                     <div class="reveal spotlight-card" style="--delay: 260ms;" onmousemove="handleSpotlight(event, this)">
                         <button onclick="toggleFaq(2)" class="relative z-10 w-full p-5 text-left flex items-center justify-between gap-4">
-                            <span class="text-sm sm:text-base font-bold text-white">Does the PTY stream redactor break interactive prompts like sudo, ssh, or Python REPL?</span>
+                            <span data-i18n="faq_q3" class="text-sm sm:text-base font-bold text-white">Does the PTY stream redactor break interactive prompts like sudo, ssh, or Python REPL?</span>
                             <i data-lucide="chevron-down" id="faq-icon-2" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
                         </button>
-                        <div id="faq-body-2" class="hidden relative z-10 px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-white/[0.06] pt-4">
+                        <div id="faq-body-2" data-i18n-html="faq_a3" class="hidden relative z-10 px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-white/[0.06] pt-4">
                             No. Unlike naive line-buffered pipes that deadlock when a program outputs a prompt without a trailing newline (e.g., <code class="text-slate-200 font-mono">"Password: "</code>), Envshield's <code class="text-slate-200 font-mono">terminal.py</code> uses an idle-timeout select flush, incremental UTF-8 multi-byte decoding, <code class="text-slate-200 font-mono">TIOCSCTTY</code> controlling terminal binding, and <code class="text-slate-200 font-mono">SIGWINCH</code> window resize propagation.
                         </div>
                     </div>
@@ -1044,10 +1035,10 @@
                     <!-- FAQ 4 -->
                     <div class="reveal spotlight-card" style="--delay: 340ms;" onmousemove="handleSpotlight(event, this)">
                         <button onclick="toggleFaq(3)" class="relative z-10 w-full p-5 text-left flex items-center justify-between gap-4">
-                            <span class="text-sm sm:text-base font-bold text-white">When do we need a Commercial License instead of the free AGPLv3 Community Edition?</span>
+                            <span data-i18n="faq_q4" class="text-sm sm:text-base font-bold text-white">When do we need a Commercial License instead of the free AGPLv3 Community Edition?</span>
                             <i data-lucide="chevron-down" id="faq-icon-3" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
                         </button>
-                        <div id="faq-body-3" class="hidden relative z-10 px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-white/[0.06] pt-4">
+                        <div id="faq-body-3" data-i18n-html="faq_a4" class="hidden relative z-10 px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-white/[0.06] pt-4">
                             Open-source projects, academic teams, and solo indie developers can use the Community Edition free forever under GNU AGPLv3. If your company embeds Envshield inside proprietary closed-source distributions, commercial SaaS infrastructure, or requires legal copyleft immunity, SOC 2 audit reporting, and SLAs, choose the Team ($19/mo) or Enterprise license.
                         </div>
                     </div>
@@ -1065,13 +1056,13 @@
                         <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
                     <span class="font-bold text-xs text-slate-200 tracking-tight">Envshield Security</span>
-                    <span class="text-xs text-slate-500 font-mono">© 2026 Ahmet Can · v0.4.0 (AGPLv3 / Commercial)</span>
+                    <span data-i18n="footer_copy" class="text-xs text-slate-500 font-mono">© 2026 Ahmet Can · v0.4.0 (AGPLv3 / Commercial)</span>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-6 text-xs text-slate-400 font-mono">
                     <a href="https://github.com/AmhetCnaa/Envshield" target="_blank" class="hover:text-white transition">GitHub</a>
                     <a href="https://pypi.org/project/envshield-cli/" target="_blank" class="hover:text-white transition">PyPI</a>
-                    <a href="https://github.com/AmhetCnaa/Envshield/blob/main/COMMERCIAL.md" target="_blank" class="hover:text-white transition">Commercial EULA</a>
+                    <a href="https://github.com/AmhetCnaa/Envshield/blob/main/COMMERCIAL.md" target="_blank" data-i18n="footer_eula" class="hover:text-white transition">Commercial EULA</a>
                     <a href="https://github.com/AmhetCnaa/Envshield/blob/main/LICENSE" target="_blank" class="hover:text-white transition">AGPLv3</a>
                 </div>
             </div>
@@ -1084,52 +1075,529 @@
             <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between">
                 <div class="flex items-center gap-2 text-slate-300">
                     <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i>
-                    <span>Envshield Quick Command Palette</span>
+                    <span data-i18n="cmd_title">Envshield Quick Command Palette</span>
                 </div>
                 <button onclick="toggleCmdModal()" class="text-slate-500 hover:text-white px-1.5 py-0.5 rounded bg-white/5">ESC</button>
             </div>
             <div class="p-2 space-y-1">
                 <button onclick="copyInstallCmd(); toggleCmdModal();" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition">
-                    <span class="text-slate-200">Copy CLI Install Command (<code class="text-emerald-400">pip install envshield-cli</code>)</span>
-                    <span class="text-slate-500">Action</span>
+                    <span data-i18n-html="cmd_item1_text" class="text-slate-200">Copy CLI Install Command (<code class="text-emerald-400">pip install envshield-cli</code>)</span>
+                    <span data-i18n="cmd_item1_sub" class="text-slate-500">Action</span>
                 </button>
                 <button onclick="toggleMemoryWipe(); toggleCmdModal(); location.href='#architecture';" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition">
-                    <span class="text-slate-200">Simulate Volatile Memory Wipe (<code class="text-sky-400">ctypes.memset</code>)</span>
-                    <span class="text-slate-500">Simulation</span>
+                    <span data-i18n-html="cmd_item2_text" class="text-slate-200">Simulate Volatile Memory Wipe (<code class="text-sky-400">ctypes.memset</code>)</span>
+                    <span data-i18n="cmd_item2_sub" class="text-slate-500">Simulation</span>
                 </button>
                 <button onclick="triggerCanaryDemo(); toggleCmdModal(); location.href='#architecture';" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition">
-                    <span class="text-slate-200">Trigger Canary Honeypot SIEM Alert</span>
-                    <span class="text-slate-500">Simulation</span>
+                    <span data-i18n="cmd_item3_text" class="text-slate-200">Trigger Canary Honeypot SIEM Alert</span>
+                    <span data-i18n="cmd_item3_sub" class="text-slate-500">Simulation</span>
                 </button>
+                <a href="#demo" onclick="toggleCmdModal()" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition block">
+                    <span data-i18n="cmd_item4_text" class="text-slate-200">Jump to Interactive Runtime Trace Sandbox</span>
+                    <span data-i18n="cmd_item4_sub" class="text-slate-500">Navigation</span>
+                </a>
                 <a href="#pricing" onclick="toggleCmdModal()" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition block">
-                    <span class="text-slate-200">Jump to Commercial Licensing & Pricing</span>
-                    <span class="text-slate-500">Navigation</span>
+                    <span data-i18n="cmd_item5_text" class="text-slate-200">Jump to Commercial Licensing & Pricing</span>
+                    <span data-i18n="cmd_item5_sub" class="text-slate-500">Navigation</span>
                 </a>
             </div>
         </div>
     </div>
 
     <!-- ========================================================================
-         VISUAL INTERACTIVITY, SCROLL CHOREOGRAPHY & MAGNETIC CANVAS ENGINE
+         VISUAL INTERACTIVITY, MULTI-LANGUAGE (TR/EN) & MOTION ENGINE
          ======================================================================== -->
     <script>
-        // 1. KINETIC TEXT SPLITTER & SCROLL-TRIGGERED CHOREOGRAPHY
-        document.querySelectorAll('[data-kinetic]').forEach(heading => {
-            const words = heading.innerText.trim().split(/\s+/);
-            heading.innerHTML = words.map((word, idx) => {
-                const isHighlight = ['paranoid', 'engineering', 'teams.', 'kernel', '&', 'process', 'attack', 'vectors.'].includes(word.toLowerCase());
-                const colorSpan = isHighlight
-                    ? `<span class="bg-gradient-to-r from-white via-slate-200 to-emerald-400 bg-clip-text text-transparent">${word}</span>`
-                    : word;
-                return `<span class="word-wrap"><span class="word-inner" style="--word-delay: ${idx * 48}ms">${colorSpan}</span></span>`;
-            }).join(' ');
-        });
+        // 1. MULTI-LANGUAGE DICTIONARY (EN / TR)
+        const i18n = {
+            en: {
+                nav_arch: "Architecture",
+                nav_trace: "Runtime Trace",
+                nav_primitives: "Primitives",
+                nav_benchmarks: "Benchmarks",
+                nav_economics: "Economics",
+                nav_licensing: "Licensing",
+                nav_quickstart: "Quickstart",
+                nav_faq: "FAQ",
+                nav_cmd: "Command",
+                nav_license_btn: "Get License",
 
-        // Cipher Hex Scramble Decoder for Eyebrow Tags on Scroll
+                hero_audit_badge: "AUDIT PASSED",
+                hero_audit_text: "145/145 invariant tests · RFC 9180 HPKE · mlock()",
+                hero_title: "Zero-disk secret execution for paranoid engineering teams.",
+                hero_desc: "Stop leaving plaintext <code class='text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded'>.env</code> files on developer NVMe drives or coupling production boots to third-party SaaS uptime. Envshield unseals AES-256-GCM envelopes directly into page-locked volatile RAM, sanitizes child PTY streams in flight, and mounts stealth <code class='text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded'>/dev/shm</code> descriptors into Docker.",
+                hero_copy_text: "Copy",
+                hero_btn_trace: "Explore Runtime Trace",
+                hero_btn_arch: "Inspect Architecture",
+                hero_hud_topology: "ZERO-DISK SIGNAL TOPOLOGY",
+                hero_canvas_hint: "Move cursor to bend field · <strong class='text-white font-normal'>Click to emit verification pulse</strong>",
+                hero_live_field: "LIVE FIELD",
+
+                telemetry_1_scramble: "01 // FILESYSTEM FOOTPRINT",
+                telemetry_1_badge: "verified",
+                telemetry_1_desc: "No temp files, swap pages, or SSD inodes",
+                telemetry_2_scramble: "02 // UNSEAL LATENCY",
+                telemetry_2_desc: "Local AES-256-GCM + X25519 HKDF",
+                telemetry_3_scramble: "03 // PTY STREAM PROXY",
+                telemetry_3_badge: "lookahead",
+                telemetry_3_desc: "UTF-8 boundary & Base64 leak masking",
+                telemetry_4_scramble: "04 // SAAS DEPENDENCY",
+                telemetry_4_badge: "air-gapped",
+                telemetry_4_desc: "Immune to external cloud API outages",
+
+                arch_scramble: "01 // Defense-in-Depth Architecture",
+                arch_title: "Engineered against real kernel & process attack vectors.",
+                arch_desc: "Every claim is backed by verifiable system calls. Hover or interact with the modules below to inspect how Envshield isolates credentials in memory.",
+
+                bento1_title: "Two-Phase Page-Locked Volatile Memory",
+                bento1_desc: "Plaintext secrets never exist as immutable Python <code class='text-slate-200 font-mono'>str</code> or <code class='text-slate-200 font-mono'>bytes</code> objects in the parent wait loop. Envshield locks 4KB-aligned virtual memory pages so the OS kernel never swaps secrets to NVMe, and executes deterministic <code class='text-slate-200 font-mono'>ctypes.memset</code> zeroing before unlocking pages on exit.",
+                bento2_badge: "Chunk-Boundary Safe",
+                bento2_title: "Sliding-Window PTY Sanitizer",
+                bento2_desc: "Intercepts child <code class='text-slate-200 font-mono'>stdout</code>/<code class='text-slate-200 font-mono'>stderr</code> pipes and pseudo-terminals. Holds a <code class='text-slate-200 font-mono'>max_secret_len - 1</code> lookahead tail so secrets split across 4096-byte read chunks—or encoded in Base64/URL—are masked before hitting terminal logs.",
+                bento2_raw_chunk: "RAW PIPE CHUNK #14",
+                bento2_split: "SPLIT DETECTED",
+                bento2_flush: "finditer() + lookahead flush",
+                bento3_badge: "0o400 TOCTOU-Free",
+                bento3_title: "Docker <code class='font-mono text-base'>/dev/shm</code> Stealth Mount",
+                bento3_desc: "Passing <code class='text-slate-200 font-mono'>docker run -e KEY=VAL</code> exposes secrets to any local user via <code class='text-slate-200 font-mono'>ps aux</code> and <code class='text-slate-200 font-mono'>docker inspect</code>. Envshield mounts an ephemeral RAM-backed <code class='text-slate-200 font-mono'>/dev/shm</code> volume to <code class='text-slate-200 font-mono'>/run/secrets</code> with atomic <code class='text-slate-200 font-mono'>0o400</code> permissions.",
+                bento3_leaks: "0 LEAKS",
+                bento3_shred: "shredded on container exit",
+                bento4_badge: "Ed25519 → X25519 + Active Deception",
+                bento4_title: "GitHub SSH Envelope v2 & Canary Honeypot Telemetry",
+                bento4_desc: "Share vaults across your team without a central server or shared master password. Envshield converts teammates' GitHub <code class='text-slate-200 font-mono'>ssh-ed25519</code> public keys into X25519 ephemeral key-encryption-keys via RFC 9180 HKDF transcript binding. If an attacker attempts an unauthorized unseal, Envshield injects fake Canary credentials and fires a silent SIEM alert.",
+                bento4_recipients: "AUTHORIZED ENVELOPE RECIPIENTS",
+                bento4_honeypot: "HONEYPOT DECOY SIMULATOR",
+                bento4_btn_test: "Test Bad Key",
+
+                demo_scramble: "02 // Live Runtime Verification",
+                demo_title: "Interactive CLI & execution trace.",
+                demo_desc: "Switch between operational traces or type commands directly into the interactive shell prompt (<code class='text-slate-200 font-mono'>help</code>, <code class='text-slate-200 font-mono'>seal</code>, <code class='text-slate-200 font-mono'>run</code>, <code class='text-slate-200 font-mono'>audit</code>, <code class='text-slate-200 font-mono'>clear</code>).",
+                tab_run: "01 · PTY Redact",
+                tab_docker: "02 · Docker Stealth",
+                tab_team: "03 · GitHub SSH",
+                tab_audit: "04 · SOC 2 Audit",
+                tab_sentinel: "05 · AST Sentinel",
+                terminal_placeholder: "Type a command (e.g. help, status, seal, audit, clear) and press Enter...",
+                terminal_run_btn: "Run ↵",
+                terminal_footer_pty: "PTY proxy active (UTF-8 incremental decoder)",
+                terminal_footer_replay: "Replay Trace",
+
+                features_scramble: "03 // Production Primitives",
+                features_title: "Built for local speed and CI/CD scale.",
+                features_desc: "Every workflow—from git pre-commit hooks to multi-cloud KMS envelopes—operates with zero external daemon overhead.",
+                prim1_label: "01 / CLOUD KMS BRIDGE",
+                prim1_title: "Hybrid Local SSH + Cloud KMS",
+                prim1_desc: "Developers unlock envelopes offline in 0.14ms via local SSH keys. CI/CD runners (GitHub Actions, GitLab) unseal the exact same file via AWS KMS, GCP KMS, or Azure Key Vault using IAM OIDC.",
+                prim2_label: "02 / SELF-HEALING HOOK",
+                prim2_title: "Pre-Commit Auto-Seal & Shred",
+                prim2_desc: "If a plaintext <code class='text-slate-200 font-mono'>.env</code> is accidentally staged, Envshield intercepts the commit, seals it into an authenticated AES-256-GCM envelope, multi-pass shreds the plaintext file, and continues cleanly.",
+                prim3_label: "03 / ZERO-DISK EDITOR",
+                prim3_title: "RAM-Disk Sandboxed Editing",
+                prim3_desc: "Running <code class='text-slate-200 font-mono'>envshield edit</code> materializes temporary buffers exclusively inside <code class='text-slate-200 font-mono'>/dev/shm</code> (Linux RAM tmpfs) and passes anti-swap flags (<code class='text-slate-200 font-mono'>-n -i NONE</code>) to Vim/Nano so no backup files touch disk.",
+                prim4_label: "04 / TAMPER-EVIDENT LEDGER",
+                prim4_title: "HMAC-SHA256 Chained Audit Log",
+                prim4_desc: "Every unseal, edit, and canary event is appended to an HMAC-chained JSONL ledger verified via constant-time <code class='text-slate-200 font-mono'>hmac.compare_digest</code>. Export executive SOC 2 / ISO 27001 HTML certificates in one command.",
+                prim5_label: "05 / STATIC AST SENTINEL",
+                prim5_title: "Secret Drift & Dead Key Detection",
+                prim5_desc: "Scans Python, TypeScript, Go, Rust, and Dockerfiles to detect missing keys referenced in code, unused orphan variables in vaults, and schema drift between staging and production profiles.",
+                prim6_label: "06 / ATOMIC PERSISTENCE",
+                prim6_title: "Crash-Safe Atomic Vault Writes",
+                prim6_desc: "Vault updates write to an isolated sibling descriptor, flush hardware buffers via <code class='text-slate-200 font-mono'>os.fsync()</code>, execute atomic POSIX/NTFS <code class='text-slate-200 font-mono'>os.replace()</code>, and sync the parent directory descriptor.",
+
+                comp_scramble: "04 // Technical Benchmark",
+                comp_title: "Architectural comparison against industry tools.",
+                comp_desc: "Evaluated across memory isolation, process argument exposure, stream sanitization, and operational sovereignty.",
+                comp_th_invariant: "Security Invariant",
+                comp_row1_name: "Page-Locked Volatile RAM (<code class='font-mono text-xs text-slate-400'>mlock</code>)",
+                comp_row1_env: "Verified · 4KB aligned",
+                comp_row1_heap: "Standard heap",
+                comp_row1_srv: "Supported (Server)",
+                comp_row1_disk: "Often writes disk",
+                comp_row2_name: "Live PTY / Pipe Stream Redaction",
+                comp_row2_env: "Sliding lookahead + Base64",
+                comp_row2_cli: "None in local CLI",
+                comp_row2_none: "None",
+                comp_row2_partial: "Partial stdout",
+                comp_row3_name: "Docker <code class='font-mono text-xs text-slate-400'>inspect</code> & <code class='font-mono text-xs text-slate-400'>ps aux</code> Immunity",
+                comp_row3_inspect: "Leaks in inspect",
+                comp_row3_sidecar: "Requires sidecar",
+                comp_row3_plaintext: "Plaintext env",
+                comp_row4_name: "Zero-Server GitHub SSH Distribution",
+                comp_row4_env: "Native RFC 9180 HPKE",
+                comp_row4_saas: "Central SaaS cloud",
+                comp_row4_cluster: "Central Vault cluster",
+                comp_row4_prop: "Proprietary cloud",
+                comp_row4_age: "Manual Age / PGP",
+                comp_row5_name: "Deceptive Canary Honeypots",
+                comp_row5_env: "Built-in SIEM webhook",
+                comp_row5_unsupported: "Unsupported",
+                comp_row6_name: "Offline / Air-Gapped Continuity",
+                comp_row6_env: "100% Autonomous",
+                comp_row6_api: "API outage halts CI",
+                comp_row6_dep: "Cluster dependent",
+                comp_row6_req: "Cloud account req.",
+
+                calc_scramble: "05 // Infrastructure Economics",
+                calc_title: "Eliminate per-seat SaaS tax & cluster ops.",
+                calc_desc: "Envshield runs deterministically inside your existing Git and CI/CD pipelines with zero hosted database servers, zero Consul/Raft clusters, and zero egress fees.",
+                calc_headcount: "Engineering Headcount",
+                calc_benchmark: "Benchmark Against",
+                calc_recovered_label: "ANNUAL SAAS / OPS RECOVERED",
+                calc_local_badge: "100% Local",
+                calc_incumbent: "Incumbent Annual Spend:",
+                calc_community: "Envshield Community (AGPLv3):",
+                calc_commercial: "Envshield Commercial Team:",
+                calc_btn_tiers: "View Licensing Tiers",
+
+                pricing_scramble: "06 // Dual-Licensing Model",
+                pricing_title: "Built for Open Source & Enterprise.",
+                pricing_desc: "Free forever under GNU AGPLv3 for open-source projects and individual developers. Commercial EULA exemptions available for proprietary enterprise teams.",
+                bill_monthly: "Monthly",
+                bill_annual: "Annual",
+                tier1_sub: "01 // OPEN SOURCE",
+                tier1_title: "Community",
+                tier1_period: "/ forever",
+                tier1_desc: "Full cryptographic engine for indie hackers, researchers, and open-source repositories compatible with AGPLv3.",
+                tier1_btn: "Install via PyPI / GitHub",
+                tier2_sub: "02 // COMMERCIAL LICENSE",
+                tier2_popular: "MOST POPULAR",
+                tier2_title: "Team Edition",
+                tier2_desc: "Commercial AGPLv3 waiver for closed-source proprietary products, SaaS companies, and commercial CI/CD pipelines.",
+                tier2_btn: "Acquire Commercial License",
+                tier3_sub: "03 // ORGANIZATION",
+                tier3_sla: "CUSTOM SLA",
+                tier3_title: "Enterprise",
+                tier3_period: "/ year contract",
+                tier3_desc: "Site-wide commercial licensing for regulated organizations requiring SOC 2 / ISO 27001 attestation and HSM backing.",
+                tier3_btn: "Contact Enterprise Sales",
+
+                qs_scramble: "07 // Zero-Friction Onboarding",
+                qs_title: "Up and running in 3 commands.",
+                qs_desc: "No accounts to register, no background agents to configure. Initialize a cryptographic vault in your repo in under 30 seconds.",
+                qs_step1_badge: "STEP 01 // INSTALL",
+                qs_step1_title: "Install Standalone CLI",
+                qs_step1_desc: "Install globally via <code class='text-slate-200 font-mono'>pip</code>, <code class='text-slate-200 font-mono'>uv</code>, or <code class='text-slate-200 font-mono'>pipx</code>. Zero external C daemon dependencies required.",
+                qs_step2_badge: "STEP 02 // SEAL VAULT",
+                qs_step2_title: "Seal & Shred Plaintext",
+                qs_step2_desc: "Encrypts <code class='text-slate-200 font-mono'>.env</code> into an authenticated AAD-bound <code class='text-slate-200 font-mono'>.env.enc</code> envelope and multi-pass shreds the plaintext original.",
+                qs_step3_badge: "STEP 03 // EXECUTE",
+                qs_step3_title: "Run Process Under Shield",
+                qs_step3_desc: "Unseals into locked volatile RAM, injects into child process environment, and actively masks accidental secret prints.",
+
+                faq_scramble: "08 // Security & Licensing FAQ",
+                faq_title: "Technical questions, answered directly.",
+                faq_q1: "What is Envshield's exact OS threat model? Can root dump memory?",
+                faq_a1: "If an adversary has compromised kernel ring 0 or root on a host, any running process can theoretically be inspected. Envshield is engineered to defeat the five highest-probability real-world breach vectors: (1) plaintext <code class='text-slate-200 font-mono'>.env</code> files persisted on SSDs/backups, (2) OS swap-file paging via <code class='text-slate-200 font-mono'>mlock()</code>/<code class='text-slate-200 font-mono'>VirtualLock()</code>, (3) non-root adjacent process ptrace/core-dumps via <code class='text-slate-200 font-mono'>prctl(PR_SET_DUMPABLE, 0)</code>, (4) world-readable <code class='text-slate-200 font-mono'>/proc/&lt;pid&gt;/cmdline</code> and <code class='text-slate-200 font-mono'>docker inspect</code> leaks, and (5) accidental traceback credential prints to CI/CD logs.",
+                faq_q2: "How does GitHub SSH team sharing work without a central server?",
+                faq_a2: "When you execute <code class='text-slate-200 font-mono'>envshield team add alice --github</code>, Envshield fetches Alice's public <code class='text-slate-200 font-mono'>ssh-ed25519</code> or <code class='text-slate-200 font-mono'>ssh-rsa</code> key over HTTPS, validates curve membership, converts Ed25519 points birationally to Curve25519 (X25519), and wraps the vault's Data Encryption Key (DEK) using RFC 9180 HPKE transcript-bound HKDF-SHA256. The updated <code class='text-slate-200 font-mono'>.env.enc</code> is committed to Git; Alice unlocks it locally using <code class='text-slate-200 font-mono'>~/.ssh/id_ed25519</code>.",
+                faq_q3: "Does the PTY stream redactor break interactive prompts like sudo, ssh, or Python REPL?",
+                faq_a3: "No. Unlike naive line-buffered pipes that deadlock when a program outputs a prompt without a trailing newline (e.g., <code class='text-slate-200 font-mono'>'Password: '</code>), Envshield's <code class='text-slate-200 font-mono'>terminal.py</code> uses an idle-timeout select flush, incremental UTF-8 multi-byte decoding, <code class='text-slate-200 font-mono'>TIOCSCTTY</code> controlling terminal binding, and <code class='text-slate-200 font-mono'>SIGWINCH</code> window resize propagation.",
+                faq_q4: "When do we need a Commercial License instead of the free AGPLv3 Community Edition?",
+                faq_a4: "Open-source projects, academic teams, and solo indie developers can use the Community Edition free forever under GNU AGPLv3. If your company embeds Envshield inside proprietary closed-source distributions, commercial SaaS infrastructure, or requires legal copyleft immunity, SOC 2 audit reporting, and SLAs, choose the Team ($19/mo) or Enterprise license.",
+
+                footer_copy: "© 2026 Ahmet Can · v0.4.0 (AGPLv3 / Commercial)",
+                footer_eula: "Commercial EULA",
+
+                cmd_title: "Envshield Quick Command Palette",
+                cmd_item1_text: "Copy CLI Install Command (<code class='text-emerald-400'>pip install envshield-cli</code>)",
+                cmd_item1_sub: "Action",
+                cmd_item2_text: "Simulate Volatile Memory Wipe (<code class='text-sky-400'>ctypes.memset</code>)",
+                cmd_item2_sub: "Simulation",
+                cmd_item3_text: "Trigger Canary Honeypot SIEM Alert",
+                cmd_item3_sub: "Simulation",
+                cmd_item4_text: "Jump to Interactive Runtime Trace Sandbox",
+                cmd_item4_sub: "Navigation",
+                cmd_item5_text: "Jump to Commercial Licensing & Pricing",
+                cmd_item5_sub: "Navigation",
+
+                tier1_bullets: [
+                    "Page-locked volatile RAM unsealing",
+                    "Live PTY & pipe stream redactor",
+                    "Docker /dev/shm stealth volume bridge",
+                    "GitHub SSH public key team envelopes",
+                    "Self-healing git pre-commit hook",
+                    "AWS, GCP & Azure Cloud KMS envelopes"
+                ],
+                tier2_bullets: [
+                    "<strong>Full Commercial AGPLv3 Copyleft Waiver</strong>",
+                    "Proprietary & closed-source deployment rights",
+                    "Real-time Canary SIEM webhooks (Slack/Datadog)",
+                    "AST Secret Drift & Dead Variable Sentinel",
+                    "GitHub Organization batch key sync",
+                    "Priority 24-hour engineering support SLA"
+                ],
+                tier3_bullets: [
+                    "<strong>Unlimited seats, runners & repositories</strong>",
+                    "Executive SOC 2 Type II / ISO 27001 HTML reports",
+                    "Hardware HSM & PKCS#11 key module support",
+                    "Dedicated Slack / Teams security channel",
+                    "1-hour critical incident response SLA",
+                    "Custom vendor procurement & IP indemnity"
+                ]
+            },
+            tr: {
+                nav_arch: "Mimari",
+                nav_trace: "Çalışma Zamanı",
+                nav_primitives: "Temeller",
+                nav_benchmarks: "Kıyaslama",
+                nav_economics: "Ekonomi",
+                nav_licensing: "Lisanslama",
+                nav_quickstart: "Hızlı Başlangıç",
+                nav_faq: "SSS",
+                nav_cmd: "Komut",
+                nav_license_btn: "Lisans Al",
+
+                hero_audit_badge: "DENETİM GEÇTİ",
+                hero_audit_text: "145/145 değişmezlik testi · RFC 9180 HPKE · mlock()",
+                hero_title: "Paranoyak mühendislik ekipleri için sıfır-disk gizli anahtar yürütme.",
+                hero_desc: "Geliştirici NVMe disklerinde düz metin <code class='text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded'>.env</code> dosyaları bırakmayı veya canlı sistem açılışlarını üçüncü taraf SaaS kesintilerine bağlamayı bırakın. Envshield, AES-256-GCM zarflarını doğrudan sayfa-kilitli uçucu RAM'e açar, alt süreç PTY akışlarını havada temizler ve Docker içine gizli <code class='text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded'>/dev/shm</code> tanımlayıcıları bağlar.",
+                hero_copy_text: "Kopyala",
+                hero_btn_trace: "Çalışma Zamanını İncele",
+                hero_btn_arch: "Mimariyi İncele",
+                hero_hud_topology: "SIFIR-DİSK SİNYAL TOPOLOJİSİ",
+                hero_canvas_hint: "Alanı bükmek için imleci gezdirin · <strong class='text-white font-normal'>Doğrulama dalgası için tıklayın</strong>",
+                hero_live_field: "CANLI ALAN",
+
+                telemetry_1_scramble: "01 // DOSYA SİSTEMİ İZİ",
+                telemetry_1_badge: "doğrulandı",
+                telemetry_1_desc: "Geçici dosya, takas (swap) veya SSD inode'u yok",
+                telemetry_2_scramble: "02 // ZARF AÇMA GECİKMESİ",
+                telemetry_2_desc: "Yerel AES-256-GCM + X25519 HKDF",
+                telemetry_3_scramble: "03 // PTY AKIŞ VEKİLİ",
+                telemetry_3_badge: "ileri bakış",
+                telemetry_3_desc: "UTF-8 sınır & Base64 sızıntı maskeleme",
+                telemetry_4_scramble: "04 // SAAS BAĞIMLILIĞI",
+                telemetry_4_badge: "izole (air-gapped)",
+                telemetry_4_desc: "Dış bulut API kesintilerine karşı tam bağışık",
+
+                arch_scramble: "01 // Derinliğine Savunma Mimarisi",
+                arch_title: "Gerçek çekirdek ve süreç saldırı vektörlerine karşı geliştirildi.",
+                arch_desc: "Her iddia doğrulanabilir sistem çağrılarıyla (syscall) desteklenir. Envshield'ın kimlik bilgilerini bellekte nasıl izole ettiğini incelemek için aşağıdaki modülleri deneyimleyin.",
+
+                bento1_title: "İki Aşamalı Sayfa-Kilitli Uçucu Bellek",
+                bento1_desc: "Düz metin sırlar, ana bekleme döngüsünde asla değişmez Python <code class='text-slate-200 font-mono'>str</code> veya <code class='text-slate-200 font-mono'>bytes</code> nesneleri olarak var olmaz. Envshield, 4KB hizalı sanal bellek sayfalarını kilitleyerek işletim sistemi çekirdeğinin sırları NVMe takas alanına yazmasını engeller ve çıkışta sayfaları açmadan önce deterministik <code class='text-slate-200 font-mono'>ctypes.memset</code> ile belleği sıfırlar.",
+                bento2_badge: "Parça Sınır Güvenli",
+                bento2_title: "Kayan Pencereli PTY Temizleyici",
+                bento2_desc: "Alt süreç <code class='text-slate-200 font-mono'>stdout</code>/<code class='text-slate-200 font-mono'>stderr</code> borularını ve pseudo-terminal akışlarını dinler. 4096 baytlık okuma bloklarına bölünen veya Base64/URL ile kodlanan sırların terminal loglarına sızmasını önlemek için <code class='text-slate-200 font-mono'>max_secret_len - 1</code> boyutunda kayan ileri bakış kuyruğu tutar.",
+                bento2_raw_chunk: "HAM BORU PARÇASI #14",
+                bento2_split: "BÖLÜNME TESPİT EDİLDİ",
+                bento2_flush: "finditer() + ileri bakış boşaltma",
+                bento3_badge: "0o400 TOCTOU Korumalı",
+                bento3_title: "Docker <code class='font-mono text-base'>/dev/shm</code> Gizli Bağlantısı",
+                bento3_desc: "<code class='text-slate-200 font-mono'>docker run -e KEY=VAL</code> kullanımı sırları <code class='text-slate-200 font-mono'>ps aux</code> ve <code class='text-slate-200 font-mono'>docker inspect</code> üzerinden tüm yerel kullanıcılara ifşa eder. Envshield, <code class='text-slate-200 font-mono'>/run/secrets</code> dizinine atomik <code class='text-slate-200 font-mono'>0o400</code> izinleriyle geçici bir <code class='text-slate-200 font-mono'>/dev/shm</code> RAM hacmi bağlar.",
+                bento3_leaks: "0 SIZINTI",
+                bento3_shred: "konteyner çıkışında shred edilir",
+                bento4_badge: "Ed25519 → X25519 + Aktif Aldatma",
+                bento4_title: "GitHub SSH Zarfı v2 & Canary Yem Tuzağı Telemetrisi",
+                bento4_desc: "Merkezi bir sunucu veya paylaşılan ana parola olmadan ekibinizle kasaları paylaşın. Envshield, ekip arkadaşlarının GitHub <code class='text-slate-200 font-mono'>ssh-ed25519</code> açık anahtarlarını RFC 9180 HKDF ile X25519 anahtar-şifreleme anahtarlarına dönüştürür. Yetkisiz bir açma girişiminde sahte Canary kimlik bilgileri enjekte edilir ve sessiz SIEM alarmı tetiklenir.",
+                bento4_recipients: "YETKİLİ ZARF ALICILARI",
+                bento4_honeypot: "YEM TUZAĞI SİMÜLATÖRÜ",
+                bento4_btn_test: "Hatalı Anahtar Dene",
+
+                demo_scramble: "02 // Canlı Çalışma Zamanı Doğrulaması",
+                demo_title: "Etkileşimli CLI ve yürütme izlemesi.",
+                demo_desc: "İşlem senaryoları arasında geçiş yapın veya doğrudan kabuk komut satırına komutlar yazın (<code class='text-slate-200 font-mono'>help</code>, <code class='text-slate-200 font-mono'>seal</code>, <code class='text-slate-200 font-mono'>run</code>, <code class='text-slate-200 font-mono'>audit</code>, <code class='text-slate-200 font-mono'>clear</code>).",
+                tab_run: "01 · PTY Maskeleme",
+                tab_docker: "02 · Docker Gizlilik",
+                tab_team: "03 · GitHub SSH",
+                tab_audit: "04 · SOC 2 Denetimi",
+                tab_sentinel: "05 · AST Bekçisi",
+                terminal_placeholder: "Komut yazın (örn: help, status, seal, audit, clear) ve Enter'a basın...",
+                terminal_run_btn: "Çalıştır ↵",
+                terminal_footer_pty: "PTY vekili devrede (UTF-8 artımlı kod çözücü)",
+                terminal_footer_replay: "İzlemeyi Yeniden Oynat",
+
+                features_scramble: "03 // Üretim Seviyesi Temeller",
+                features_title: "Yerel hız ve CI/CD ölçeği için inşa edildi.",
+                features_desc: "Git pre-commit kancalarından çoklu-bulut KMS zarflarına kadar tüm iş akışları harici sunucu yükü olmadan sıfır ek maliyetle çalışır.",
+                prim1_label: "01 / BULUT KMS KÖPRÜSÜ",
+                prim1_title: "Hibrit Yerel SSH + Bulut KMS",
+                prim1_desc: "Geliştiriciler zarfları yerel SSH anahtarlarıyla çevrimdışı 0.14ms içinde açar. CI/CD işçileri (GitHub Actions, GitLab) aynı dosyayı IAM OIDC kullanarak AWS KMS, GCP KMS veya Azure Key Vault üzerinden açar.",
+                prim2_label: "02 / KENDİ KENDİNİ ONARAN KANCA",
+                prim2_title: "Commit Öncesi Otomatik Mühürleme & Shred",
+                prim2_desc: "Eğer kazara düz metin bir <code class='text-slate-200 font-mono'>.env</code> stage edilirse, Envshield commiti yakalar, kimlik doğrulamalı AES-256-GCM zarfına mühürler, düz metin dosyayı çoklu geçişle shred eder ve temizce devam eder.",
+                prim3_label: "03 / SIFIR-DİSK DÜZENLEYİCİ",
+                prim3_title: "RAM-Disk Korumalı Düzenleme",
+                prim3_desc: "<code class='text-slate-200 font-mono'>envshield edit</code> çalıştırıldığında geçici tamponlar sadece <code class='text-slate-200 font-mono'>/dev/shm</code> (Linux RAM tmpfs) içinde oluşturulur ve Vim/Nano'ya takas önleyici bayraklar (<code class='text-slate-200 font-mono'>-n -i NONE</code>) verilerek diske hiçbir yedek dosyanın değmemesi sağlanır.",
+                prim4_label: "04 / KURCALAMAYA KARŞI KORUMALI DEFTER",
+                prim4_title: "HMAC-SHA256 Zincirli Denetim Defteri",
+                prim4_desc: "Her açma, düzenleme ve canary olayı, sabit zamanlı <code class='text-slate-200 font-mono'>hmac.compare_digest</code> ile doğrulanan HMAC zincirli JSONL defterine eklenir. Tek komutla yönetici düzeyinde SOC 2 / ISO 27001 HTML sertifikaları dışa aktarın.",
+                prim5_label: "05 / STATİK AST BEKÇİSİ",
+                prim5_title: "Gizli Anahtar Kayması & Ölü Değişken Tespiti",
+                prim5_desc: "Kodda başvurulan ancak kasada eksik olan anahtarları, kullanılmayan yetim değişkenleri ve staging/production profilleri arasındaki şema uyuşmazlıklarını tespit etmek için Python, TypeScript, Go, Rust ve Dockerfile dosyalarını tarar.",
+                prim6_label: "06 / ATOMİK KALICILIK",
+                prim6_title: "Çökmeye Dayanıklı Atomik Kasa Yazımları",
+                prim6_desc: "Kasa güncellemeleri izole edilmiş bir kardeş tanımlayıcıya yazılır, donanım tamponları <code class='text-slate-200 font-mono'>os.fsync()</code> ile boşaltılır, atomik POSIX/NTFS <code class='text-slate-200 font-mono'>os.replace()</code> çalıştırılır ve üst dizin tanımlayıcısı eşitlenir.",
+
+                comp_scramble: "04 // Teknik Kıyaslama",
+                comp_title: "Sektör araçlarıyla mimari kıyaslama.",
+                comp_desc: "Bellek izolasyonu, süreç argümanı ifşası, akış temizleme ve operasyonel bağımsızlık açısından değerlendirildi.",
+                comp_th_invariant: "Güvenlik Değişmezi",
+                comp_row1_name: "Sayfa-Kilitli Uçucu RAM (<code class='font-mono text-xs text-slate-400'>mlock</code>)",
+                comp_row1_env: "Doğrulandı · 4KB hizalı",
+                comp_row1_heap: "Standart yığın (heap)",
+                comp_row1_srv: "Desteklenir (Sunucu)",
+                comp_row1_disk: "Sıklıkla diske yazar",
+                comp_row2_name: "Canlı PTY / Boru Akışı Maskeleme",
+                comp_row2_env: "Kayan ileri bakış + Base64",
+                comp_row2_cli: "Yerel CLI'da yok",
+                comp_row2_none: "Yok",
+                comp_row2_partial: "Kısmi stdout",
+                comp_row3_name: "Docker <code class='font-mono text-xs text-slate-400'>inspect</code> ve <code class='font-mono text-xs text-slate-400'>ps aux</code> Bağışıklığı",
+                comp_row3_inspect: "inspect içinde sızar",
+                comp_row3_sidecar: "Sidecar gerektirir",
+                comp_row3_plaintext: "Düz metin env",
+                comp_row4_name: "Sunucusuz GitHub SSH Dağıtımı",
+                comp_row4_env: "Yerel RFC 9180 HPKE",
+                comp_row4_saas: "Merkezi SaaS bulutu",
+                comp_row4_cluster: "Merkezi Vault kümesi",
+                comp_row4_prop: "Özel mülk bulut",
+                comp_row4_age: "Manuel Age / PGP",
+                comp_row5_name: "Yanıltıcı Canary Yem Tuzakları",
+                comp_row5_env: "Dahili SIEM webhook",
+                comp_row5_unsupported: "Desteklenmiyor",
+                comp_row6_name: "Çevrimdışı / İzole (Air-Gapped) Süreklilik",
+                comp_row6_env: "%100 Otonom",
+                comp_row6_api: "API kesintisi CI'ı durdurur",
+                comp_row6_dep: "Kümeye bağımlı",
+                comp_row6_req: "Bulut hesabı zorunlu",
+
+                calc_scramble: "05 // Altyapı Ekonomisi",
+                calc_title: "Kullanıcı başına SaaS vergisini ve küme operasyonlarını ortadan kaldırın.",
+                calc_desc: "Envshield, barındırılan veritabanı sunucuları, Consul/Raft kümeleri ve veri çıkış ücretleri olmadan doğrudan mevcut Git ve CI/CD akışlarınız içinde deterministik olarak çalışır.",
+                calc_headcount: "Mühendis Kadrosu",
+                calc_benchmark: "Kıyaslanan Çözüm",
+                calc_recovered_label: "YILLIK GERİ KAZANILAN SAAS / OPS BÜTÇESİ",
+                calc_local_badge: "%100 Yerel",
+                calc_incumbent: "Mevcut Yıllık Harcama:",
+                calc_community: "Envshield Topluluk (AGPLv3):",
+                calc_commercial: "Envshield Ticari Ekip:",
+                calc_btn_tiers: "Lisans Paketlerini Gör",
+
+                pricing_scramble: "06 // Çift-Lisanslama Modeli",
+                pricing_title: "Açık Kaynak ve Kurumsal için Üretildi.",
+                pricing_desc: "Açık kaynak projeler ve bireysel geliştiriciler için GNU AGPLv3 ile sonsuza kadar ücretsiz. Özel mülk kurumsal ekipler için ticari EULA muafiyetleri mevcuttur.",
+                bill_monthly: "Aylık",
+                bill_annual: "Yıllık",
+                tier1_sub: "01 // AÇIK KAYNAK",
+                tier1_title: "Topluluk",
+                tier1_period: "/ sonsuza dek",
+                tier1_desc: "AGPLv3 ile uyumlu bağımsız geliştiriciler, araştırmacılar ve açık kaynak depolar için tam kriptografik motor.",
+                tier1_btn: "PyPI / GitHub ile Kur",
+                tier2_sub: "02 // TİCARİ LİSANS",
+                tier2_popular: "EN ÇOK TERCİH EDİLEN",
+                tier2_title: "Ekip Paketi",
+                tier2_desc: "Kapalı kaynaklı özel mülk ürünler, SaaS şirketleri ve ticari CI/CD akışları için ticari AGPLv3 muafiyeti.",
+                tier2_btn: "Ticari Lisans Al",
+                tier3_sub: "03 // KURUMSAL",
+                tier3_sla: "ÖZEL SLA",
+                tier3_title: "Kurumsal",
+                tier3_period: "/ yıllık sözleşme",
+                tier3_desc: "SOC 2 / ISO 27001 uyumluluk kanıtı ve HSM donanım desteği gerektiren regüle edilmiş kuruluşlar için şirket çapında ticari lisanslama.",
+                tier3_btn: "Kurumsal Satışla İletişime Geç",
+
+                qs_scramble: "07 // Sıfır Sürtünmeli Başlangıç",
+                qs_title: "3 komutta ayağa kalkın.",
+                qs_desc: "Hesap açmak yok, arka plan aracı yapılandırmak yok. Deponuzda 30 saniyenin altında kriptografik bir kasa başlatın.",
+                qs_step1_badge: "ADIM 01 // KURULUM",
+                qs_step1_title: "Bağımsız CLI'ı Kurun",
+                qs_step1_desc: "<code class='text-slate-200 font-mono'>pip</code>, <code class='text-slate-200 font-mono'>uv</code> veya <code class='text-slate-200 font-mono'>pipx</code> ile genel olarak kurun. Sıfır harici C arka plan servisi bağımlılığı gerektirir.",
+                qs_step2_badge: "ADIM 02 // KASAYI MÜHÜRLE",
+                qs_step2_title: "Mühürleyin & Düz Metni Parçalayın",
+                qs_step2_desc: "<code class='text-slate-200 font-mono'>.env</code> dosyasını doğrulanmış AAD bağlı <code class='text-slate-200 font-mono'>.env.enc</code> zarfına şifreler ve düz metin orijinali çoklu geçişle shred eder.",
+                qs_step3_badge: "ADIM 03 // ÇALIŞTIR",
+                qs_step3_title: "Süreci Kalkan Altında Başlatın",
+                qs_step3_desc: "Kilitli uçucu RAM'e açar, alt süreç ortamına enjekte eder ve kazara ekrana basılan sırları aktif olarak maskeler.",
+
+                faq_scramble: "08 // Güvenlik & Lisanslama SSS",
+                faq_title: "Teknik sorular, doğrudan yanıtlar.",
+                faq_q1: "Envshield'ın kesin işletim sistemi tehdit modeli nedir? Root belleği dökebilir mi?",
+                faq_a1: "Eğer bir saldırgan ana makinede kernel ring 0 veya root yetkisi elde etmişse, teorik olarak çalışan herhangi bir süreç incelenebilir. Envshield, gerçek dünyadaki en yüksek olasılıklı 5 sızıntı vektörünü bertaraf etmek için tasarlanmıştır: (1) SSD ve yedeklerde kalan düz metin <code class='text-slate-200 font-mono'>.env</code> dosyaları, (2) <code class='text-slate-200 font-mono'>mlock()</code>/<code class='text-slate-200 font-mono'>VirtualLock()</code> ile işletim sistemi takas (swap) dosyasına sayfa dökümü, (3) <code class='text-slate-200 font-mono'>prctl(PR_SET_DUMPABLE, 0)</code> ile yetkisiz yan süreç ptrace/core-dump okumaları, (4) herkese açık <code class='text-slate-200 font-mono'>/proc/&lt;pid&gt;/cmdline</code> ve <code class='text-slate-200 font-mono'>docker inspect</code> sızıntıları, ve (5) CI/CD loglarına basılan kazara hata ayıklama şifreleri.",
+                faq_q2: "Merkezi bir sunucu olmadan GitHub SSH ile ekip paylaşımı nasıl çalışır?",
+                faq_a2: "<code class='text-slate-200 font-mono'>envshield team add alice --github</code> komutunu çalıştırdığınızda, Envshield Alice'in genel <code class='text-slate-200 font-mono'>ssh-ed25519</code> veya <code class='text-slate-200 font-mono'>ssh-rsa</code> anahtarını HTTPS üzerinden çeker, eğri doğrulaması yapar, Ed25519 noktalarını rasyonel olarak Curve25519'a (X25519) dönüştürür ve kasanın Veri Şifreleme Anahtarını (DEK) RFC 9180 HPKE HKDF-SHA256 ile zarflar. Güncellenen <code class='text-slate-200 font-mono'>.env.enc</code> Git'e commit edilir; Alice bunu yerel makinesindeki <code class='text-slate-200 font-mono'>~/.ssh/id_ed25519</code> anahtarıyla çözer.",
+                faq_q3: "PTY akış maskeleyici; sudo, ssh veya Python REPL gibi etkileşimli istemleri bozar mı?",
+                faq_a3: "Hayır. Sonunda yeni satır (\\n) olmadan istem basan programlarda (örneğin <code class='text-slate-200 font-mono'>'Password: '</code>) kilitlenen ilkel satır tamponlu boruların aksine, Envshield'ın <code class='text-slate-200 font-mono'>terminal.py</code> modülü boşta kalma zaman aşımı (idle-timeout select flush), artımlı UTF-8 çok baytlı kod çözme, <code class='text-slate-200 font-mono'>TIOCSCTTY</code> kontrol terminali bağlama ve <code class='text-slate-200 font-mono'>SIGWINCH</code> pencere boyutu iletimi kullanır.",
+                faq_q4: "Ücretsiz AGPLv3 Topluluk Sürümü yerine ne zaman Ticari Lisansa ihtiyacımız olur?",
+                faq_a4: "Açık kaynak projeler, akademik ekipler ve bağımsız geliştiriciler GNU AGPLv3 kapsamında Topluluk Sürümünü sonsuza kadar ücretsiz kullanabilir. Şirketiniz Envshield'ı kapalı kaynaklı ticari dağıtımlara veya SaaS altyapısına gömüyorsa, yasal copyleft muafiyeti, SOC 2 denetim raporlaması ve SLA garantisi istiyorsa Ekip ($19/ay) veya Kurumsal lisansı tercih edin.",
+
+                footer_copy: "© 2026 Ahmet Can · v0.4.0 (AGPLv3 / Ticari)",
+                footer_eula: "Ticari EULA",
+
+                cmd_title: "Envshield Hızlı Komut Paleti",
+                cmd_item1_text: "CLI Kurulum Komutunu Kopyala (<code class='text-emerald-400'>pip install envshield-cli</code>)",
+                cmd_item1_sub: "Eylem",
+                cmd_item2_text: "Uçucu Bellek Temizliğini Simüle Et (<code class='text-sky-400'>ctypes.memset</code>)",
+                cmd_item2_sub: "Simülasyon",
+                cmd_item3_text: "Canary Yem Tuzağı SIEM Alarmını Tetikle",
+                cmd_item3_sub: "Simülasyon",
+                cmd_item4_text: "Etkileşimli Çalışma Zamanı Terminaline Git",
+                cmd_item4_sub: "Gezinme",
+                cmd_item5_text: "Ticari Lisanslama & Fiyatlandırmaya Git",
+                cmd_item5_sub: "Gezinme",
+
+                tier1_bullets: [
+                    "Sayfa-kilitli uçucu RAM'de açma",
+                    "Canlı PTY ve boru akışı maskeleyici",
+                    "Docker /dev/shm gizli birim köprüsü",
+                    "GitHub SSH açık anahtarlı ekip zarfları",
+                    "Kendi kendini onaran git pre-commit kancası",
+                    "AWS, GCP ve Azure Bulut KMS zarfları"
+                ],
+                tier2_bullets: [
+                    "<strong>Tam Ticari AGPLv3 Telif Muafiyeti</strong>",
+                    "Özel mülk ve kapalı kaynak dağıtım hakları",
+                    "Gerçek zamanlı Canary SIEM webhook'ları (Slack/Datadog)",
+                    "AST Gizli Değişken Kayması & Ölü Değişken Bekçisi",
+                    "GitHub Kuruluşları için toplu anahtar senkronizasyonu",
+                    "Öncelikli 24 saat mühendislik destek SLA'i"
+                ],
+                tier3_bullets: [
+                    "<strong>Sınırsız kullanıcı, işçi ve depo hakkı</strong>",
+                    "Yönetici düzeyi SOC 2 Type II / ISO 27001 HTML raporları",
+                    "Donanım HSM & PKCS#11 anahtar modülü desteği",
+                    "Özel tahsis edilmiş Slack / Teams güvenlik kanalı",
+                    "1 saat kritik olay müdahale SLA'i",
+                    "Özel tedarik sözleşmesi ve fikri mülkiyet tazminatı"
+                ]
+            }
+        };
+
+        let currentLang = 'en';
+
+        // 2. KINETIC TEXT ENGINE
+        const kineticHighlightWords = [
+            'paranoid', 'engineering', 'teams.', 'kernel', '&', 'process', 'attack', 'vectors.',
+            'paranoyak', 'mühendislik', 'ekipleri', 'için.', 'çekirdek', 've', 'süreç', 'saldırı', 'vektörlerine',
+            'local', 'speed', 'ci/cd', 'scale.', 'yerel', 'hız', 'ölçeği',
+            'open', 'source', 'enterprise.', 'açık', 'kaynak', 'kurumsal',
+            '3', 'commands.', 'komutta', 'directly.', 'doğrudan', 'tools.', 'araçlarıyla', 'saas', 'vergisini'
+        ];
+
+        function renderKineticHeadings(lang) {
+            document.querySelectorAll('[data-kinetic]').forEach(heading => {
+                const id = heading.dataset.kineticId;
+                const text = (id && i18n[lang][id]) ? i18n[lang][id] : heading.innerText;
+                const isVisible = heading.classList.contains('is-visible');
+                const words = text.trim().split(/\s+/);
+
+                heading.innerHTML = words.map((word, idx) => {
+                    const clean = word.toLowerCase().replace(/[^a-z0-9ğüşıöç&/.-]/gi, '');
+                    const isHighlight = kineticHighlightWords.some(hw => clean === hw || clean.startsWith(hw));
+                    const colorSpan = isHighlight
+                        ? `<span class="bg-gradient-to-r from-white via-slate-200 to-emerald-400 bg-clip-text text-transparent">${word}</span>`
+                        : word;
+                    return `<span class="word-wrap"><span class="word-inner" style="--word-delay: ${idx * 48}ms">${colorSpan}</span></span>`;
+                }).join(' ');
+
+                if (isVisible) {
+                    heading.classList.add('is-visible');
+                }
+            });
+        }
+
+        // Cipher Hex Scramble Decoder for Eyebrow Tags
         const hexChars = "0123456789ABCDEF#/_";
         function scrambleDecode(el) {
-            if (el.dataset.scrambled === "true") return;
-            el.dataset.scrambled = "true";
             const target = el.dataset.scramble || el.innerText;
             let iteration = 0;
             const interval = setInterval(() => {
@@ -1138,12 +1606,12 @@
                     if (idx < iteration) return target[idx];
                     return hexChars[Math.floor(Math.random() * hexChars.length)];
                 }).join("");
-                iteration += 1.2;
+                iteration += 1.4;
                 if (iteration >= target.length) {
                     el.innerText = target;
                     clearInterval(interval);
                 }
-            }, 22);
+            }, 20);
         }
 
         // IntersectionObserver for Scroll Entrance Animations
@@ -1151,7 +1619,8 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
-                    if (entry.target.dataset.scramble) {
+                    if (entry.target.dataset.scramble && entry.target.dataset.scrambled !== "true") {
+                        entry.target.dataset.scrambled = "true";
                         scrambleDecode(entry.target);
                     }
                 }
@@ -1162,7 +1631,82 @@
             revealObserver.observe(el);
         });
 
-        // 2. TOP SCROLL PROGRESS BAR & NAVBAR ACTIVE SECTION SPY
+        // 3. LANGUAGE SWITCHER IMPLEMENTATION
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('envshield_lang', lang);
+            document.documentElement.lang = lang;
+
+            // Toggle Navbar Button Active Classes
+            const btnEn = document.getElementById('lang-btn-en');
+            const btnTr = document.getElementById('lang-btn-tr');
+            if (lang === 'tr') {
+                btnTr.className = "px-2 py-0.5 rounded-md bg-white/10 text-white font-semibold transition";
+                btnEn.className = "px-2 py-0.5 rounded-md text-slate-400 hover:text-white transition";
+            } else {
+                btnEn.className = "px-2 py-0.5 rounded-md bg-white/10 text-white font-semibold transition";
+                btnTr.className = "px-2 py-0.5 rounded-md text-slate-400 hover:text-white transition";
+            }
+
+            // Update all static i18n text nodes
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.dataset.i18n;
+                if (i18n[lang][key]) {
+                    el.textContent = i18n[lang][key];
+                }
+            });
+
+            // Update HTML nodes
+            document.querySelectorAll('[data-i18n-html]').forEach(el => {
+                const key = el.dataset.i18nHtml;
+                if (i18n[lang][key]) {
+                    el.innerHTML = i18n[lang][key];
+                }
+            });
+
+            // Update Input Placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.dataset.i18nPlaceholder;
+                if (i18n[lang][key]) {
+                    el.placeholder = i18n[lang][key];
+                }
+            });
+
+            // Update Scramble Data Attributes and Text
+            document.querySelectorAll('[data-i18n-scramble]').forEach(el => {
+                const key = el.dataset.i18nScramble;
+                if (i18n[lang][key]) {
+                    el.dataset.scramble = i18n[lang][key];
+                    el.innerText = i18n[lang][key];
+                }
+            });
+
+            // Re-render kinetic headings
+            renderKineticHeadings(lang);
+
+            // Re-render pricing features bullets
+            ['tier1', 'tier2', 'tier3'].forEach(tier => {
+                const ul = document.getElementById(tier + '-features-list');
+                if (ul && i18n[lang][tier + '_bullets']) {
+                    const iconColor = tier === 'tier3' ? 'text-sky-400' : 'text-emerald-400';
+                    ul.innerHTML = i18n[lang][tier + '_bullets'].map(bullet => `
+                        <li class="flex items-center gap-2.5">
+                            <i data-lucide="check" class="w-4 h-4 ${iconColor} flex-shrink-0"></i>
+                            <span>${bullet}</span>
+                        </li>
+                    `).join('');
+                }
+            });
+
+            // Update Dynamic Components
+            renderHexGrid();
+            calculateSavings();
+            setBilling(currentBillingMode);
+            switchTerminalDemo(currentScenarioKey);
+            lucide.createIcons();
+        }
+
+        // 4. TOP SCROLL PROGRESS BAR & NAVBAR ACTIVE SECTION SPY
         const progressBar = document.getElementById('scroll-progress');
         const navLinks = document.querySelectorAll('.nav-spy-link');
         const trackedSections = ['architecture', 'demo', 'features', 'comparison', 'calculator', 'pricing', 'quickstart', 'faq'];
@@ -1199,7 +1743,7 @@
             }
         }, { passive: true });
 
-        // 3. 3D PERSPECTIVE TILT & SPOTLIGHT ON BENTO CARDS
+        // 5. 3D PERSPECTIVE TILT & SPOTLIGHT ON BENTO CARDS
         function handleSpotlight(e, card) {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -1207,7 +1751,7 @@
             card.style.setProperty('--mouse-x', `${x}px`);
             card.style.setProperty('--mouse-y', `${y}px`);
 
-            // Subtle 3D tilt (max 2.5 deg)
+            // Subtle 3D tilt (max 2.2 deg)
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
             const rotateX = ((y - centerY) / centerY) * -2.2;
@@ -1233,7 +1777,7 @@
             resetCardTilt(card);
         }
 
-        // 4. INTERACTIVE MAGNETIC PARTICLE & CIRCUIT CANVAS IN HERO
+        // 6. INTERACTIVE MAGNETIC PARTICLE & CIRCUIT CANVAS IN HERO
         const canvas = document.getElementById('circuit-canvas');
         const ctx = canvas.getContext('2d');
         let cw = 0, ch = 0;
@@ -1356,7 +1900,7 @@
         }
         animateCircuitCanvas();
 
-        // 5. Package Manager Switcher
+        // 7. PACKAGE MANAGER SWITCHER
         const pkgCommands = {
             pip: "pip install envshield-cli",
             uv: "uv tool install envshield-cli",
@@ -1377,21 +1921,24 @@
             const cmd = document.getElementById('install-cmd').innerText;
             navigator.clipboard.writeText(cmd);
             const btnText = document.getElementById('copy-btn-text');
-            btnText.innerText = 'Copied';
-            setTimeout(() => { btnText.innerText = 'Copy'; }, 1800);
+            btnText.innerText = currentLang === 'tr' ? 'Kopyalandı' : 'Copied';
+            setTimeout(() => {
+                btnText.innerText = currentLang === 'tr' ? 'Kopyala' : 'Copy';
+            }, 1800);
         }
 
-        // 6. Interactive Volatile Memory Hex Inspector (Bento Card 1)
+        // 8. INTERACTIVE VOLATILE MEMORY HEX INSPECTOR (BENTO CARD 1)
         let isMemWiped = false;
         function renderHexGrid() {
             const grid = document.getElementById('hex-dump-grid');
             const badge = document.getElementById('mem-badge');
             const btnText = document.getElementById('btn-mem-text');
+            if (!grid || !badge || !btnText) return;
 
             if (!isMemWiped) {
                 badge.className = "px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold text-[10px]";
-                badge.innerText = "PAGE LOCKED IN RAM (mlock)";
-                btnText.innerText = "Simulate Process Exit (memset 0x00)";
+                badge.innerText = currentLang === 'tr' ? "RAM'DE KİLİTLİ SAYFA (mlock)" : "PAGE LOCKED IN RAM (mlock)";
+                btnText.innerText = currentLang === 'tr' ? "Süreç Çıkışını Simüle Et (memset 0x00)" : "Simulate Process Exit (memset 0x00)";
                 grid.innerHTML = `
                     <div class="flex justify-between text-slate-400"><span>0x7ffe8400</span><span class="text-emerald-400">73 6b 5f 6c 69 76 65 5f  39 38 61 46 32 6b 4c 39</span><span class="text-slate-500">|sk_live_98aF2kL9|</span></div>
                     <div class="flex justify-between text-slate-400"><span>0x7ffe8410</span><span class="text-sky-400">70 6f 73 74 67 72 65 73  3a 2f 2f 70 72 6f 64 5f</span><span class="text-slate-500">|postgres://prod_|</span></div>
@@ -1399,8 +1946,8 @@
                 `;
             } else {
                 badge.className = "px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-semibold text-[10px]";
-                badge.innerText = "ZEROED & UNLOCKED (munlock)";
-                btnText.innerText = "Restore Volatile Unseal Buffer";
+                badge.innerText = currentLang === 'tr' ? "SIFIRLANDI VE KİLİT AÇILDI (munlock)" : "ZEROED & UNLOCKED (munlock)";
+                btnText.innerText = currentLang === 'tr' ? "Uçucu Açma Tamponunu Geri Yükle" : "Restore Volatile Unseal Buffer";
                 grid.innerHTML = `
                     <div class="flex justify-between text-slate-600"><span>0x7ffe8400</span><span>00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00</span><span>|................|</span></div>
                     <div class="flex justify-between text-slate-600"><span>0x7ffe8410</span><span>00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00</span><span>|................|</span></div>
@@ -1412,9 +1959,8 @@
             isMemWiped = !isMemWiped;
             renderHexGrid();
         }
-        renderHexGrid();
 
-        // 7. Interactive Canary Honeypot Trigger (Bento Card 4)
+        // 9. INTERACTIVE CANARY HONEYPOT TRIGGER (BENTO CARD 4)
         function triggerCanaryDemo() {
             const out = document.getElementById('canary-output');
             out.innerHTML = `<code class="text-amber-300">POST https://siem.internal/webhook HTTP/1.1
@@ -1426,71 +1972,130 @@
 }</code>`;
         }
 
-        // 8. Interactive Runtime Terminal Sandbox
+        // 10. INTERACTIVE RUNTIME TERMINAL SANDBOX
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
         const scenarios = {
-            run: {
-                title: "envshield run -- python app.py",
-                lines: [
-                    { ts: "+0.02ms", type: "dim", text: "[kernel] prctl(PR_SET_DUMPABLE, 0) -> 0 (core dumps disabled)" },
-                    { ts: "+0.14ms", type: "ok", text: "[vault] Unsealed 14 secrets from .env.enc into mlock() arena (0x7ffe8400)" },
-                    { ts: "+0.19ms", type: "dim", text: "[pty] Spawning child process with incremental UTF-8 sliding-window proxy..." },
-                    { ts: "+4.10ms", type: "plain", text: "INFO: Starting Uvicorn worker on http://0.0.0.0:8080" },
-                    { ts: "+8.42ms", type: "plain", text: "DEBUG: Outbound request Authorization: Bearer <span class='px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold'>[REDACTED:STRIPE_SECRET_KEY]</span>" },
-                    { ts: "+9.15ms", type: "err", text: "RuntimeError: DB handshake failed for <span class='px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold'>[REDACTED:DATABASE_URL]</span>" },
-                    { ts: "+9.40ms", type: "ok", text: "[teardown] 2-phase wipe_all(): ctypes.memset(0x00) -> munlock() complete. 0 bytes on disk." }
-                ]
+            en: {
+                run: {
+                    title: "envshield run -- python app.py",
+                    lines: [
+                        { ts: "+0.02ms", type: "dim", text: "[kernel] prctl(PR_SET_DUMPABLE, 0) -> 0 (core dumps disabled)" },
+                        { ts: "+0.14ms", type: "ok", text: "[vault] Unsealed 14 secrets from .env.enc into mlock() arena (0x7ffe8400)" },
+                        { ts: "+0.19ms", type: "dim", text: "[pty] Spawning child process with incremental UTF-8 sliding-window proxy..." },
+                        { ts: "+4.10ms", type: "plain", text: "INFO: Starting Uvicorn worker on http://0.0.0.0:8080" },
+                        { ts: "+8.42ms", type: "plain", text: "DEBUG: Outbound request Authorization: Bearer <span class='px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold'>[REDACTED:STRIPE_SECRET_KEY]</span>" },
+                        { ts: "+9.15ms", type: "err", text: "RuntimeError: DB handshake failed for <span class='px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold'>[REDACTED:DATABASE_URL]</span>" },
+                        { ts: "+9.40ms", type: "ok", text: "[teardown] 2-phase wipe_all(): ctypes.memset(0x00) -> munlock() complete. 0 bytes on disk." }
+                    ]
+                },
+                docker: {
+                    title: "envshield docker --stealth run -p 8000:8000 api:latest",
+                    lines: [
+                        { ts: "+0.05ms", type: "dim", text: "[stealth] Allocating ephemeral RAM directory /dev/shm/envshield_91a8..." },
+                        { ts: "+0.18ms", type: "ok", text: "[stealth] Created descriptor with atomic os.open(O_CREAT|O_EXCL, 0o400)" },
+                        { ts: "+1.12ms", type: "plain", text: "docker run -v /dev/shm/envshield_91a8:/run/secrets:ro -e STRIPE_KEY -p 8000:8000 api:latest" },
+                        { ts: "+2.05ms", type: "dim", text: "# Verification: Host observer executes 'ps aux' and 'docker inspect':" },
+                        { ts: "+2.40ms", type: "sky", text: "inspect Config.Env => ['PATH=/usr/local/bin'] (Zero plaintext values exposed)" },
+                        { ts: "+3.10ms", type: "ok", text: "[teardown] Container exited. Multi-pass shredded /dev/shm/envshield_91a8." }
+                    ]
+                },
+                team: {
+                    title: "envshield team add sarah --github",
+                    lines: [
+                        { ts: "+0.10ms", type: "dim", text: "[team] Validating username regex & querying https://github.com/sarah.keys..." },
+                        { ts: "+42.8ms", type: "ok", text: "[ssh] Verified curve point on Ed25519: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH..." },
+                        { ts: "+43.1ms", type: "dim", text: "[hpke] Executing birational map Ed25519 -> X25519 + RFC 9180 HKDF-SHA256 wrap..." },
+                        { ts: "+43.6ms", type: "sky", text: "[envelope] Bound recipient header to AES-256-GCM AAD (4 authorized recipients)" },
+                        { ts: "+44.2ms", type: "ok", text: "[atomic] fsync(temp_fd) -> os.replace('.env.enc') -> fsync(dir_fd) complete." }
+                    ]
+                },
+                audit: {
+                    title: "envshield audit verify --report soc2_certificate.html",
+                    lines: [
+                        { ts: "+0.08ms", type: "dim", text: "[audit] Reading .envshield.audit.jsonl (248 chained events)..." },
+                        { ts: "+1.94ms", type: "ok", text: "[hmac] Verified 248/248 SHA-256 links via constant-time hmac.compare_digest()" },
+                        { ts: "+2.10ms", type: "plain", text: "  ├─ 218x SECRET_UNSEAL       (status: VERIFIED)" },
+                        { ts: "+2.15ms", type: "plain", text: "  ├─  28x STREAM_REDACT_EVENT (status: VERIFIED)" },
+                        { ts: "+2.20ms", type: "plain", text: "  └─   2x CANARY_TRIP_ALERT   (status: VERIFIED)" },
+                        { ts: "+4.50ms", type: "ok", text: "[export] Generated signed SOC 2 Type II compliance artifact: soc2_certificate.html" }
+                    ]
+                },
+                sentinel: {
+                    title: "envshield sentinel check --strict",
+                    lines: [
+                        { ts: "+0.12ms", type: "dim", text: "[ast] Scanning 142 files (Python, TypeScript, Go, Dockerfile)..." },
+                        { ts: "+14.6ms", type: "ok", text: "[match] 18 environment references validated against production vault." },
+                        { ts: "+15.1ms", type: "warn", text: "[drift] WARNING: 'WEBHOOK_SIGNING_SECRET' used in src/Billing.ts:44 missing in 'staging'" },
+                        { ts: "+15.4ms", type: "err", text: "[dead]  ERROR: 'DEPRECATED_SENDGRID_KEY' present in vault but unreferenced in codebase" },
+                        { ts: "+15.8ms", type: "sky", text: "[ci] Sentinel exited with code 1 (blocked deployment before runtime crash)." }
+                    ]
+                }
             },
-            docker: {
-                title: "envshield docker --stealth run -p 8000:8000 api:latest",
-                lines: [
-                    { ts: "+0.05ms", type: "dim", text: "[stealth] Allocating ephemeral RAM directory /dev/shm/envshield_91a8..." },
-                    { ts: "+0.18ms", type: "ok", text: "[stealth] Created descriptor with atomic os.open(O_CREAT|O_EXCL, 0o400)" },
-                    { ts: "+1.12ms", type: "plain", text: "docker run -v /dev/shm/envshield_91a8:/run/secrets:ro -e STRIPE_KEY -p 8000:8000 api:latest" },
-                    { ts: "+2.05ms", type: "dim", text: "# Verification: Host observer executes 'ps aux' and 'docker inspect':" },
-                    { ts: "+2.40ms", type: "sky", text: "inspect Config.Env => [\"PATH=/usr/local/bin\"] (Zero plaintext values exposed)" },
-                    { ts: "+3.10ms", type: "ok", text: "[teardown] Container exited. Multi-pass shredded /dev/shm/envshield_91a8." }
-                ]
-            },
-            team: {
-                title: "envshield team add sarah --github",
-                lines: [
-                    { ts: "+0.10ms", type: "dim", text: "[team] Validating username regex & querying https://github.com/sarah.keys..." },
-                    { ts: "+42.8ms", type: "ok", text: "[ssh] Verified curve point on Ed25519: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH..." },
-                    { ts: "+43.1ms", type: "dim", text: "[hpke] Executing birational map Ed25519 -> X25519 + RFC 9180 HKDF-SHA256 wrap..." },
-                    { ts: "+43.6ms", type: "sky", text: "[envelope] Bound recipient header to AES-256-GCM AAD (4 authorized recipients)" },
-                    { ts: "+44.2ms", type: "ok", text: "[atomic] fsync(temp_fd) -> os.replace('.env.enc') -> fsync(dir_fd) complete." }
-                ]
-            },
-            audit: {
-                title: "envshield audit verify --report soc2_certificate.html",
-                lines: [
-                    { ts: "+0.08ms", type: "dim", text: "[audit] Reading .envshield.audit.jsonl (248 chained events)..." },
-                    { ts: "+1.94ms", type: "ok", text: "[hmac] Verified 248/248 SHA-256 links via constant-time hmac.compare_digest()" },
-                    { ts: "+2.10ms", type: "plain", text: "  ├─ 218x SECRET_UNSEAL       (status: VERIFIED)" },
-                    { ts: "+2.15ms", type: "plain", text: "  ├─  28x STREAM_REDACT_EVENT (status: VERIFIED)" },
-                    { ts: "+2.20ms", type: "plain", text: "  └─   2x CANARY_TRIP_ALERT   (status: VERIFIED)" },
-                    { ts: "+4.50ms", type: "ok", text: "[export] Generated signed SOC 2 Type II compliance artifact: soc2_certificate.html" }
-                ]
-            },
-            sentinel: {
-                title: "envshield sentinel check --strict",
-                lines: [
-                    { ts: "+0.12ms", type: "dim", text: "[ast] Scanning 142 files (Python, TypeScript, Go, Dockerfile)..." },
-                    { ts: "+14.6ms", type: "ok", text: "[match] 18 environment references validated against production vault." },
-                    { ts: "+15.1ms", type: "warn", text: "[drift] WARNING: 'WEBHOOK_SIGNING_SECRET' used in src/Billing.ts:44 missing in 'staging'" },
-                    { ts: "+15.4ms", type: "err", text: "[dead]  ERROR: 'DEPRECATED_SENDGRID_KEY' present in vault but unreferenced in codebase" },
-                    { ts: "+15.8ms", type: "sky", text: "[ci] Sentinel exited with code 1 (blocked deployment before runtime crash)." }
-                ]
+            tr: {
+                run: {
+                    title: "envshield run -- python app.py",
+                    lines: [
+                        { ts: "+0.02ms", type: "dim", text: "[kernel] prctl(PR_SET_DUMPABLE, 0) -> 0 (bellek dökümleri engellendi)" },
+                        { ts: "+0.14ms", type: "ok", text: "[vault] .env.enc içindeki 14 sır mlock() alanına açıldı (0x7ffe8400)" },
+                        { ts: "+0.19ms", type: "dim", text: "[pty] Artımlı UTF-8 kayan pencereli vekil ile alt süreç başlatılıyor..." },
+                        { ts: "+4.10ms", type: "plain", text: "INFO: Uvicorn işçisi http://0.0.0.0:8080 adresinde başlatıldı" },
+                        { ts: "+8.42ms", type: "plain", text: "DEBUG: Dış istek Authorization: Bearer <span class='px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold'>[REDACTED:STRIPE_SECRET_KEY]</span>" },
+                        { ts: "+9.15ms", type: "err", text: "RuntimeError: DB el sıkışması başarısız: <span class='px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold'>[REDACTED:DATABASE_URL]</span>" },
+                        { ts: "+9.40ms", type: "ok", text: "[teardown] 2 aşamalı wipe_all(): ctypes.memset(0x00) -> munlock() tamamlandı. Diskte 0 bayt." }
+                    ]
+                },
+                docker: {
+                    title: "envshield docker --stealth run -p 8000:8000 api:latest",
+                    lines: [
+                        { ts: "+0.05ms", type: "dim", text: "[stealth] Geçici RAM dizini tahsis ediliyor: /dev/shm/envshield_91a8..." },
+                        { ts: "+0.18ms", type: "ok", text: "[stealth] Tanımlayıcı atomik os.open(O_CREAT|O_EXCL, 0o400) ile oluşturuldu" },
+                        { ts: "+1.12ms", type: "plain", text: "docker run -v /dev/shm/envshield_91a8:/run/secrets:ro -e STRIPE_KEY -p 8000:8000 api:latest" },
+                        { ts: "+2.05ms", type: "dim", text: "# Doğrulama: Ana makine gözlemcisi 'ps aux' ve 'docker inspect' çalıştırıyor:" },
+                        { ts: "+2.40ms", type: "sky", text: "inspect Config.Env => ['PATH=/usr/local/bin'] (Sıfır düz metin değer ifşası)" },
+                        { ts: "+3.10ms", type: "ok", text: "[teardown] Konteyner çıktı. /dev/shm/envshield_91a8 çoklu geçişle shred edildi." }
+                    ]
+                },
+                team: {
+                    title: "envshield team add sarah --github",
+                    lines: [
+                        { ts: "+0.10ms", type: "dim", text: "[team] Kullanıcı adı doğrulanıyor & https://github.com/sarah.keys sorgulanıyor..." },
+                        { ts: "+42.8ms", type: "ok", text: "[ssh] Ed25519 eğri noktası doğrulandı: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH..." },
+                        { ts: "+43.1ms", type: "dim", text: "[hpke] Ed25519 -> X25519 rasyonel dönüşüm + RFC 9180 HKDF-SHA256 sarımı..." },
+                        { ts: "+43.6ms", type: "sky", text: "[envelope] Alıcı başlığı AES-256-GCM AAD'ye bağlandı (4 yetkili alıcı)" },
+                        { ts: "+44.2ms", type: "ok", text: "[atomic] fsync(temp_fd) -> os.replace('.env.enc') -> fsync(dir_fd) tamamlandı." }
+                    ]
+                },
+                audit: {
+                    title: "envshield audit verify --report soc2_certificate.html",
+                    lines: [
+                        { ts: "+0.08ms", type: "dim", text: "[audit] .envshield.audit.jsonl okunuyor (248 zincirli olay)..." },
+                        { ts: "+1.94ms", type: "ok", text: "[hmac] 248/248 SHA-256 bağı sabit zamanlı hmac.compare_digest() ile doğrulandı" },
+                        { ts: "+2.10ms", type: "plain", text: "  ├─ 218x SECRET_UNSEAL       (durum: DOĞRULANDI)" },
+                        { ts: "+2.15ms", type: "plain", text: "  ├─  28x STREAM_REDACT_EVENT (durum: DOĞRULANDI)" },
+                        { ts: "+2.20ms", type: "plain", text: "  └─   2x CANARY_TRIP_ALERT   (durum: DOĞRULANDI)" },
+                        { ts: "+4.50ms", type: "ok", text: "[export] İmzalı SOC 2 Type II uyumluluk çıktısı üretildi: soc2_certificate.html" }
+                    ]
+                },
+                sentinel: {
+                    title: "envshield sentinel check --strict",
+                    lines: [
+                        { ts: "+0.12ms", type: "dim", text: "[ast] 142 dosya taranıyor (Python, TypeScript, Go, Dockerfile)..." },
+                        { ts: "+14.6ms", type: "ok", text: "[match] 18 ortam referansı üretim kasası ile doğrulandı." },
+                        { ts: "+15.1ms", type: "warn", text: "[drift] UYARI: src/Billing.ts:44 içindeki 'WEBHOOK_SIGNING_SECRET' staging'de eksik" },
+                        { ts: "+15.4ms", type: "err", text: "[dead]  HATA: 'DEPRECATED_SENDGRID_KEY' kasada mevcut ama kodda kullanılmıyor" },
+                        { ts: "+15.8ms", type: "sky", text: "[ci] Sentinel çıkış kodu 1 (çalışma zamanı çöküşü öncesi dağıtım engellendi)." }
+                    ]
+                }
             }
         };
 
         let currentScenarioKey = 'run';
         function appendTerminalLine(ts, type, htmlText) {
             const containerEl = document.getElementById('terminal-content');
+            if (!containerEl) return;
             const row = document.createElement('div');
             row.className = "flex items-baseline gap-3";
             let colorClass = "text-slate-300";
@@ -1510,17 +2115,22 @@
 
         function switchTerminalDemo(key) {
             currentScenarioKey = key;
-            const s = scenarios[key];
-            document.getElementById('terminal-tab-title').innerText = s.title;
+            const langSet = scenarios[currentLang] || scenarios.en;
+            const s = langSet[key] || scenarios.en[key];
+            const titleEl = document.getElementById('terminal-tab-title');
+            if (titleEl) titleEl.innerText = s.title;
 
             ['run', 'docker', 'team', 'audit', 'sentinel'].forEach(k => {
                 const btn = document.getElementById('tab-' + k);
-                btn.className = (k === key)
-                    ? "px-2.5 py-1 rounded-lg bg-white/10 text-white font-semibold transition"
-                    : "px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition";
+                if (btn) {
+                    btn.className = (k === key)
+                        ? "px-2.5 py-1 rounded-lg bg-white/10 text-white font-semibold transition"
+                        : "px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition";
+                }
             });
 
             const containerEl = document.getElementById('terminal-content');
+            if (!containerEl) return;
             containerEl.innerHTML = '';
             s.lines.forEach((line, idx) => {
                 setTimeout(() => {
@@ -1539,36 +2149,52 @@
             appendTerminalLine("user $", "sky", escapeHtml(rawCmd));
             const cmd = rawCmd.toLowerCase();
 
-            if (cmd === 'clear') {
+            if (cmd === 'clear' || cmd === 'temizle') {
                 document.getElementById('terminal-content').innerHTML = '';
                 return;
-            } else if (cmd === 'help') {
-                appendTerminalLine("0.01ms", "ok", "Available interactive commands: <span class='text-white'>status</span>, <span class='text-white'>seal</span>, <span class='text-white'>run</span>, <span class='text-white'>stealth</span>, <span class='text-white'>audit</span>, <span class='text-white'>clear</span>");
-            } else if (cmd === 'status') {
-                appendTerminalLine("0.04ms", "ok", "Envshield v0.4.0 · mlock() Page Arena: ACTIVE · Vault: .env.enc (AES-256-GCM v2) · Integrity: OK");
-            } else if (cmd.startsWith('seal')) {
-                appendTerminalLine("0.18ms", "ok", "✓ Sealed 14 keys into .env.enc (PBKDF2 600,000 iters + X25519 HKDF) & shredded plaintext .env.");
-            } else if (cmd.startsWith('run')) {
+            } else if (cmd === 'help' || cmd === 'yardim' || cmd === 'yardım') {
+                const helpMsg = currentLang === 'tr'
+                    ? "Kullanılabilir etkileşimli komutlar: <span class='text-white'>status</span>, <span class='text-white'>seal</span>, <span class='text-white'>run</span>, <span class='text-white'>stealth</span>, <span class='text-white'>audit</span>, <span class='text-white'>clear</span>"
+                    : "Available interactive commands: <span class='text-white'>status</span>, <span class='text-white'>seal</span>, <span class='text-white'>run</span>, <span class='text-white'>stealth</span>, <span class='text-white'>audit</span>, <span class='text-white'>clear</span>";
+                appendTerminalLine("0.01ms", "ok", helpMsg);
+            } else if (cmd === 'status' || cmd === 'durum') {
+                const statMsg = currentLang === 'tr'
+                    ? "Envshield v0.4.0 · mlock() Sayfa Alanı: AKTİF · Kasa: .env.enc (AES-256-GCM v2) · Bütünlük: TAMAM"
+                    : "Envshield v0.4.0 · mlock() Page Arena: ACTIVE · Vault: .env.enc (AES-256-GCM v2) · Integrity: OK";
+                appendTerminalLine("0.04ms", "ok", statMsg);
+            } else if (cmd.startsWith('seal') || cmd.startsWith('muhur') || cmd.startsWith('mühür')) {
+                const sealMsg = currentLang === 'tr'
+                    ? "✓ 14 anahtar .env.enc içine mühürlendi (PBKDF2 600,000 iterasyon + X25519 HKDF) ve düz metin .env shred edildi."
+                    : "✓ Sealed 14 keys into .env.enc (PBKDF2 600,000 iters + X25519 HKDF) & shredded plaintext .env.";
+                appendTerminalLine("0.18ms", "ok", sealMsg);
+            } else if (cmd.startsWith('run') || cmd.startsWith('calistir') || cmd.startsWith('çalıştır')) {
                 switchTerminalDemo('run');
             } else if (cmd.startsWith('stealth') || cmd.startsWith('docker')) {
                 switchTerminalDemo('docker');
-            } else if (cmd.startsWith('audit')) {
+            } else if (cmd.startsWith('audit') || cmd.startsWith('denetim')) {
                 switchTerminalDemo('audit');
             } else {
-                appendTerminalLine("0.02ms", "dim", `Executed under shield: '${escapeHtml(rawCmd)}'. Try typing 'help' or 'status'.`);
+                const defMsg = currentLang === 'tr'
+                    ? `Kalkan altında yürütüldü: '${escapeHtml(rawCmd)}'. 'help' veya 'status' yazmayı deneyin.`
+                    : `Executed under shield: '${escapeHtml(rawCmd)}'. Try typing 'help' or 'status'.`;
+                appendTerminalLine("0.02ms", "dim", defMsg);
             }
         }
 
         function replayCurrentScenario() {
             switchTerminalDemo(currentScenarioKey);
         }
-        switchTerminalDemo('run');
 
-        // 9. TCO / ROI Calculator
+        // 11. TCO / ROI CALCULATOR
         function calculateSavings() {
-            const seats = parseInt(document.getElementById('team-size-slider').value);
-            const comp = document.getElementById('competitor-select').value;
-            document.getElementById('team-size-display').innerText = `${seats} engineers`;
+            const slider = document.getElementById('team-size-slider');
+            const compSelect = document.getElementById('competitor-select');
+            if (!slider || !compSelect) return;
+
+            const seats = parseInt(slider.value);
+            const comp = compSelect.value;
+            const unitLabel = currentLang === 'tr' ? 'mühendis' : 'engineers';
+            document.getElementById('team-size-display').innerText = `${seats} ${unitLabel}`;
 
             let compAnnual = 0;
             if (comp === 'doppler') compAnnual = seats * 29 * 12;
@@ -1576,36 +2202,43 @@
             else if (comp === 'onepassword') compAnnual = Math.round(seats * 19.99 * 12);
 
             const envTeam = seats * 19 * 12;
-            document.getElementById('comp-cost').innerText = `$${compAnnual.toLocaleString()} / yr`;
-            document.getElementById('env-team-cost').innerText = `$${envTeam.toLocaleString()} / yr`;
-            document.getElementById('savings-display').innerText = `$${compAnnual.toLocaleString()} / yr`;
+            const yrLabel = currentLang === 'tr' ? '/ yıl' : '/ yr';
+            document.getElementById('comp-cost').innerText = `$${compAnnual.toLocaleString()} ${yrLabel}`;
+            document.getElementById('env-team-cost').innerText = `$${envTeam.toLocaleString()} ${yrLabel}`;
+            document.getElementById('savings-display').innerText = `$${compAnnual.toLocaleString()} ${yrLabel}`;
         }
-        calculateSavings();
 
-        // 10. Billing Toggle
+        // 12. BILLING TOGGLE
+        let currentBillingMode = 'annual';
         function setBilling(mode) {
+            currentBillingMode = mode;
             const bMonthly = document.getElementById('bill-monthly');
             const bAnnual = document.getElementById('bill-annual');
             const priceVal = document.getElementById('team-price-val');
             const pricePeriod = document.getElementById('team-price-period');
+            if (!bMonthly || !bAnnual || !priceVal || !pricePeriod) return;
+
+            const monthlyPeriod = currentLang === 'tr' ? '/ geliştirici / ay' : '/ developer / mo';
+            const annualPeriod = currentLang === 'tr' ? '/ geliştirici / ay (yıllık faturalandırılır)' : '/ developer / mo (billed annually)';
 
             if (mode === 'monthly') {
                 bMonthly.className = "px-3 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition";
                 bAnnual.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5";
                 priceVal.innerText = "$19";
-                pricePeriod.innerText = "/ developer / mo";
+                pricePeriod.innerText = monthlyPeriod;
             } else {
                 bAnnual.className = "px-3 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition flex items-center gap-1.5";
                 bMonthly.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition";
                 priceVal.innerText = "$15";
-                pricePeriod.innerText = "/ developer / mo (billed annually)";
+                pricePeriod.innerText = annualPeriod;
             }
         }
 
-        // 11. FAQ Accordion
+        // 13. FAQ ACCORDION
         function toggleFaq(idx) {
             const body = document.getElementById('faq-body-' + idx);
             const icon = document.getElementById('faq-icon-' + idx);
+            if (!body || !icon) return;
             const isHidden = body.classList.contains('hidden');
             if (isHidden) {
                 body.classList.remove('hidden');
@@ -1616,21 +2249,24 @@
             }
         }
 
-        // 12. Command Palette Modal (⌘K / Ctrl+K)
+        // 14. COMMAND PALETTE MODAL (⌘K / Ctrl+K)
         function toggleCmdModal() {
             const modal = document.getElementById('cmd-modal');
-            modal.classList.toggle('hidden');
+            if (modal) modal.classList.toggle('hidden');
         }
         window.addEventListener('keydown', (e) => {
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
                 toggleCmdModal();
             } else if (e.key === 'Escape') {
-                document.getElementById('cmd-modal').classList.add('hidden');
+                const modal = document.getElementById('cmd-modal');
+                if (modal) modal.classList.add('hidden');
             }
         });
 
-        lucide.createIcons();
+        // 15. INITIALIZATION
+        const savedLang = localStorage.getItem('envshield_lang') || ((navigator.language && navigator.language.startsWith('tr')) ? 'tr' : 'en');
+        setLanguage(savedLang);
     </script>
 </body>
 </html>
