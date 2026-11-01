@@ -1,256 +1,181 @@
-# envshield
+<div align="center">
 
-<p align="center">
-  <strong>Zero-Disk Secret Engine, Team Asymmetric Vaults & Runtime Injection for Developers</strong>
-</p>
+# 🛡️ envshield
 
-<p align="center">
-  <a href="https://pypi.org/project/envshield-cli/"><img src="https://img.shields.io/pypi/v/envshield-cli.svg?color=blue" alt="PyPI version"></a>
-  <a href="https://pypi.org/project/envshield-cli/"><img src="https://img.shields.io/pypi/pyversions/envshield-cli.svg" alt="Python versions"></a>
-  <img src="https://img.shields.io/badge/security-AES--256--GCM-green.svg" alt="AES-256-GCM">
-  <img src="https://img.shields.io/badge/memory-zero--disk--leak-success.svg" alt="Zero-Disk Writes">
-  <img src="https://img.shields.io/badge/recipients-SSH%20%2F%20Ed25519%20%2F%20RSA-blueviolet.svg" alt="SSH Recipients">
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
-</p>
+**Zero-Disk Secret Engine & Runtime Injection for Developers**
 
----
+Never commit plaintext `.env` files again. Encrypt once, share securely, and inject secrets directly from RAM without touching disk storage.
 
-## Overview
+[![PyPI version](https://img.shields.io/pypi/v/envshield-cli.svg?style=flat-square&color=blue)](https://pypi.org/project/envshield-cli/)
+[![Python](https://img.shields.io/pypi/pyversions/envshield-cli.svg?style=flat-square)](https://pypi.org/project/envshield-cli/)
+[![Security](https://img.shields.io/badge/encryption-AES--256--GCM-2ea44f.svg?style=flat-square)](https://github.com/AmhetCnaa/Envshield)
+[![Zero Disk](https://img.shields.io/badge/storage-zero--disk--leak-success.svg?style=flat-square)](https://github.com/AmhetCnaa/Envshield)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
-Modern software development relies heavily on `.env` files for configuration, database credentials, third-party API tokens, and production keys. However, unencrypted secret files represent one of the most common vectors for credential exfiltration, accidental Git commits, filesystem backups, and container image leaks.
-
-**envshield** eliminates secret leakage on developer workstations, team repositories, and CI/CD pipelines using an ephemeral **Zero-Disk Writes** architecture combined with **AES-256-GCM** encryption and **Multi-Recipient SSH Public Key** envelope cryptography. Secrets are decrypted strictly in volatile process RAM and streamed directly to child processes through memory pipelines without ever touching disk storage or swap files.
+</div>
 
 ---
 
-## Key Features
+## 💡 Why envshield?
 
-- 🔒 **Zero-Disk Writes Architecture:** Secrets are decrypted in volatile RAM (`bytes`/`bytearray`) and injected directly into child process environments (`os.environ`). No plaintext file or temp directory is ever written.
-- 🛡️ **Memory Hardening & Anti-Dump:** Memory pages are locked in RAM using `VirtualLock` (Windows) and `mlock` (POSIX) to prevent kernel paging to `pagefile.sys` or swap partitions. In-place memory zeroing wipes sensitive buffers immediately after handoff.
-- 👥 **Team Asymmetric Encryption (SSH Keys):** Seal vaults for multiple team members using their existing SSH public keys (`id_ed25519.pub`, `id_rsa.pub`). Any authorized member can decrypt with their private key without sharing passwords.
-- 📝 **Safe In-Place Vault Editing (`envshield edit`):** Edit encrypted vaults securely inside your favorite editor (`$EDITOR` / `nano` / `vim` / `notepad`). The ephemeral buffer is shredded with multi-pass overwrites upon exit.
-- 🔍 **In-Memory Diff Tool (`envshield diff`):** Compare encrypted vaults or check working tree changes against encrypted vaults with syntax-colored unified diffs without persisting decrypted files to disk.
-- 🔑 **OS Keyring Integration (`envshield key`):** Seamlessly store and retrieve vault passphrases using Windows Credential Manager, macOS Keychain, or Linux Secret Service.
-- 📦 **Multi-Format Support:** Seal and unseal standard `.env`, `.json`, `.toml`, and `.yaml` configurations, with automatic hierarchical key flattening (`DATABASE__PORT=5432`).
-- 🤖 **Standalone Executables:** Portable standalone binary compilation for Windows, macOS, and Linux via automated GitHub Actions CI/CD.
+Every developer relies on `.env` files for API tokens and database credentials. But plaintext secrets pose serious risks: accidental Git pushes, disk forensic recovery, and leaks in Docker containers.
+
+**envshield** fixes this with three simple principles:
+1. **Zero-Disk Invariant:** Secrets are decrypted **strictly in RAM** and passed directly to child process memory. No temporary files, no plaintext left on disk.
+2. **Team-First Security:** Seal vaults using your teammates' existing **SSH public keys** (`id_ed25519.pub`, `id_rsa.pub`). No shared passwords required.
+3. **Zero Code Changes:** Works with any language or runtime—Python, Node.js, Go, Rust, Ruby, Docker, or shell scripts.
 
 ---
 
-## Core Philosophy: Zero-Disk Writes
+## ⚡ Quick Start (in 30 seconds)
 
-```
-       ┌────────────────────────┐
-       │   .env.enc / vault.enc │ (Encrypted on Disk / Git Safe)
-       └───────────┬────────────┘
-                   │
-                   ▼ [Read into locked memory buffer]
-    ╔══════════════════════════════════════════════════════════════════╗
-    ║                     RAM / MEMORY ONLY (VirtualLock / mlock)      ║
-    ║                                                                  ║
-    ║   1. Resolve DEK (Password PBKDF2 OR SSH Private Key ECDH/RSA)  ║
-    ║   2. AES-256-GCM Authenticated Decryption                        ║
-    ║   3. In-memory Parsing (.env / JSON / TOML / YAML)               ║
-    ║   4. Inject into os.environ.copy()                               ║
-    ║   5. In-place Memory Wipe (ctypes.memset / RtlZeroMemory)        ║
-    ╚══════════════════════════════════════════════════════════════════╝
-                   │
-                   ▼ [Stream to subprocess via execve / fork]
-       ┌────────────────────────┐
-       │     Child Process      │ (e.g., python app.py, uvicorn, node, docker)
-       └────────────────────────┘
-```
-
----
-
-## Cryptographic Envelope Architecture (V2)
-
-`envshield` implements standard NIST-recommended cryptographic primitives:
-
-| Component | Primitive | Specification / Purpose |
-| :--- | :--- | :--- |
-| **Payload Cipher** | `AES-256-GCM` | Authenticated Encryption with Associated Data (AEAD). Tamper-proof integrity. |
-| **Data Encryption Key** | `256-bit CSPRNG` | Unique random DEK generated per vault via `os.urandom(32)`. |
-| **Password Slot** | `PBKDF2-HMAC-SHA256` | 100,000 rounds with 16-byte random salt to encrypt the DEK. |
-| **Ed25519 SSH Slot** | `X25519 ECDH + HKDF` | Ephemeral Curve25519 key exchange + HKDF-SHA256 + AES-GCM encryption of DEK. |
-| **RSA SSH Slot** | `RSA-OAEP-SHA256` | Direct 2048/4096-bit RSA asymmetric encryption of DEK with MGF1-SHA256. |
-| **Memory Isolation** | `mlock` / `VirtualLock` | Prevents operating system from swapping volatile secret buffers to disk. |
-| **Disk Shredding** | `CSPRNG + Zero + fsync` | Overwrites block layer with random bytes and zeros before unlinking. |
-
----
-
-## Benchmark & Comparison
-
-| Feature / Metric | `envshield` | Plain `.env` / `dotenv` | `sops` | `Ansible Vault` | `HashiCorp Vault` |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Zero-Disk Writes (RAM only)** | **Yes (100% RAM)** | No (Plaintext) | Partial (Exec helper) | Partial (Temp files) | Yes (HTTP daemon) |
-| **Memory Hardening (`mlock`)** | **Yes (`VirtualLock`)** | None | None | None | Yes |
-| **SSH Public Key Recipients** | **Yes (Ed25519 / RSA)** | None | Yes (PGP / Age) | None | No (Token / AppRole) |
-| **In-Memory Diff Engine** | **Yes (`envshield diff`)** | Standard diff | Yes | Yes | Web / API only |
-| **In-Place Secure Editor** | **Yes (`envshield edit`)** | Insecure | Yes | Yes | Web UI |
-| **Integrated Keyring Storage** | **Yes (`envshield key`)** | None | None | None | External CLI |
-| **Cold-Start Overhead** | **< 30 ms** | ~ 5 ms | ~ 60 ms | ~ 350 ms | ~ 150-400 ms |
-
----
-
-## Installation
+### 1. Install
 
 ```bash
 pip install envshield-cli
 ```
 
-Or install with all development tooling:
+### 2. Lock Your Secrets
+
+Encrypt your `.env` into a secure `.env.enc` vault and wipe the unencrypted file from disk:
 
 ```bash
-pip install "envshield-cli[dev]"
-```
-
----
-
-## CLI Command Reference
-
-### 1. `envshield seal` — Encrypt Secrets Vault
-
-Encrypt an unencrypted `.env`, `.json`, or `.toml` file into a secure vault.
-
-```bash
-# Encrypt default .env to .env.enc (prompts securely for password)
-envshield seal
-
-# Seal with SSH public keys for team members (no shared password required!)
-envshield seal .env -r ~/.ssh/id_ed25519.pub -r ~/.ssh/id_rsa.pub --no-password
-
-# Hybrid vault: Both password AND team SSH keys can unlock
-envshield seal .env -r "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5..."
-
-# Encrypt structured configuration files
-envshield seal config.json --format json -o config.json.enc
-
-# Encrypt and securely shred original unencrypted file from disk
 envshield seal .env --shred
-
-# Save password automatically to OS Keyring during seal
-envshield seal .env --keyring-name prod_secret
 ```
+*(Now `.env.enc` is completely safe to commit to Git!)*
 
----
+### 3. Run Your Application
 
-### 2. `envshield run` — In-Memory Execution Injection
-
-Decrypts your vault entirely in volatile memory and streams standard process input/output directly to your terminal.
+Decrypt on-the-fly in RAM and stream execution directly to your app:
 
 ```bash
-# Run a Python service with secrets loaded into RAM
 envshield run -- python app.py
-
-# Run with SSH private key authentication
-envshield run -i ~/.ssh/id_ed25519 -- node server.js
-
-# Run with password automatically retrieved from OS Keyring
-envshield run --keyring-name prod_secret -- uvicorn main:app
-
-# Run with custom encrypted vault
-envshield run --env-file staging.json.enc -- npm start
 ```
+*(Replace `python app.py` with `npm start`, `uvicorn main:app`, `cargo run`, or any command)*
 
-#### Automated CI/CD Execution
-For headless containers (Docker, GitHub Actions, GitLab CI, Kubernetes):
+---
+
+## 🚀 Everyday Workflows
+
+### 👥 1. Team Collaboration (No Shared Passwords)
+Encrypt a vault for multiple teammates using their SSH keys:
 
 ```bash
-export ENVSHIELD_KEY="your-secure-ci-passphrase"
-envshield run --env-file .env.production.enc -- ./deploy.sh
+# Seal for yourself and your teammates
+envshield seal .env -r ~/.ssh/id_ed25519.pub -r ~/.ssh/alice_rsa.pub --no-password
+
+# Anyone with their authorized private key runs smoothly:
+envshield run -i ~/.ssh/id_ed25519 -- npm start
 ```
 
 ---
 
-### 3. `envshield edit` — Safe In-Place Vault Editing
-
-Edit an encrypted vault in-place without manual decryption or leaving unencrypted copies behind.
+### 📝 2. Edit Secrets In-Place (`envshield edit`)
+Need to add or update an API key? Don't decrypt to disk. Open an ephemeral buffer in your favorite editor:
 
 ```bash
-# Opens default terminal editor ($EDITOR or notepad) on ephemeral secured RAM file
 envshield edit .env.enc
-
-# Edit using specific editor and SSH key
-envshield edit .env.enc -i ~/.ssh/id_ed25519 --editor code
 ```
-
-Upon closing the editor, `envshield` validates changes, re-seals the vault, and securely shreds the temporary file.
+*`envshield` opens your editor (`$EDITOR` or `notepad`), re-encrypts changes on save, and shreds the temporary memory buffer automatically.*
 
 ---
 
-### 4. `envshield diff` — In-Memory Vault Comparison
-
-Compare changes between encrypted vaults or between an unencrypted file and an encrypted vault.
+### 🔍 3. Compare Vaults Without Decrypting (`envshield diff`)
+Inspect differences between encrypted vaults or against your local changes directly in the terminal:
 
 ```bash
-# Diff encrypted vault against local working file
+# Diff encrypted vault against working tree
 envshield diff .env.enc
 
-# Diff two encrypted vaults directly in RAM
+# Diff two environment vaults (staging vs prod)
 envshield diff staging.env.enc prod.env.enc
 ```
 
 ---
 
-### 5. `envshield key` — OS Keyring Management
-
-Manage passphrases in your operating system's native credential store (Windows Credential Manager, macOS Keychain, Linux Secret Service).
-
-```bash
-# Securely store a passphrase in OS Keyring
-envshield key set production_db
-
-# Retrieve and inspect stored key
-envshield key get production_db
-
-# Delete stored key
-envshield key delete production_db
-```
-
----
-
-### 6. Integrated Security Scanners & Git Hooks
-
-Scan codebases for hardcoded credentials and configuration drift:
+### 🔑 4. Save Password to OS Keyring (`envshield key`)
+Never re-type passwords again. Store credentials securely in Windows Credential Manager, macOS Keychain, or Linux Secret Service:
 
 ```bash
-# Scan working directory for secret leaks
-envshield .
+# Save vault password
+envshield key set my_project
 
-# Scan git staged files before commit
-envshield --staged
-
-# CI/CD mode (SARIF / JSON reporting)
-envshield --ci --format sarif > report.sarif
-
-# Install git pre-commit hook automatically
-envshield --install-hook
+# Run automatically with stored credential
+envshield run --keyring-name my_project -- python main.py
 ```
 
 ---
 
-## Python API Usage
+### 🤖 5. CI / CD & Headless Automation
+Supply the vault key non-interactively in Docker, GitHub Actions, or Kubernetes:
 
-You can also leverage `envshield`'s zero-disk engine directly within Python applications:
-
-```python
-from pathlib import Path
-from envshield.core.vault import seal_file, unseal_to_memory
-from envshield.core.runner import execute_with_env
-
-# 1. Seal an environment file with password or SSH recipients
-seal_file(Path(".env"), Path(".env.enc"), password="MasterPassword123!")
-
-# 2. Unseal directly into RAM (returns dict, zero disk writes)
-secrets = unseal_to_memory(Path(".env.enc"), password="MasterPassword123!")
-print("Database host:", secrets["DB_HOST"])
-
-# 3. Execute subprocess with in-memory secrets injection
-exit_code = execute_with_env(["python", "worker.py"], secrets)
+```bash
+export ENVSHIELD_KEY="your-production-vault-key"
+envshield run --env-file .env.prod.enc -- ./deploy.sh
 ```
 
 ---
 
-## License
+## 🧠 How It Works
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+```text
+       ┌──────────────┐
+       │   .env.enc   │  ◄── Safely committed to Git (AES-256-GCM)
+       └──────┬───────┘
+              │
+              ▼  [Loaded into locked RAM pages]
+    ╔════════════════════════════════════════════════════════════════╗
+    ║                     VOLATILE RAM BUFFER                        ║
+    ║                                                                ║
+    ║   • Authenticate via Password OR SSH Private Key               ║
+    ║   • AES-256-GCM Decrypt strictly in memory                     ║
+    ║   • Lock memory against swap writes (VirtualLock / mlock)      ║
+    ║   • Inject secrets directly into os.environ.copy()             ║
+    ║   • Overwrite & zero RAM buffer immediately                    ║
+    ╚════════════════════════════════════════════════════════════════╝
+              │
+              ▼  [Streams directly to child process]
+       ┌──────────────┐
+       │  Your App    │  (Python, Node.js, Go, Rust, Docker...)
+       └──────────────┘
+```
+
+---
+
+## 📊 Comparison
+
+| Feature | `envshield` | Plain `.env` | `sops` | `HashiCorp Vault` |
+| :--- | :---: | :---: | :---: | :---: |
+| **Zero-Disk Writes (RAM only)** | **Yes** | ❌ No | Partial | ❌ Requires Daemon |
+| **SSH Public Key Recipients** | **Yes** | ❌ No | ❌ (PGP / Age) | ❌ (Token auth) |
+| **Memory Page Locking (`mlock`)** | **Yes** | ❌ No | ❌ No | **Yes** |
+| **In-Memory Diff Tool** | **Yes** | ❌ Plaintext | **Yes** | ❌ Web / API only |
+| **Setup Overhead** | **Zero (< 1 min)**| Zero | Medium | High (Server Setup) |
+| **Cold Start Delay** | **< 30 ms** | ~ 5 ms | ~ 60 ms | ~ 200 ms |
+
+---
+
+## 📦 Supported Formats
+
+`envshield` automatically handles multiple configuration formats:
+
+* **`.env` files:** Standard `KEY=VALUE` pairs, `export KEY=VALUE`, and comments.
+* **`.json` files:** Flattened hierarchically (`{"db": {"port": 5432}}` ➔ `DB__PORT=5432`).
+* **`.toml` files:** Native TOML table support.
+* **`.yaml` files:** YAML mapping support.
+
+---
+
+## 🔒 Security & Cryptography
+
+* **AEAD Cipher:** AES-256-GCM authenticated encryption (128-bit authentication tag).
+* **Key Derivation:** PBKDF2-HMAC-SHA256 with 100,000 iterations and 16-byte random salt.
+* **Asymmetric Exchange:** OpenSSH Ed25519 (via Montgomery Curve25519 ECDH + HKDF) & RSA-OAEP-SHA256.
+* **Memory Protection:** OS memory locking via `VirtualLock` (Windows) and `mlock` (POSIX) to prevent swapping to disk.
+* **Data Sanitization:** Cryptographic overwrite with CSPRNG bytes and zeroes before memory release or file deletion.
+
+---
+
+## 📄 License
+
+Distributed under the **MIT License**. See [LICENSE](LICENSE) for more details.
