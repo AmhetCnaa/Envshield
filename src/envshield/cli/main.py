@@ -199,6 +199,12 @@ def _build_run_parser(add_help: bool = True) -> argparse.ArgumentParser:
         help="Disable real-time live terminal output secret masking/redaction.",
     )
     parser.add_argument(
+        "-t",
+        "--pty",
+        action="store_true",
+        help="Allocate a pseudo-terminal (PTY) for interactive programs (e.g. bash, psql, vim).",
+    )
+    parser.add_argument(
         "--no-interpolate",
         action="store_true",
         help="Disable dynamic ${VAR} and ${VAR:-default} interpolation in memory.",
@@ -297,6 +303,7 @@ def handle_run(args: list[str], console: Console) -> None:
         command,
         secrets,
         redact=not parsed.no_redact,
+        pty=parsed.pty,
     )
     sys.exit(exit_code)
 

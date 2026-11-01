@@ -11,10 +11,14 @@ def execute_with_env(
     command: list[str],
     secrets: dict[str, str],
     redact: bool = True,
+    pty: bool = False,
 ) -> int:
     """
     Executes a command with secrets injected into the process environment.
     Zero-disk writes: secrets are passed directly in memory to the child process environment.
+
+    When `pty=True`, executes inside a Pseudo-Terminal (PTY) session, enabling
+    interactive subshells (bash, zsh), TUI programs, and REPLs to receive native TTY controls.
 
     When `redact=True` (default), stdout and stderr streams are intercepted in real-time,
     and any secret values are automatically masked with [REDACTED:<KEY_NAME>] before
@@ -24,6 +28,11 @@ def execute_with_env(
     """
     if not command:
         return 0
+
+    if pty:
+        from envshield.core.terminal import execute_interactive
+
+        return execute_interactive(command, secrets, redact=redact)
 
     merged_env = os.environ.copy()
     merged_env.update(secrets)
