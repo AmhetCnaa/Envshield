@@ -4,7 +4,7 @@
  */
 
 :root {
-    --section-py: clamp(76px, 7.5vw, 118px);
+    --section-py: clamp(52px, 5.5vw, 84px);
     --container-max-w: 1200px;
     --container-px: 24px;
 
@@ -326,6 +326,88 @@ body {
 .spotlight-card:hover {
     border-color: rgba(56, 189, 248, 0.28);
     box-shadow: var(--inner-specular), 0 24px 48px -15px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(56, 189, 248, 0.12);
+}
+
+/* ============================================================================
+   SEMANTIC COLORWAY ACCENTS (Distinct Visual Identities & Contrast)
+   ============================================================================ */
+
+/* Colorway 1: Cyber Emerald (RAM & Kernel Security) */
+.card-emerald {
+    border-color: rgba(16, 185, 129, 0.22);
+    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(16, 185, 129, 0.09) 0%, transparent 70%), var(--bg-card);
+}
+.card-emerald:hover {
+    border-color: rgba(16, 185, 129, 0.48);
+    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 26px -4px rgba(16, 185, 129, 0.22);
+}
+.card-emerald::before {
+    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(16, 185, 129, 0.18), transparent 70%) !important;
+}
+
+/* Colorway 2: Laser Amber (PTY Streams, Redaction & Interception) */
+.card-amber {
+    border-color: rgba(245, 158, 11, 0.22);
+    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(245, 158, 11, 0.09) 0%, transparent 70%), var(--bg-card);
+}
+.card-amber:hover {
+    border-color: rgba(245, 158, 11, 0.48);
+    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 26px -4px rgba(245, 158, 11, 0.22);
+}
+.card-amber::before {
+    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(245, 158, 11, 0.18), transparent 70%) !important;
+}
+
+/* Colorway 3: Electric Cyan (Docker, Containers & SHM Descriptors) */
+.card-cyan {
+    border-color: rgba(56, 189, 248, 0.22);
+    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(56, 189, 248, 0.09) 0%, transparent 70%), var(--bg-card);
+}
+.card-cyan:hover {
+    border-color: rgba(56, 189, 248, 0.48);
+    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 26px -4px rgba(56, 189, 248, 0.22);
+}
+.card-cyan::before {
+    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(56, 189, 248, 0.18), transparent 70%) !important;
+}
+
+/* Colorway 4: Neon Purple (Asymmetric Cryptography, SSH & Envelopes) */
+.card-purple {
+    border-color: rgba(168, 85, 247, 0.22);
+    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(168, 85, 247, 0.10) 0%, transparent 70%), var(--bg-card);
+}
+.card-purple:hover {
+    border-color: rgba(168, 85, 247, 0.48);
+    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 28px -4px rgba(168, 85, 247, 0.24);
+}
+.card-purple::before {
+    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(168, 85, 247, 0.20), transparent 70%) !important;
+}
+
+/* Colorway 5: Cobalt Indigo (RAM-Disk, Sandboxing & Storage) */
+.card-indigo {
+    border-color: rgba(99, 102, 241, 0.22);
+    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(99, 102, 241, 0.09) 0%, transparent 70%), var(--bg-card);
+}
+.card-indigo:hover {
+    border-color: rgba(99, 102, 241, 0.48);
+    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 26px -4px rgba(99, 102, 241, 0.22);
+}
+.card-indigo::before {
+    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(99, 102, 241, 0.18), transparent 70%) !important;
+}
+
+/* Colorway 6: Crimson Rose (AST Sentinel, Drift & Anomaly Detection) */
+.card-rose {
+    border-color: rgba(244, 63, 94, 0.22);
+    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(244, 63, 94, 0.09) 0%, transparent 70%), var(--bg-card);
+}
+.card-rose:hover {
+    border-color: rgba(244, 63, 94, 0.48);
+    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 28px -4px rgba(244, 63, 94, 0.24);
+}
+.card-rose::before {
+    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(244, 63, 94, 0.20), transparent 70%) !important;
 }
 
 /* Animated Laser Scanline on Card Hover */

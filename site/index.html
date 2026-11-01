@@ -304,7 +304,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
                 <!-- Bento Card 1 (2 Cols): Interactive Volatile RAM Page Inspector -->
-                <div class="reveal spotlight-card lg:col-span-2 p-6 sm:p-7 flex flex-col justify-between" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <div class="reveal spotlight-card card-emerald lg:col-span-2 p-5 sm:p-6 flex flex-col justify-between" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
@@ -339,7 +339,7 @@
                 </div>
 
                 <!-- Bento Card 2 (1 Col): Sliding-Window PTY Stream Redactor -->
-                <div class="reveal spotlight-card p-6 sm:p-7 flex flex-col justify-between" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <div class="reveal spotlight-card card-amber p-5 sm:p-6 flex flex-col justify-between" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
@@ -375,7 +375,7 @@
                 </div>
 
                 <!-- Bento Card 3 (1 Col): Docker Stealth /dev/shm Bridge -->
-                <div class="reveal spotlight-card p-6 sm:p-7 flex flex-col justify-between" style="--delay: 300ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <div class="reveal spotlight-card card-cyan p-5 sm:p-6 flex flex-col justify-between" style="--delay: 300ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
@@ -409,7 +409,7 @@
                 </div>
 
                 <!-- Bento Card 4 (2 Cols): Zero-Server GitHub SSH Envelope + Canary Honeypot -->
-                <div class="reveal spotlight-card lg:col-span-2 p-6 sm:p-7 flex flex-col justify-between" style="--delay: 400ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <div class="reveal spotlight-card card-purple lg:col-span-2 p-5 sm:p-6 flex flex-col justify-between" style="--delay: 400ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
@@ -549,83 +549,113 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                <!-- Primitive 1 -->
-                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 80ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <!-- Top Primary 1: Cloud KMS Bridge (7 Cols - Cyber Emerald) -->
+                <div class="reveal spotlight-card card-emerald lg:col-span-7 p-5 sm:p-6 flex flex-col justify-between" style="--delay: 80ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
-                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span data-i18n="prim1_label">01 / CLOUD KMS BRIDGE</span>
-                        <i data-lucide="cloud-cog" class="w-4 h-4 text-emerald-400"></i>
+                    <div class="relative z-10 space-y-2.5">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span data-i18n="prim1_label" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-semibold text-[10px]">01 / CLOUD KMS BRIDGE</span>
+                            <i data-lucide="cloud-cog" class="w-4 h-4 text-emerald-400"></i>
+                        </div>
+                        <h3 data-i18n="prim1_title" class="text-base sm:text-lg font-bold text-white tracking-tight">Hybrid Local SSH + Cloud KMS</h3>
+                        <p data-i18n="prim1_desc" class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            Developers unlock envelopes offline in 0.14ms via local SSH keys. CI/CD runners (GitHub Actions, GitLab) unseal the exact same file via AWS KMS, GCP KMS, or Azure Key Vault using IAM OIDC.
+                        </p>
                     </div>
-                    <h3 data-i18n="prim1_title" class="relative z-10 text-base font-bold text-white">Hybrid Local SSH + Cloud KMS</h3>
-                    <p data-i18n="prim1_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                        Developers unlock envelopes offline in 0.14ms via local SSH keys. CI/CD runners (GitHub Actions, GitLab) unseal the exact same file via AWS KMS, GCP KMS, or Azure Key Vault using IAM OIDC.
-                    </p>
+                    <div class="relative z-10 mt-4 pt-3 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-2 font-mono text-[11px]">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/40 text-emerald-300 border border-emerald-500/20">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            Local: 0.14ms · Offline SSH
+                        </span>
+                        <span class="text-slate-500 hidden sm:inline">↔</span>
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/40 text-sky-300 border border-sky-500/20">
+                            CI/CD: IAM OIDC Zero-Key
+                        </span>
+                    </div>
                 </div>
 
-                <!-- Primitive 2 -->
-                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 160ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <!-- Top Primary 2: Self-Healing Hook (5 Cols - Laser Amber) -->
+                <div class="reveal spotlight-card card-amber lg:col-span-5 p-5 sm:p-6 flex flex-col justify-between" style="--delay: 160ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
-                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span data-i18n="prim2_label">02 / SELF-HEALING HOOK</span>
-                        <i data-lucide="git-commit" class="w-4 h-4 text-sky-400"></i>
+                    <div class="relative z-10 space-y-2.5">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span data-i18n="prim2_label" class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/25 font-semibold text-[10px]">02 / SELF-HEALING HOOK</span>
+                            <i data-lucide="git-commit" class="w-4 h-4 text-amber-400"></i>
+                        </div>
+                        <h3 data-i18n="prim2_title" class="text-base sm:text-lg font-bold text-white tracking-tight">Pre-Commit Auto-Seal & Shred</h3>
+                        <p data-i18n-html="prim2_desc" class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                            If a plaintext <code class="text-slate-200 font-mono">.env</code> is accidentally staged, Envshield intercepts the commit, seals it into an authenticated AES-256-GCM envelope, multi-pass shreds the plaintext file, and continues cleanly.
+                        </p>
                     </div>
-                    <h3 data-i18n="prim2_title" class="relative z-10 text-base font-bold text-white">Pre-Commit Auto-Seal & Shred</h3>
-                    <p data-i18n-html="prim2_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                        If a plaintext <code class="text-slate-200 font-mono">.env</code> is accidentally staged, Envshield intercepts the commit, seals it into an authenticated AES-256-GCM envelope, multi-pass shreds the plaintext file, and continues cleanly.
-                    </p>
+                    <div class="relative z-10 mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between font-mono text-[11px] bg-black/40 px-2.5 py-1 rounded border border-amber-500/20">
+                        <span class="text-rose-400 line-through text-[10px]">staged .env</span>
+                        <span class="text-amber-400">➜</span>
+                        <span class="text-amber-300 font-bold">[SEAL]</span>
+                        <span class="text-amber-400">➜</span>
+                        <span class="text-emerald-400 font-semibold text-[10px]">0 Bytes Plaintext</span>
+                    </div>
                 </div>
 
-                <!-- Primitive 3 -->
-                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 240ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <!-- Bottom 4 Compact Cards: 3 cols each (12 cols total) -->
+                <!-- Card 3: RAM-Disk Editor (Cobalt Indigo) -->
+                <div class="reveal spotlight-card card-indigo lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 240ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
-                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span data-i18n="prim3_label">03 / ZERO-DISK EDITOR</span>
-                        <i data-lucide="file-lock-2" class="w-4 h-4 text-indigo-400"></i>
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span data-i18n="prim3_label" class="px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-400 border border-indigo-500/25 font-semibold text-[10px]">03 / ZERO-DISK EDIT</span>
+                            <i data-lucide="file-lock-2" class="w-4 h-4 text-indigo-400"></i>
+                        </div>
+                        <h3 data-i18n="prim3_title" class="text-sm sm:text-base font-bold text-white tracking-tight">RAM-Disk Sandboxed Editing</h3>
+                        <p data-i18n-html="prim3_desc" class="text-xs text-slate-400 leading-relaxed">
+                            Running <code class="text-slate-200 font-mono">envshield edit</code> materializes temporary buffers exclusively inside <code class="text-slate-200 font-mono">/dev/shm</code> (Linux RAM tmpfs) and passes anti-swap flags (<code class="text-slate-200 font-mono">-n -i NONE</code>) to Vim/Nano so no backup files touch disk.
+                        </p>
                     </div>
-                    <h3 data-i18n="prim3_title" class="relative z-10 text-base font-bold text-white">RAM-Disk Sandboxed Editing</h3>
-                    <p data-i18n-html="prim3_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                        Running <code class="text-slate-200 font-mono">envshield edit</code> materializes temporary buffers exclusively inside <code class="text-slate-200 font-mono">/dev/shm</code> (Linux RAM tmpfs) and passes anti-swap flags (<code class="text-slate-200 font-mono">-n -i NONE</code>) to Vim/Nano so no backup files touch disk.
-                    </p>
                 </div>
 
-                <!-- Primitive 4 -->
-                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 320ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <!-- Card 4: HMAC Audit Ledger (Electric Cyan) -->
+                <div class="reveal spotlight-card card-cyan lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 300ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
-                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span data-i18n="prim4_label">04 / TAMPER-EVIDENT LEDGER</span>
-                        <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-400"></i>
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span data-i18n="prim4_label" class="px-2 py-0.5 rounded bg-sky-500/15 text-sky-400 border border-sky-500/25 font-semibold text-[10px]">04 / AUDIT LEDGER</span>
+                            <i data-lucide="file-check-2" class="w-4 h-4 text-sky-400"></i>
+                        </div>
+                        <h3 data-i18n="prim4_title" class="text-sm sm:text-base font-bold text-white tracking-tight">HMAC-SHA256 Chained Audit Log</h3>
+                        <p data-i18n-html="prim4_desc" class="text-xs text-slate-400 leading-relaxed">
+                            Every unseal, edit, and canary event is appended to an HMAC-chained JSONL ledger verified via constant-time <code class="text-slate-200 font-mono">hmac.compare_digest</code>. Export executive SOC 2 / ISO 27001 HTML certificates in one command.
+                        </p>
                     </div>
-                    <h3 data-i18n="prim4_title" class="relative z-10 text-base font-bold text-white">HMAC-SHA256 Chained Audit Log</h3>
-                    <p data-i18n-html="prim4_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                        Every unseal, edit, and canary event is appended to an HMAC-chained JSONL ledger verified via constant-time <code class="text-slate-200 font-mono">hmac.compare_digest</code>. Export executive SOC 2 / ISO 27001 HTML certificates in one command.
-                    </p>
                 </div>
 
-                <!-- Primitive 5 -->
-                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 400ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <!-- Card 5: Static AST Sentinel (Crimson Rose) -->
+                <div class="reveal spotlight-card card-rose lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 360ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
-                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span data-i18n="prim5_label">05 / STATIC AST SENTINEL</span>
-                        <i data-lucide="radar" class="w-4 h-4 text-amber-400"></i>
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span data-i18n="prim5_label" class="px-2 py-0.5 rounded bg-rose-500/15 text-rose-400 border border-rose-500/25 font-semibold text-[10px]">05 / AST SENTINEL</span>
+                            <i data-lucide="radar" class="w-4 h-4 text-rose-400"></i>
+                        </div>
+                        <h3 data-i18n="prim5_title" class="text-sm sm:text-base font-bold text-white tracking-tight">Secret Drift & Dead Key Detection</h3>
+                        <p data-i18n="prim5_desc" class="text-xs text-slate-400 leading-relaxed">
+                            Scans Python, TypeScript, Go, Rust, and Dockerfiles to detect missing keys referenced in code, unused orphan variables in vaults, and schema drift between staging and production profiles.
+                        </p>
                     </div>
-                    <h3 data-i18n="prim5_title" class="relative z-10 text-base font-bold text-white">Secret Drift & Dead Key Detection</h3>
-                    <p data-i18n="prim5_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                        Scans Python, TypeScript, Go, Rust, and Dockerfiles to detect missing keys referenced in code, unused orphan variables in vaults, and schema drift between staging and production profiles.
-                    </p>
                 </div>
 
-                <!-- Primitive 6 -->
-                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 480ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <!-- Card 6: Crash-Safe Writes (Neon Purple) -->
+                <div class="reveal spotlight-card card-purple lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 420ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
-                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
-                        <span data-i18n="prim6_label">06 / ATOMIC PERSISTENCE</span>
-                        <i data-lucide="hard-drive" class="w-4 h-4 text-sky-400"></i>
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span data-i18n="prim6_label" class="px-2 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/25 font-semibold text-[10px]">06 / ATOMIC WRITES</span>
+                            <i data-lucide="hard-drive" class="w-4 h-4 text-purple-400"></i>
+                        </div>
+                        <h3 data-i18n="prim6_title" class="text-sm sm:text-base font-bold text-white tracking-tight">Crash-Safe Atomic Vault Writes</h3>
+                        <p data-i18n-html="prim6_desc" class="text-xs text-slate-400 leading-relaxed">
+                            Vault updates write to an isolated sibling descriptor, flush hardware buffers via <code class="text-slate-200 font-mono">os.fsync()</code>, execute atomic POSIX/NTFS <code class="text-slate-200 font-mono">os.replace()</code>, and sync the parent directory descriptor.
+                        </p>
                     </div>
-                    <h3 data-i18n="prim6_title" class="relative z-10 text-base font-bold text-white">Crash-Safe Atomic Vault Writes</h3>
-                    <p data-i18n-html="prim6_desc" class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
-                        Vault updates write to an isolated sibling descriptor, flush hardware buffers via <code class="text-slate-200 font-mono">os.fsync()</code>, execute atomic POSIX/NTFS <code class="text-slate-200 font-mono">os.replace()</code>, and sync the parent directory descriptor.
-                    </p>
                 </div>
             </div>
         </div>
@@ -828,7 +858,7 @@
 
             <div class="pricing-grid grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch pt-4">
                 <!-- Tier 1: Community Edition -->
-                <div class="reveal spotlight-card p-7 flex flex-col justify-between space-y-6" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <div class="reveal spotlight-card card-indigo p-6 flex flex-col justify-between space-y-5" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
@@ -856,7 +886,7 @@
                 </div>
 
                 <!-- Tier 2: Team Commercial Edition -->
-                <div class="reveal spotlight-card p-7 flex flex-col justify-between space-y-6 border-emerald-500/40 bg-[#0b1018]" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <div class="reveal spotlight-card card-emerald p-6 flex flex-col justify-between space-y-5 border-2 border-emerald-400/50 bg-[#0c141d] shadow-2xl shadow-emerald-500/10 ring-1 ring-emerald-400/20" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
@@ -884,7 +914,7 @@
                 </div>
 
                 <!-- Tier 3: Enterprise Tier -->
-                <div class="reveal spotlight-card p-7 flex flex-col justify-between space-y-6" style="--delay: 340ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <div class="reveal spotlight-card card-purple p-6 flex flex-col justify-between space-y-5" style="--delay: 340ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
@@ -929,62 +959,71 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
-                <!-- Step 1 -->
-                <div class="reveal spotlight-card p-6 flex flex-col justify-between space-y-4" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
-                    <div class="relative z-10 space-y-3">
-                        <div class="flex items-center justify-between font-mono text-xs">
-                            <span data-i18n="qs_step1_badge" class="text-emerald-400 font-semibold">STEP 01 // INSTALL</span>
-                            <span class="text-slate-500">~3 seconds</span>
+            <div class="reveal spotlight-card card-cyan p-5 sm:p-7" style="--delay: 150ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <div class="scanline-sweep"></div>
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08]">
+                    <!-- Step 1 (Cyber Emerald) -->
+                    <div class="flex flex-col justify-between space-y-3.5 lg:pr-6">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between font-mono text-xs">
+                                <span data-i18n="qs_step1_badge" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-semibold text-[10px]">STEP 01 // INSTALL</span>
+                                <span class="text-slate-500 text-[11px]">~3s</span>
+                            </div>
+                            <h3 data-i18n="qs_step1_title" class="text-base font-bold text-white">Install Standalone CLI</h3>
+                            <p data-i18n-html="qs_step1_desc" class="text-xs text-slate-400 leading-relaxed">
+                                Install globally via <code class="text-slate-200 font-mono">pip</code>, <code class="text-slate-200 font-mono">uv</code>, or <code class="text-slate-200 font-mono">pipx</code>. Zero external C daemon dependencies required.
+                            </p>
                         </div>
-                        <h3 data-i18n="qs_step1_title" class="text-base font-bold text-white">Install Standalone CLI</h3>
-                        <p data-i18n-html="qs_step1_desc" class="text-xs text-slate-400 leading-relaxed">
-                            Install globally via <code class="text-slate-200 font-mono">pip</code>, <code class="text-slate-200 font-mono">uv</code>, or <code class="text-slate-200 font-mono">pipx</code>. Zero external C daemon dependencies required.
-                        </p>
+                        <div class="bg-[#05070a] rounded-xl p-3 border border-emerald-500/25 font-mono text-xs flex items-center justify-between group">
+                            <code class="text-emerald-400 truncate">$ pip install envshield-cli</code>
+                            <button onclick="navigator.clipboard.writeText('pip install envshield-cli');" class="text-slate-500 hover:text-white transition flex-shrink-0 ml-2" title="Copy">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="relative z-10 bg-[#05070a] rounded-xl p-3.5 border border-white/10 font-mono text-xs flex items-center justify-between">
-                        <code class="text-emerald-400">$ pip install envshield-cli</code>
-                    </div>
-                </div>
 
-                <!-- Step 2 -->
-                <div class="reveal spotlight-card p-6 flex flex-col justify-between space-y-4" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
-                    <div class="relative z-10 space-y-3">
-                        <div class="flex items-center justify-between font-mono text-xs">
-                            <span data-i18n="qs_step2_badge" class="text-sky-400 font-semibold">STEP 02 // SEAL VAULT</span>
-                            <span class="text-slate-500">AES-256-GCM</span>
+                    <!-- Step 2 (Laser Amber) -->
+                    <div class="flex flex-col justify-between space-y-3.5 pt-6 lg:pt-0 lg:px-6">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between font-mono text-xs">
+                                <span data-i18n="qs_step2_badge" class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30 font-semibold text-[10px]">STEP 02 // SEAL VAULT</span>
+                                <span class="text-slate-500 text-[11px]">AES-256-GCM</span>
+                            </div>
+                            <h3 data-i18n="qs_step2_title" class="text-base font-bold text-white">Seal & Shred Plaintext</h3>
+                            <p data-i18n-html="qs_step2_desc" class="text-xs text-slate-400 leading-relaxed">
+                                Encrypts <code class="text-slate-200 font-mono">.env</code> into an authenticated AAD-bound <code class="text-slate-200 font-mono">.env.enc</code> envelope and multi-pass shreds the plaintext original.
+                            </p>
                         </div>
-                        <h3 data-i18n="qs_step2_title" class="text-base font-bold text-white">Seal & Shred Plaintext</h3>
-                        <p data-i18n-html="qs_step2_desc" class="text-xs text-slate-400 leading-relaxed">
-                            Encrypts <code class="text-slate-200 font-mono">.env</code> into an authenticated AAD-bound <code class="text-slate-200 font-mono">.env.enc</code> envelope and multi-pass shreds the plaintext original.
-                        </p>
+                        <div class="bg-[#05070a] rounded-xl p-3 border border-amber-500/25 font-mono text-xs flex items-center justify-between group">
+                            <code class="text-amber-300 truncate">$ envshield seal --shred</code>
+                            <button onclick="navigator.clipboard.writeText('envshield seal --shred');" class="text-slate-500 hover:text-white transition flex-shrink-0 ml-2" title="Copy">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="relative z-10 bg-[#05070a] rounded-xl p-3.5 border border-white/10 font-mono text-xs flex items-center justify-between">
-                        <code class="text-sky-400">$ envshield seal --shred</code>
-                    </div>
-                </div>
 
-                <!-- Step 3 -->
-                <div class="reveal spotlight-card p-6 flex flex-col justify-between space-y-4" style="--delay: 340ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
-                    <div class="relative z-10 space-y-3">
-                        <div class="flex items-center justify-between font-mono text-xs">
-                            <span data-i18n="qs_step3_badge" class="text-indigo-400 font-semibold">STEP 03 // EXECUTE</span>
-                            <span class="text-slate-500">0 Bytes on Disk</span>
+                    <!-- Step 3 (Neon Purple) -->
+                    <div class="flex flex-col justify-between space-y-3.5 pt-6 lg:pt-0 lg:pl-6">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between font-mono text-xs">
+                                <span data-i18n="qs_step3_badge" class="px-2 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/30 font-semibold text-[10px]">STEP 03 // EXECUTE</span>
+                                <span class="text-slate-500 text-[11px]">0 B on Disk</span>
+                            </div>
+                            <h3 data-i18n="qs_step3_title" class="text-base font-bold text-white">Run Process Under Shield</h3>
+                            <p data-i18n-html="qs_step3_desc" class="text-xs text-slate-400 leading-relaxed">
+                                Unseals into locked volatile RAM, injects into child process environment, and actively masks accidental secret prints.
+                            </p>
                         </div>
-                        <h3 data-i18n="qs_step3_title" class="text-base font-bold text-white">Run Process Under Shield</h3>
-                        <p data-i18n-html="qs_step3_desc" class="text-xs text-slate-400 leading-relaxed">
-                            Unseals into locked volatile RAM, injects into child process environment, and actively masks accidental secret prints.
-                        </p>
-                    </div>
-                    <div class="relative z-10 bg-[#05070a] rounded-xl p-3.5 border border-white/10 font-mono text-xs flex items-center justify-between">
-                        <code class="text-indigo-400">$ envshield run -- python app.py</code>
+                        <div class="bg-[#05070a] rounded-xl p-3 border border-purple-500/25 font-mono text-xs flex items-center justify-between group">
+                            <code class="text-purple-300 truncate">$ envshield run -- python app.py</code>
+                            <button onclick="navigator.clipboard.writeText('envshield run -- python app.py');" class="text-slate-500 hover:text-white transition flex-shrink-0 ml-2" title="Copy">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div>
+        </div>
     </section>
 
     <!-- 9. TECHNICAL FAQ ACCORDION -->
