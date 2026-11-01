@@ -1,0 +1,183 @@
+/**
+ * Envshield Landing Page Stylesheet
+ * Strict Container Bounding, Semantic Stacking & Whitespace Rhythm
+ * Linear / Vercel Dark Mode Aesthetic with OKLCH Color Tokens
+ */
+
+:root {
+    /* ------------------------------------------------------------------------
+       LAYOUT & VERTICAL SPACING RHYTHM TOKENS
+       ------------------------------------------------------------------------ */
+    --section-py: clamp(80px, 8vw, 130px);
+    --container-max-w: 1200px;
+    --container-px: 24px;
+
+    /* ------------------------------------------------------------------------
+       LINEAR / VERCEL DARK-MODE COLOR TOKENS (OKLCH)
+       ------------------------------------------------------------------------ */
+    --bg-obsidian: oklch(0.12 0.015 250);            /* #07090E */
+    --bg-surface: oklch(0.15 0.02 250);              /* #0D111A */
+    --bg-surface-subtle: oklch(0.15 0.02 250 / 0.5);  /* Subtle section background */
+    --bg-panel: oklch(0.18 0.025 250);                /* #131A26 */
+    --bg-card: oklch(0.21 0.03 250);                  /* #182232 */
+    --glass-bg: oklch(0.18 0.025 250 / 0.75);
+
+    /* Accent & Brand Colors */
+    --color-cyan: oklch(0.78 0.15 210);              /* #38BDF8 */
+    --color-cyan-glow: oklch(0.78 0.15 210 / 0.25);
+    --color-emerald: oklch(0.75 0.17 160);           /* #34D399 */
+    --color-indigo: oklch(0.68 0.18 275);            /* #818CF8 */
+    --color-violet: oklch(0.65 0.20 290);            /* #A78BFA */
+    --color-amber: oklch(0.78 0.18 75);              /* #FBBF24 */
+    --color-rose: oklch(0.70 0.20 25);               /* #FB7185 */
+
+    /* Borders & Glass Dividers */
+    --border-subtle: oklch(1 0 0 / 0.08);            /* rgba(255, 255, 255, 0.08) */
+    --border-highlight: oklch(0.78 0.15 210 / 0.35);  /* Cyan hover */
+    --border-card: oklch(1 0 0 / 0.10);
+
+    /* Typography */
+    --text-primary: oklch(0.96 0.01 250);            /* High contrast white */
+    --text-secondary: oklch(0.75 0.02 250);          /* Slate 300 */
+    --text-muted: oklch(0.55 0.02 250);              /* Slate 500 */
+}
+
+/* Base Document Reset & Box Bounding */
+html {
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+body {
+    background-color: var(--bg-obsidian);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* ------------------------------------------------------------------------
+   STRICT CONTAINER BOUNDING (Max 1200px, 24px padding)
+   ------------------------------------------------------------------------ */
+.container {
+    max-width: var(--container-max-w);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-px);
+    padding-right: var(--container-px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+/* ------------------------------------------------------------------------
+   STANDARDIZED SECTION FLOW & VERTICAL RHYTHM
+   Eliminates all overlapping, stacking context bugs & erratic gaps
+   ------------------------------------------------------------------------ */
+.section {
+    position: relative;
+    width: 100%;
+    display: block;
+    clear: both;
+    padding-top: var(--section-py);
+    padding-bottom: var(--section-py);
+    box-sizing: border-box;
+}
+
+/* Hero Section: Extra top padding for sticky nav bar */
+.section.hero {
+    padding-top: clamp(100px, 12vw, 160px);
+    padding-bottom: var(--section-py);
+    overflow: hidden;
+}
+
+/* Alternating Section Backgrounds & Visual Borders */
+.section.has-bg-alt {
+    background-color: var(--bg-surface-subtle);
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Pricing Grid Headroom (Protects the Featured Badge from Colliding) */
+.section.pricing .pricing-grid {
+    padding-top: 1rem; /* 16px top room for -top-3.5 badge */
+}
+
+/* Footer Flow */
+.footer {
+    position: relative;
+    width: 100%;
+    display: block;
+    clear: both;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: clamp(48px, 6vw, 80px);
+    padding-bottom: clamp(48px, 6vw, 80px);
+    background-color: var(--bg-obsidian);
+}
+
+/* ------------------------------------------------------------------------
+   COMPONENTS & UTILITIES
+   ------------------------------------------------------------------------ */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-subtle);
+}
+
+.glass-panel-hover {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-panel-hover:hover {
+    border-color: var(--border-highlight);
+    box-shadow: 0 10px 30px -10px var(--color-cyan-glow);
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.35; filter: blur(50px); }
+    50% { opacity: 0.75; filter: blur(75px); }
+}
+
+.glow-ambient {
+    animation: pulse-glow 7s infinite ease-in-out;
+}
+
+.gradient-headline {
+    background: linear-gradient(135deg, #FFFFFF 20%, #38BDF8 60%, #818CF8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.gradient-cyan {
+    background: linear-gradient(135deg, #38BDF8 0%, #34D399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #07090E;
+}
+::-webkit-scrollbar-thumb {
+    background: #1E293B;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #334155;
+}
