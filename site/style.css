@@ -45,10 +45,90 @@ body {
     margin: 0;
     padding: 0;
     background-color: var(--bg-canvas);
+    background-image:
+        radial-gradient(ellipse 90% 55% at 50% -10%, rgba(16, 185, 129, 0.14), transparent 70%),
+        radial-gradient(ellipse 70% 50% at 85% 28%, rgba(56, 189, 248, 0.11), transparent 72%),
+        radial-gradient(ellipse 75% 55% at 15% 62%, rgba(99, 102, 241, 0.11), transparent 75%),
+        radial-gradient(ellipse 80% 50% at 50% 95%, rgba(16, 185, 129, 0.10), transparent 70%);
+    background-attachment: fixed;
     color: #f8fafc;
     overflow-x: hidden;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================================
+   ATMOSPHERIC AURORA & SOFT GRADIENT MESH BACKDROP
+   ============================================================================ */
+.aurora-backdrop {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.aurora-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(125px);
+    opacity: 0.55;
+    will-change: transform;
+    mix-blend-mode: screen;
+}
+
+.aurora-orb-emerald {
+    width: 680px;
+    height: 680px;
+    top: -12%;
+    left: 8%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.28) 0%, rgba(16, 185, 129, 0.06) 55%, transparent 75%);
+    animation: auroraFloat1 22s ease-in-out infinite alternate;
+}
+
+.aurora-orb-cyan {
+    width: 740px;
+    height: 740px;
+    top: 18%;
+    right: -8%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.24) 0%, rgba(14, 165, 233, 0.06) 55%, transparent 75%);
+    animation: auroraFloat2 26s ease-in-out infinite alternate;
+}
+
+.aurora-orb-indigo {
+    width: 780px;
+    height: 780px;
+    bottom: -15%;
+    left: 22%;
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.22) 0%, rgba(99, 102, 241, 0.05) 55%, transparent 75%);
+    animation: auroraFloat3 28s ease-in-out infinite alternate;
+}
+
+.aurora-orb-teal {
+    width: 560px;
+    height: 560px;
+    top: 52%;
+    left: -10%;
+    background: radial-gradient(circle, rgba(45, 212, 191, 0.18) 0%, rgba(20, 184, 166, 0.04) 55%, transparent 75%);
+    animation: auroraFloat1 24s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes auroraFloat1 {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(60px, 40px, 0) scale(1.08); }
+    100% { transform: translate3d(-40px, 70px, 0) scale(0.96); }
+}
+
+@keyframes auroraFloat2 {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(-70px, 50px, 0) scale(1.06); }
+    100% { transform: translate3d(45px, -55px, 0) scale(0.95); }
+}
+
+@keyframes auroraFloat3 {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(55px, -65px, 0) scale(1.1); }
+    100% { transform: translate3d(-65px, 35px, 0) scale(0.97); }
 }
 
 /* Top Scroll Progress Laser Bar */
@@ -107,10 +187,39 @@ body {
 .section.hero {
     padding-top: clamp(104px, 10vw, 136px);
     padding-bottom: clamp(56px, 6vw, 88px);
+    background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(16, 185, 129, 0.09) 0%, rgba(56, 189, 248, 0.05) 45%, transparent 80%);
 }
 
 .section.has-bg-alt {
-    background: linear-gradient(180deg, rgba(12, 15, 22, 0.65) 0%, rgba(5, 6, 9, 0.95) 100%);
+    background: 
+        radial-gradient(ellipse 75% 55% at 50% 0%, rgba(56, 189, 248, 0.08) 0%, rgba(99, 102, 241, 0.05) 45%, transparent 75%),
+        linear-gradient(180deg, rgba(13, 18, 30, 0.55) 0%, rgba(7, 10, 18, 0.45) 50%, rgba(5, 6, 9, 0.75) 100%);
+}
+
+/* Soft Luminous Horizon Glow Between Sections */
+.section::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(880px, 90%);
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(52, 211, 153, 0.32) 30%, rgba(56, 189, 248, 0.45) 50%, rgba(129, 140, 248, 0.32) 70%, transparent 100%);
+    pointer-events: none;
+}
+
+.section::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(760px, 85%);
+    height: 140px;
+    background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(56, 189, 248, 0.065), rgba(16, 185, 129, 0.03) 55%, transparent 80%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* ============================================================================

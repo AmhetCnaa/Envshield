@@ -47,10 +47,14 @@
     <!-- Top Laser Scroll Progress Bar -->
     <div id="scroll-progress"></div>
 
-    <!-- Ambient Radial Lighting & Grid Matrix -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <!-- Ambient Aurora Gradient Mesh, Radial Lighting & Grid Matrix -->
+    <div class="aurora-backdrop">
+        <div class="aurora-orb aurora-orb-emerald"></div>
+        <div class="aurora-orb aurora-orb-cyan"></div>
+        <div class="aurora-orb aurora-orb-indigo"></div>
+        <div class="aurora-orb aurora-orb-teal"></div>
         <div class="absolute inset-0 bg-grid-matrix"></div>
-        <div id="cursor-ambient-glow" class="absolute w-[650px] h-[650px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-tr from-emerald-500/[0.05] via-sky-500/[0.05] to-transparent blur-[110px] transition-transform duration-300 ease-out" style="left: 50%; top: 25%;"></div>
+        <div id="cursor-ambient-glow" class="absolute w-[750px] h-[750px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-tr from-emerald-500/[0.11] via-sky-500/[0.09] to-indigo-500/[0.08] blur-[120px] transition-transform duration-300 ease-out" style="left: 50%; top: 25%;"></div>
     </div>
 
     <!-- Floating Island Glass Dock Navbar -->
