@@ -98,6 +98,18 @@ def test_unseal_corrupted_payload(tmp_path: Path):
     with pytest.raises(AuthError):
         unseal_to_memory(enc_file, "password")
 
+    # Tamper with the JSON header (AAD binding check): flip format "env" -> "jsn"
+    raw_valid = bytearray(
+        seal_file(valid_env, enc_file, "password") or enc_file.read_bytes()
+    )
+    idx = raw_valid.find(b'"format":"env"')
+    assert idx != -1
+    raw_valid[idx + 10] = ord("j")
+    enc_file.write_bytes(bytes(raw_valid))
+    with pytest.raises(InvalidKey, match="AAD"):
+        unseal_to_memory(enc_file, "password")
+
+
 
 def test_vault_file_not_found(tmp_path: Path):
     """Verifies FileNotFoundError when source file does not exist."""

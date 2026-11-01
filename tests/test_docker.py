@@ -34,9 +34,15 @@ def test_build_docker_run_command_standard() -> None:
     assert cmd[0] == "docker"
     assert "run" in cmd
     assert "-e" in cmd
-    assert "DB_PASS=secret123" in cmd
-    assert "API_KEY=ak_456" in cmd
+    # Critical security invariant: ONLY `-e KEY` is passed in argv (never `-e KEY=VAL`),
+    # preventing secret leaks in `ps aux` / `/proc/<pid>/cmdline`.
+    assert "DB_PASS" in cmd
+    assert "API_KEY" in cmd
+    assert "DB_PASS=secret123" not in cmd
+    assert "API_KEY=ak_456" not in cmd
+    assert "secret123" not in " ".join(cmd)
     assert "my-app:latest" in cmd
+
 
 
 def test_build_docker_run_command_stealth() -> None:
@@ -86,6 +92,39 @@ def test_execute_docker_mocked_success(monkeypatch) -> None:
     called_secrets = mock_exec.call_args[0][1]
     assert called_cmd == ["docker", "compose", "up"]
     assert called_secrets == secrets
+
+
+def test_execute_docker_stealth_materializes_and_shreds_ram_secrets(monkeypatch) -> None:
+    """
+    Verifies that stealth mode populates an isolated ephemeral directory with
+    `/run/secrets/<KEY>` files, mounts it read-only (`:ro`), and forensically shreds
+    the directory immediately after container exit.
+    """
+    monkeypatch.setattr("shutil.which", lambda _: "/usr/bin/docker")
+    captured_mount_dir: list[Path] = []
+
+    def fake_execute_with_env(cmd: list[str], secrets: dict[str, str], redact: bool = True) -> int:
+        # Find the `-v <host_dir>:/run/secrets:ro` argument and verify files exist inside during run
+        assert "-v" in cmd
+        v_idx = cmd.index("-v")
+        mount_spec = cmd[v_idx + 1]
+        assert mount_spec.endswith(":/run/secrets:ro")
+        host_dir = Path(mount_spec[: -len(":/run/secrets:ro")])
+        assert host_dir.is_dir()
+        assert (host_dir / "DB_PASS").read_text(encoding="utf-8") == "stealth_secret_val"
+        assert "DB_PASS=stealth_secret_val" in (host_dir / ".env").read_text(encoding="utf-8")
+        captured_mount_dir.append(host_dir)
+        return 0
+
+    monkeypatch.setattr("envshield.core.docker_bridge.execute_with_env", fake_execute_with_env)
+    ret = execute_docker_with_secrets(
+        ["run", "alpine"], {"DB_PASS": "stealth_secret_val"}, stealth=True
+    )
+    assert ret == 0
+    assert len(captured_mount_dir) == 1
+    # Directory must be completely shredded and removed on exit
+    assert not captured_mount_dir[0].exists()
+
 
 
 @mock.patch("sys.exit", side_effect=my_exit)

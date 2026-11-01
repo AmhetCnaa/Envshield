@@ -87,3 +87,19 @@ def test_ed25519_recipient_encrypt_decrypt(tmp_path):
 def test_find_default_identities():
     ids = find_default_identities()
     assert isinstance(ids, list)
+
+
+def test_ed25519_birational_map_rejects_identity_and_invalid_points():
+    import pytest
+
+    from envshield.core.recipients import ed25519_pub_to_x25519_pub
+
+    # y == 1 (Ed25519 identity point: 0x01 followed by 31 zero bytes) must be rejected
+    identity_point = b"\x01" + b"\x00" * 31
+    with pytest.raises(ValueError, match="low-order"):
+        ed25519_pub_to_x25519_pub(identity_point)
+
+    # Wrong length must be rejected
+    with pytest.raises(ValueError, match="32 bytes"):
+        ed25519_pub_to_x25519_pub(b"short")
+

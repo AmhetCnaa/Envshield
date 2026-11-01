@@ -351,12 +351,11 @@ def unseal_raw_payload(
             aad = raw_bytes[:header_end]
             try:
                 decrypted_bytes = aesgcm.decrypt(payload_nonce, ciphertext, aad)
-            except InvalidTag:
-                # Backward-compatible fallback for v2 vaults sealed before AAD header binding
-                try:
-                    decrypted_bytes = aesgcm.decrypt(payload_nonce, ciphertext, None)
-                except InvalidTag as exc:
-                    raise InvalidKey("Authentication failed: payload tag mismatch.") from exc
+            except InvalidTag as exc:
+                raise InvalidKey(
+                    "Authentication failed: payload GCM tag or authenticated header (AAD) mismatch."
+                ) from exc
+
 
 
         try:

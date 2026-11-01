@@ -11,24 +11,52 @@ from cryptography.hazmat.primitives.asymmetric import ed25519, padding, rsa, x25
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
+from envshield.core.memory import SecureBuffer, secure_wipe
+
 P_25519: int = 2**255 - 19
 
 
 def ed25519_pub_to_x25519_pub(ed_pub_bytes: bytes) -> bytes:
-    """Converts Ed25519 public key bytes to X25519 Montgomery public key bytes."""
+    """
+    Converts Ed25519 public key bytes (32B) to X25519 Montgomery public key bytes (32B)
+    via the birational map u = (1 + y) / (1 - y) mod (2^255 - 19).
+    Hardened against low-order / identity point (y == 1) and non-canonical y >= P_25519.
+    """
+    if len(ed_pub_bytes) != 32:
+        raise ValueError("Ed25519 public key must be exactly 32 bytes.")
+
+    # Verify point is valid on the Ed25519 curve via OpenSSL backend first
+    ed25519.Ed25519PublicKey.from_public_bytes(ed_pub_bytes)
+
     y = int.from_bytes(ed_pub_bytes, "little") & ((1 << 255) - 1)
-    u = ((1 + y) * pow(1 - y, P_25519 - 2, P_25519)) % P_25519
+    if y <= 1 or y >= P_25519:
+        raise ValueError("Invalid or low-order Ed25519 public key point (y <= 1 or y >= p).")
+
+    denom = (1 - y) % P_25519
+    if denom == 0:
+        raise ValueError("Invalid Ed25519 public key point: division by zero in birational map.")
+
+    u = ((1 + y) * pow(denom, P_25519 - 2, P_25519)) % P_25519
+    if u == 0:
+        raise ValueError("Rejected low-order X25519 public key point (u == 0).")
+
     return u.to_bytes(32, "little")
 
 
-def ed25519_priv_to_x25519_priv(ed_priv_seed: bytes) -> bytes:
-    """Converts Ed25519 private seed (32 bytes) to X25519 private key bytes."""
+def ed25519_priv_to_x25519_priv(ed_priv_seed: bytes) -> bytearray:
+    """
+    Converts Ed25519 private seed (32 bytes) to clamped X25519 private scalar inside a
+    mutable bytearray so the caller can deterministically zero-wipe it after use.
+    """
+    if len(ed_priv_seed) != 32:
+        raise ValueError("Ed25519 private seed must be 32 bytes.")
     h = hashlib.sha512(ed_priv_seed).digest()
     s = bytearray(h[:32])
     s[0] &= 248
     s[31] &= 127
     s[31] |= 64
-    return bytes(s)
+    return s
+
 
 
 class Recipient:
@@ -111,24 +139,34 @@ def encrypt_dek_for_recipient(dek: bytes, recipient: Recipient) -> dict[str, str
         }
 
     if recipient.key_type in ("ssh-ed25519", "x25519"):
-        # ECDH with ephemeral X25519 key pair + HKDF + AES-GCM
+        # ECDH with ephemeral X25519 key pair + HKDF (with HPKE-style transcript binding) + AES-GCM
         recipient_x_pub: x25519.X25519PublicKey = recipient.public_key_obj
+        recipient_pub_bytes = recipient_x_pub.public_bytes(
+            serialization.Encoding.Raw, serialization.PublicFormat.Raw
+        )
         ephem_priv = x25519.X25519PrivateKey.generate()
         ephem_pub_bytes = ephem_priv.public_key().public_bytes(
             serialization.Encoding.Raw, serialization.PublicFormat.Raw
         )
 
-        shared_secret = ephem_priv.exchange(recipient_x_pub)
-        derived_key = HKDF(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=None,
-            info=b"envshield-v2-slot",
-        ).derive(shared_secret)
+        # Bind both ephemeral and recipient public keys into the HKDF context info (RFC 9180 / HPKE style)
+        hkdf_info = b"envshield-v2-slot|" + ephem_pub_bytes + b"|" + recipient_pub_bytes
 
-        nonce = os.urandom(12)
-        aesgcm = AESGCM(derived_key)
-        enc_dek = aesgcm.encrypt(nonce, dek, None)
+        with (
+            SecureBuffer(ephem_priv.exchange(recipient_x_pub)) as sec_shared,
+            SecureBuffer(
+                HKDF(
+                    algorithm=hashes.SHA256(),
+                    length=32,
+                    salt=ephem_pub_bytes,
+                    info=hkdf_info,
+                ).derive(sec_shared.to_bytes())
+            ) as sec_derived,
+        ):
+            nonce = os.urandom(12)
+            slot_aad = ephem_pub_bytes + recipient_pub_bytes
+            aesgcm = AESGCM(sec_derived.to_bytes())
+            enc_dek = aesgcm.encrypt(nonce, dek, slot_aad)
 
         return {
             "type": recipient.key_type,
@@ -137,6 +175,7 @@ def encrypt_dek_for_recipient(dek: bytes, recipient: Recipient) -> dict[str, str
             "nonce": base64.b64encode(nonce).decode("utf-8"),
             "encrypted_dek": base64.b64encode(enc_dek).decode("utf-8"),
         }
+
 
     if recipient.key_type == "kms":
         from envshield.core.kms import encrypt_dek_with_kms
@@ -211,9 +250,11 @@ def decrypt_dek_with_identity(
                 serialization.PrivateFormat.Raw,
                 serialization.NoEncryption(),
             )
-            x_priv = x25519.X25519PrivateKey.from_private_bytes(
-                ed25519_priv_to_x25519_priv(raw_seed)
-            )
+            clamped_scalar = ed25519_priv_to_x25519_priv(raw_seed)
+            try:
+                x_priv = x25519.X25519PrivateKey.from_private_bytes(bytes(clamped_scalar))
+            finally:
+                secure_wipe(clamped_scalar)
         elif isinstance(priv_key, x25519.X25519PrivateKey):
             x_priv = priv_key
 
@@ -221,21 +262,30 @@ def decrypt_dek_with_identity(
             ephem_pub_bytes = base64.b64decode(slot["ephemeral_pub"])
             nonce = base64.b64decode(slot["nonce"])
             enc_dek = base64.b64decode(slot["encrypted_dek"])
+            recipient_pub_bytes = x_priv.public_key().public_bytes(
+                serialization.Encoding.Raw, serialization.PublicFormat.Raw
+            )
 
             ephem_pub = x25519.X25519PublicKey.from_public_bytes(ephem_pub_bytes)
-            shared_secret = x_priv.exchange(ephem_pub)
+            hkdf_info = b"envshield-v2-slot|" + ephem_pub_bytes + b"|" + recipient_pub_bytes
+            slot_aad = ephem_pub_bytes + recipient_pub_bytes
 
-            derived_key = HKDF(
-                algorithm=hashes.SHA256(),
-                length=32,
-                salt=None,
-                info=b"envshield-v2-slot",
-            ).derive(shared_secret)
+            with (
+                SecureBuffer(x_priv.exchange(ephem_pub)) as sec_shared,
+                SecureBuffer(
+                    HKDF(
+                        algorithm=hashes.SHA256(),
+                        length=32,
+                        salt=ephem_pub_bytes,
+                        info=hkdf_info,
+                    ).derive(sec_shared.to_bytes())
+                ) as sec_derived,
+            ):
+                aesgcm = AESGCM(sec_derived.to_bytes())
+                try:
+                    return aesgcm.decrypt(nonce, enc_dek, slot_aad)
+                except Exception:
+                    return None
 
-            aesgcm = AESGCM(derived_key)
-            try:
-                return aesgcm.decrypt(nonce, enc_dek, None)
-            except Exception:
-                return None
 
     return None
