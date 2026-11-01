@@ -12,11 +12,13 @@ def test_regex_scanner_aws_key():
     assert findings[0].rule_id == "AWS_ACCESS_KEY"
     assert findings[0].severity == Severity.CRITICAL
 
+
 def test_regex_scanner_ignore_inline():
     scanner = RegexScanner()
     content = "aws_access_key_id = AKIAIOSFODNN7EXAMPLE # envshield:ignore\n"
     findings = scanner.scan_file("test.py", content)
     assert len(findings) == 0
+
 
 def test_entropy_scanner():
     scanner = EntropyScanner(min_length=16, entropy_threshold=4.0)
@@ -25,18 +27,21 @@ def test_entropy_scanner():
     findings = scanner.scan_file("test.py", content)
     assert len(findings) == 1
     assert findings[0].rule_id == "HIGH_ENTROPY_STRING"
-    
+
+
 def test_entropy_scanner_ignore():
     scanner = EntropyScanner(min_length=16, entropy_threshold=4.0)
     content = "secret = 'aB3dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW3xY5z' # envshield:ignore\n"
     findings = scanner.scan_file("test.py", content)
     assert len(findings) == 0
 
+
 def test_shannon_entropy():
     # AAA has entropy 0
     assert shannon_entropy("AAA") == 0.0
     # ABC has entropy ~1.58
     assert shannon_entropy("ABC") > 1.5
+
 
 def test_env_validator_missing_var():
     validator = EnvValidator()
@@ -47,6 +52,7 @@ def test_env_validator_missing_var():
     assert findings[0].rule_id == "MISSING_ENV_VAR"
     assert "API_KEY" in findings[0].description
 
+
 def test_env_validator_type_mismatch():
     validator = EnvValidator()
     example = "PORT=8080"
@@ -54,6 +60,7 @@ def test_env_validator_type_mismatch():
     findings = validator.validate(".env", env, ".env.example", example)
     assert len(findings) == 1
     assert findings[0].rule_id == "ENV_TYPE_MISMATCH"
+
 
 def test_env_validator_extraneous_var():
     validator = EnvValidator()

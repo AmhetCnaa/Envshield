@@ -13,11 +13,12 @@ def shannon_entropy(data: str) -> float:
     entropy = 0.0
     length = len(data)
     occurrences = {char: data.count(char) for char in set(data)}
-    
+
     for count in occurrences.values():
         probability = count / length
         entropy -= probability * math.log2(probability)
     return entropy
+
 
 class EntropyScanner(BaseScanner):
     """Scans for high-entropy strings which often represent cryptographic keys or passwords."""
@@ -26,7 +27,7 @@ class EntropyScanner(BaseScanner):
         self.min_length = min_length
         self.entropy_threshold = entropy_threshold
         # Find potential strings: anything alphanumeric with some special chars that is long enough
-        self.string_pattern = re.compile(r'[A-Za-z0-9+/=_-]{' + str(self.min_length) + r',}')
+        self.string_pattern = re.compile(r"[A-Za-z0-9+/=_-]{" + str(self.min_length) + r",}")
 
     def scan_file(self, file_path: str, content: str) -> list[Finding]:
         findings = []
@@ -50,7 +51,7 @@ class EntropyScanner(BaseScanner):
                     description=f"High entropy string detected (entropy: {entropy:.2f}).",
                     severity=Severity.MEDIUM,
                     secret_value=mask_secret(candidate),
-                    remediation="Verify if this is a hardcoded secret. If so, move it to a secret manager."
+                    remediation="Verify if this is a hardcoded secret. If so, move it to a secret manager.",
                 )
                 findings.append(finding)
         return findings

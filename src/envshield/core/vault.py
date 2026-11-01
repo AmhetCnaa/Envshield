@@ -14,8 +14,11 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from envshield.core.formats import detect_format, parse_secrets
+from envshield.core.audit import compute_key_fingerprint, record_audit_event
+from envshield.core.formats import detect_format
+from envshield.core.interpolator import interpolate_secrets
 from envshield.core.memory import SecureBuffer, secure_wipe
+from envshield.core.profiles import parse_secrets_with_profile
 from envshield.core.recipients import (
     Recipient,
     decrypt_dek_with_identity,
@@ -106,6 +109,7 @@ def seal_file(
     ciphertext = aesgcm.encrypt(payload_nonce, plaintext, None)
 
     slots: list[dict[str, Any]] = []
+    salt: bytes | None = None
 
     # 1. Password slot (if password provided)
     if password:
@@ -151,6 +155,13 @@ def seal_file(
 
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(payload)
+
+    record_audit_event(
+        action="SEAL",
+        target_path=target,
+        key_id=compute_key_fingerprint(salt or (str(recipients[0]) if recipients else "vault")),
+        details={"format": detected_fmt, "slots": len(slots)},
+    )
 
 
 def _decrypt_v1_payload(payload: bytes, password: str) -> bytes:
@@ -272,7 +283,16 @@ def unseal_raw_payload(
                 raise InvalidKey("Authentication failed: payload tag mismatch.") from exc
 
         try:
-            return decrypted_bytes.decode("utf-8"), fmt
+            plaintext = decrypted_bytes.decode("utf-8")
+            record_audit_event(
+                action="UNSEAL",
+                target_path=source,
+                key_id=compute_key_fingerprint(
+                    password or (str(identity_path) if identity_path else "ssh_identity")
+                ),
+                details={"format": fmt, "version": 2},
+            )
+            return plaintext, fmt
         except UnicodeDecodeError as exc:
             raise AuthError("Decrypted payload is not valid UTF-8 text.") from exc
 
@@ -286,7 +306,14 @@ def unseal_raw_payload(
         raise original_err from None
 
     try:
-        return decrypted_bytes.decode("utf-8"), "env"
+        plaintext = decrypted_bytes.decode("utf-8")
+        record_audit_event(
+            action="UNSEAL",
+            target_path=source,
+            key_id=compute_key_fingerprint(password or "legacy"),
+            details={"format": "env", "version": 1},
+        )
+        return plaintext, "env"
     except UnicodeDecodeError as exc:
         raise AuthError("Decrypted payload is not valid UTF-8 text.") from exc
 
@@ -295,11 +322,21 @@ def unseal_to_memory(
     source_path: Path | str,
     password: str | None = None,
     identity_path: str | Path | None = None,
+    profile: str | None = None,
+    interpolate: bool = True,
 ) -> dict[str, str]:
     """
     Reads an encrypted environment file (.env.enc), decrypts it in RAM,
-    and parses it into a dictionary of KEY=VALUE pairs.
+    resolves requested profile (if any), and recursively interpolates variables (${VAR}).
     Zero-disk writes: plaintext is never written to disk.
     """
     content, fmt = unseal_raw_payload(source_path, password, identity_path)
-    return parse_secrets(content, format_type=fmt, path_hint=str(source_path))
+    secrets = parse_secrets_with_profile(
+        content,
+        profile=profile,
+        format_type=fmt,
+        path_hint=str(source_path),
+    )
+    if interpolate:
+        secrets = interpolate_secrets(secrets)
+    return secrets

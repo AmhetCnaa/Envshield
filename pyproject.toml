@@ -4,11 +4,23 @@ build-backend = "hatchling.build"
 
 [project]
 name = "envshield-cli"
-version = "0.3.0"
-description = "Zero-disk secret engine & runtime injection for developers"
+version = "0.4.0"
+description = "Zero-disk secret engine, live stream redaction & runtime injection for developers"
 readme = "README.md"
 requires-python = ">=3.9"
-keywords = ["secrets", "cli", "security", "aes-gcm", "env-vault", "ssh-keys", "zero-disk"]
+keywords = [
+    "secrets",
+    "cli",
+    "security",
+    "aes-gcm",
+    "env-vault",
+    "ssh-keys",
+    "zero-disk",
+    "redaction",
+    "audit-log",
+    "git-hook",
+    "canary",
+]
 dependencies = [
     "rich>=13.0.0",
     "cryptography>=42.0.0",

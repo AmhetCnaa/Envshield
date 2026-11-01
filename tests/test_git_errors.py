@@ -8,6 +8,7 @@ from envshield.utils.git import get_staged_files, install_pre_commit_hook
 def test_get_staged_files_error(mock_run):
     assert get_staged_files() == []
 
+
 @mock.patch("subprocess.run")
 def test_install_pre_commit_hook_fail(mock_run):
     mock_result = mock.Mock()

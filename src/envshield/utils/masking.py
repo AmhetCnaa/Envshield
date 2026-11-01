@@ -1,6 +1,6 @@
 def mask_secret(secret: str) -> str:
     """Mask a secret string to prevent leakage in logs.
-    
+
     Format:
     - If length <= 8, returns '***'
     - Otherwise, returns first 3 chars + '...' + last 3 chars

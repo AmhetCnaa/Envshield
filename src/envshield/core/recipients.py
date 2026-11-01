@@ -78,9 +78,7 @@ class Recipient:
         except Exception:
             pass
 
-        raise ValueError(
-            f"Unsupported or invalid recipient public key format: '{text[:30]}...'"
-        )
+        raise ValueError(f"Unsupported or invalid recipient public key format: '{text[:30]}...'")
 
 
 def encrypt_dek_for_recipient(dek: bytes, recipient: Recipient) -> dict[str, str]:

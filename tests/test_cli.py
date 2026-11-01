@@ -10,6 +10,7 @@ def test_mask_secret():
     assert mask_secret("short") == "***"
     assert mask_secret("longersecretkey") == "lon...key"
 
+
 def test_format_json():
     result = ScanResult()
     result.add_finding(Finding("file.py", 1, "ID", "Desc", Severity.HIGH, "secret", "fix it"))
@@ -17,6 +18,7 @@ def test_format_json():
     data = json.loads(output)
     assert data["findings_count"] == 1
     assert data["findings"][0]["severity"] == "HIGH"
+
 
 def test_format_sarif():
     result = ScanResult()
@@ -26,11 +28,12 @@ def test_format_sarif():
     assert "runs" in data
     assert len(data["runs"][0]["results"]) == 1
 
+
 def test_ignore_manager(tmp_path):
     # Mock an ignore file
     ignore_file = tmp_path / ".envshieldignore"
     ignore_file.write_text("*.txt\nignored_dir/*")
-    
+
     manager = IgnoreManager(str(tmp_path))
     assert manager.is_ignored(str(tmp_path / "test.txt")) == True
     assert manager.is_ignored(str(tmp_path / "test.py")) == False

@@ -23,8 +23,13 @@ class IgnoreManager:
         """Checks if a file path matches any ignore patterns."""
         rel_path = os.path.relpath(file_path, self.project_root)
         # Normalize to forward slashes for fnmatch
-        rel_path = rel_path.replace(os.sep, '/')
+        rel_path = rel_path.replace(os.sep, "/")
         for pattern in self.ignore_patterns:
-            if fnmatch.fnmatch(rel_path, pattern) or fnmatch.fnmatch(rel_path, f"{pattern}/*") or fnmatch.fnmatch(rel_path, f"*/{pattern}/*") or fnmatch.fnmatch(rel_path, f"*/{pattern}"):
+            if (
+                fnmatch.fnmatch(rel_path, pattern)
+                or fnmatch.fnmatch(rel_path, f"{pattern}/*")
+                or fnmatch.fnmatch(rel_path, f"*/{pattern}/*")
+                or fnmatch.fnmatch(rel_path, f"*/{pattern}")
+            ):
                 return True
         return False

@@ -31,3 +31,5 @@ htmlcov/
 !.env.example
 !.env.enc
 !.env.*.enc
+*.audit.jsonl
+.envshield.audit.jsonl

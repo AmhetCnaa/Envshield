@@ -133,7 +133,12 @@ def test_execute_with_env_subprocess_injection(capfd):
     assert exit_code == 0
 
     out, _ = capfd.readouterr()
-    assert "CONFIDENTIAL_INJECTED_VALUE_42" in out
+    assert "[REDACTED:TEST_KEY]" in out
+
+    exit_code_raw = execute_with_env(command, secrets, redact=False)
+    assert exit_code_raw == 0
+    out_raw, _ = capfd.readouterr()
+    assert "CONFIDENTIAL_INJECTED_VALUE_42" in out_raw
 
 
 def test_execute_with_env_empty_and_nonzero():
@@ -165,7 +170,10 @@ def test_cli_seal_and_run_end_to_end(mock_exit, tmp_path: Path, monkeypatch, cap
     env_file.write_text("APP_TOKEN=token_cli_999\n", encoding="utf-8")
 
     # 1. Test CLI seal with password prompt mocked
-    with mock.patch("getpass.getpass", return_value="test_password"), pytest.raises(SystemExit) as exc_seal:
+    with (
+        mock.patch("getpass.getpass", return_value="test_password"),
+        pytest.raises(SystemExit) as exc_seal,
+    ):
         main(["seal"])
     assert exc_seal.value.code == 0
 
@@ -175,17 +183,19 @@ def test_cli_seal_and_run_end_to_end(mock_exit, tmp_path: Path, monkeypatch, cap
     # 2. Test CLI run with ENVSHIELD_KEY environment variable
     monkeypatch.setenv("ENVSHIELD_KEY", "test_password")
     with pytest.raises(SystemExit) as exc_run:
-        main([
-            "run",
-            "--",
-            sys.executable,
-            "-c",
-            "import os; print(os.environ['APP_TOKEN'])",
-        ])
+        main(
+            [
+                "run",
+                "--",
+                sys.executable,
+                "-c",
+                "import os; print(os.environ['APP_TOKEN'])",
+            ]
+        )
     assert exc_run.value.code == 0
 
     out, _ = capfd.readouterr()
-    assert "token_cli_999" in out
+    assert "[REDACTED:APP_TOKEN]" in out
 
 
 @mock.patch("sys.exit", side_effect=my_exit)
@@ -198,16 +208,18 @@ def test_cli_run_without_double_dash(mock_exit, tmp_path: Path, monkeypatch, cap
 
     monkeypatch.setenv("ENVSHIELD_KEY", "direct_pass")
     with pytest.raises(SystemExit) as exc_run:
-        main([
-            "run",
-            sys.executable,
-            "-c",
-            "import os; print(os.environ['DIRECT_VAR'])",
-        ])
+        main(
+            [
+                "run",
+                sys.executable,
+                "-c",
+                "import os; print(os.environ['DIRECT_VAR'])",
+            ]
+        )
     assert exc_run.value.code == 0
 
     out, _ = capfd.readouterr()
-    assert "direct_ok" in out
+    assert "[REDACTED:DIRECT_VAR]" in out
 
 
 @mock.patch("sys.exit", side_effect=my_exit)
@@ -303,6 +315,7 @@ def test_cli_scan_subcommand(mock_exit, tmp_path: Path, monkeypatch):
         main(["scan", str(tmp_path)])
     assert exc.value.code == 0
 
+
 def test_legacy_v1_vault_backwards_compatibility(tmp_path: Path):
     """Verifies that legacy v1 format (salt + nonce + ct) continues to unseal seamlessly."""
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -329,9 +342,11 @@ def test_team_ssh_recipient_vault(tmp_path: Path):
 
     # 1. Generate team keys
     rsa_priv = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    rsa_pub_ssh = rsa_priv.public_key().public_bytes(
-        serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH
-    ).decode("utf-8")
+    rsa_pub_ssh = (
+        rsa_priv.public_key()
+        .public_bytes(serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH)
+        .decode("utf-8")
+    )
     rsa_priv_file = tmp_path / "team_member1_rsa"
     rsa_priv_file.write_bytes(
         rsa_priv.private_bytes(
@@ -342,9 +357,11 @@ def test_team_ssh_recipient_vault(tmp_path: Path):
     )
 
     ed_priv = ed25519.Ed25519PrivateKey.generate()
-    ed_pub_ssh = ed_priv.public_key().public_bytes(
-        serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH
-    ).decode("utf-8")
+    ed_pub_ssh = (
+        ed_priv.public_key()
+        .public_bytes(serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH)
+        .decode("utf-8")
+    )
     ed_priv_file = tmp_path / "team_member2_ed25519"
     ed_priv_file.write_bytes(
         ed_priv.private_bytes(
@@ -376,9 +393,11 @@ def test_hybrid_vault_password_and_recipients(tmp_path: Path):
     from cryptography.hazmat.primitives.asymmetric import ed25519
 
     ed_priv = ed25519.Ed25519PrivateKey.generate()
-    ed_pub_ssh = ed_priv.public_key().public_bytes(
-        serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH
-    ).decode("utf-8")
+    ed_pub_ssh = (
+        ed_priv.public_key()
+        .public_bytes(serialization.Encoding.OpenSSH, serialization.PublicFormat.OpenSSH)
+        .decode("utf-8")
+    )
     ed_priv_file = tmp_path / "member_ed"
     ed_priv_file.write_bytes(
         ed_priv.private_bytes(
@@ -411,7 +430,10 @@ def test_cli_key_commands(mock_exit, tmp_path: Path):
         mock.patch("keyring.get_password", side_effect=lambda s, n: mock_store.get(n)),
         mock.patch("keyring.delete_password", side_effect=lambda s, n: mock_store.pop(n, None)),
     ):
-        with mock.patch("getpass.getpass", return_value="mysecretpass"), pytest.raises(SystemExit) as e1:
+        with (
+            mock.patch("getpass.getpass", return_value="mysecretpass"),
+            pytest.raises(SystemExit) as e1,
+        ):
             main(["key", "set", "prod_key"])
         assert e1.value.code == 0
 

@@ -8,22 +8,23 @@ def parse_env_file(content: str) -> dict[str, tuple[str, int]]:
     env_vars = {}
     for line_num, line in enumerate(content.splitlines(), start=1):
         line = line.strip()
-        if not line or line.startswith('#'):
+        if not line or line.startswith("#"):
             continue
-        if '=' in line:
-            key, val = line.split('=', 1)
+        if "=" in line:
+            key, val = line.split("=", 1)
             key = key.strip()
             val = val.strip().strip("'").strip('"')
             env_vars[key] = (val, line_num)
     return env_vars
 
+
 def infer_type(value: str) -> str:
     """Infers the basic type of an environment variable string."""
     if not value:
         return "empty"
-    if value.lower() in ('true', 'false', '1', '0', 'yes', 'no'):
+    if value.lower() in ("true", "false", "1", "0", "yes", "no"):
         return "boolean"
-    if value.isdigit() or (value.startswith('-') and value[1:].isdigit()):
+    if value.isdigit() or (value.startswith("-") and value[1:].isdigit()):
         return "int"
     try:
         float(value)
@@ -32,10 +33,13 @@ def infer_type(value: str) -> str:
         pass
     return "string"
 
+
 class EnvValidator:
     """Validates .env files against .env.example files for drift and type mismatches."""
-    
-    def validate(self, env_path: str, env_content: str, example_path: str, example_content: str) -> list[Finding]:
+
+    def validate(
+        self, env_path: str, env_content: str, example_path: str, example_content: str
+    ) -> list[Finding]:
         findings = []
         env_vars = parse_env_file(env_content)
         example_vars = parse_env_file(example_content)
@@ -50,7 +54,7 @@ class EnvValidator:
                         rule_id="MISSING_ENV_VAR",
                         description=f"Missing required environment variable '{key}' defined in {os.path.basename(example_path)}.",
                         severity=Severity.HIGH,
-                        remediation=f"Add '{key}' to your {os.path.basename(env_path)} file."
+                        remediation=f"Add '{key}' to your {os.path.basename(env_path)} file.",
                     )
                 )
             else:
@@ -58,18 +62,21 @@ class EnvValidator:
                 env_val, env_line = env_vars[key]
                 example_type = infer_type(example_val)
                 env_type = infer_type(env_val)
-                
+
                 # Only warn if example type is specific (not just empty or generic string if we wanted to be strict,
                 # but let's check strict type mismatch for int/boolean/float)
-                if example_type in ("int", "float", "boolean") and env_type not in ("empty", example_type):
-                     findings.append(
+                if example_type in ("int", "float", "boolean") and env_type not in (
+                    "empty",
+                    example_type,
+                ):
+                    findings.append(
                         Finding(
                             file_path=env_path,
                             line_number=env_line,
                             rule_id="ENV_TYPE_MISMATCH",
                             description=f"Type mismatch for '{key}': expected {example_type} (from {os.path.basename(example_path)}), got {env_type}.",
                             severity=Severity.MEDIUM,
-                            remediation=f"Update '{key}' to be of type {example_type}."
+                            remediation=f"Update '{key}' to be of type {example_type}.",
                         )
                     )
 
@@ -83,8 +90,8 @@ class EnvValidator:
                         rule_id="EXTRANEOUS_ENV_VAR",
                         description=f"Undocumented variable '{key}' found. Not present in {os.path.basename(example_path)}.",
                         severity=Severity.LOW,
-                        remediation=f"Add '{key}' to {os.path.basename(example_path)} or remove it from {os.path.basename(env_path)}."
+                        remediation=f"Add '{key}' to {os.path.basename(example_path)} or remove it from {os.path.basename(env_path)}.",
                     )
                 )
-                
+
         return findings

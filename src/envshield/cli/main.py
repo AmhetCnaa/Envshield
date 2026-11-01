@@ -10,10 +10,14 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+from envshield.core.audit import read_audit_entries, record_audit_event, verify_audit_chain
+from envshield.core.decoy import load_decoy_secrets, trigger_canary_alert
 from envshield.core.diff_engine import compute_in_memory_diff, render_diff
 from envshield.core.editor import edit_vault
+from envshield.core.git_hook import install_hook, run_pre_commit_scan, uninstall_hook
 from envshield.core.keyring_manager import delete_key, get_key, save_key
 from envshield.core.models import ScanResult
+from envshield.core.profiles import detect_git_branch_profile
 from envshield.core.runner import execute_with_env
 from envshield.core.vault import AuthError, InvalidKey, seal_file, shred_file, unseal_to_memory
 from envshield.scanners.entropy import EntropyScanner
@@ -119,7 +123,9 @@ def handle_seal(args: list[str], console: Console) -> None:
             prompt_message="Enter encryption password: ",
         )
         if not password and not parsed.recipients:
-            console.print("[red]Error: Password cannot be empty when no recipients are specified.[/red]")
+            console.print(
+                "[red]Error: Password cannot be empty when no recipients are specified.[/red]"
+            )
             sys.exit(1)
 
     if password and parsed.keyring_name and save_key(parsed.keyring_name, password):
@@ -144,48 +150,11 @@ def handle_seal(args: list[str], console: Console) -> None:
     sys.exit(0)
 
 
-def handle_run(args: list[str], console: Console) -> None:
-    if "--" in args:
-        dash_idx = args.index("--")
-        opt_args = args[:dash_idx]
-        command = args[dash_idx + 1 :]
-    else:
-        parser = argparse.ArgumentParser(
-            prog="envshield run",
-            description="Run a command with decrypted secrets injected into memory.",
-            add_help=False,
-        )
-        parser.add_argument("--env-file", default=".env.enc")
-        parser.add_argument("-i", "--identity", default=None)
-        parser.add_argument("--keyring-name", default=None)
-        parser.add_argument("-h", "--help", action="store_true")
-        parsed_opts, command = parser.parse_known_args(args)
-        if parsed_opts.help:
-            full_parser = argparse.ArgumentParser(
-                prog="envshield run",
-                description="Run a command with decrypted secrets injected into memory.",
-            )
-            full_parser.add_argument("--env-file", default=".env.enc")
-            full_parser.add_argument("-i", "--identity", default=None)
-            full_parser.add_argument("--keyring-name", default=None)
-            full_parser.add_argument(
-                "command",
-                nargs=argparse.REMAINDER,
-                help="Command to execute (e.g. envshield run -- python app.py)",
-            )
-            full_parser.print_help()
-            sys.exit(0)
-        opt_args = []
-        if parsed_opts.env_file != ".env.enc":
-            opt_args.extend(["--env-file", parsed_opts.env_file])
-        if parsed_opts.identity:
-            opt_args.extend(["--identity", parsed_opts.identity])
-        if parsed_opts.keyring_name:
-            opt_args.extend(["--keyring-name", parsed_opts.keyring_name])
-
+def _build_run_parser(add_help: bool = True) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="envshield run",
         description="Run a command with decrypted secrets injected into memory.",
+        add_help=add_help,
     )
     parser.add_argument(
         "--env-file",
@@ -203,8 +172,62 @@ def handle_run(args: list[str], console: Console) -> None:
         default=None,
         help="Lookup password from OS keyring under this name.",
     )
+    parser.add_argument(
+        "-p",
+        "--profile",
+        "--env",
+        dest="profile",
+        default=None,
+        help="Environment profile section to load (e.g. production, staging).",
+    )
+    parser.add_argument(
+        "--auto-branch",
+        action="store_true",
+        help="Automatically detect and select profile matching current Git branch.",
+    )
+    parser.add_argument(
+        "--no-redact",
+        action="store_true",
+        help="Disable real-time live terminal output secret masking/redaction.",
+    )
+    parser.add_argument(
+        "--no-interpolate",
+        action="store_true",
+        help="Disable dynamic ${VAR} and ${VAR:-default} interpolation in memory.",
+    )
+    parser.add_argument(
+        "--enable-decoy",
+        action="store_true",
+        help="Inject decoy/canary environment if authentication fails.",
+    )
+    parser.add_argument(
+        "--decoy-file",
+        default=None,
+        help="Path to custom decoy environment file for canary trap.",
+    )
+    parser.add_argument(
+        "--alert-webhook",
+        default=None,
+        help="Webhook URL to notify upon unauthorized intrusion / decoy activation.",
+    )
+    return parser
 
-    parsed = parser.parse_args(opt_args)
+
+def handle_run(args: list[str], console: Console) -> None:
+    run_parser = _build_run_parser(add_help=True)
+    if "--" in args:
+        dash_idx = args.index("--")
+        opt_args = args[:dash_idx]
+        command = args[dash_idx + 1 :]
+        parsed = run_parser.parse_args(opt_args)
+    else:
+        helper_parser = _build_run_parser(add_help=False)
+        helper_parser.add_argument("-h", "--help", action="store_true")
+        parsed_opts, command = helper_parser.parse_known_args(args)
+        if parsed_opts.help:
+            run_parser.print_help()
+            sys.exit(0)
+        parsed = parsed_opts
 
     if not command:
         console.print(
@@ -217,8 +240,12 @@ def handle_run(args: list[str], console: Console) -> None:
         console.print(f"[red]Error: Encrypted environment file '{env_path}' not found.[/red]")
         sys.exit(1)
 
+    selected_profile = parsed.profile
+    if parsed.auto_branch and not selected_profile:
+        selected_profile = detect_git_branch_profile()
+        console.print(f"[dim]Git branch profile detected: '[cyan]{selected_profile}[/cyan]'[/dim]")
+
     password: str | None = None
-    # Check if we can decrypt with identity first or if password is needed
     if not parsed.identity:
         password = resolve_password(
             keyring_name=parsed.keyring_name,
@@ -226,15 +253,43 @@ def handle_run(args: list[str], console: Console) -> None:
         )
 
     try:
-        secrets = unseal_to_memory(env_path, password=password, identity_path=parsed.identity)
+        secrets = unseal_to_memory(
+            env_path,
+            password=password,
+            identity_path=parsed.identity,
+            profile=selected_profile,
+            interpolate=not parsed.no_interpolate,
+        )
     except (InvalidKey, AuthError) as exc:
-        console.print(f"[red]Decryption failed: {exc}[/red]")
-        sys.exit(1)
+        if parsed.enable_decoy or os.environ.get("ENVSHIELD_DECOY_ENABLED"):
+            console.print(
+                "[dim yellow]Warning: Access restricted. Entering isolated sandbox environment...[/dim yellow]"
+            )
+            trigger_canary_alert(
+                env_path,
+                webhook_url=parsed.alert_webhook,
+                details={"reason": "auth_failure", "command": command},
+            )
+            secrets = load_decoy_secrets(parsed.decoy_file)
+        else:
+            console.print(f"[red]Decryption failed: {exc}[/red]")
+            sys.exit(1)
     except Exception as exc:
         console.print(f"[red]Error unsealing environment file: {exc}[/red]")
         sys.exit(1)
 
-    exit_code = execute_with_env(command, secrets)
+    record_audit_event(
+        action="RUN",
+        target_path=env_path,
+        key_id="session",
+        details={"command": command, "profile": selected_profile},
+    )
+
+    exit_code = execute_with_env(
+        command,
+        secrets,
+        redact=not parsed.no_redact,
+    )
     sys.exit(exit_code)
 
 
@@ -366,6 +421,113 @@ def handle_key(args: list[str], console: Console) -> None:
     sys.exit(0)
 
 
+def handle_audit(args: list[str], console: Console) -> None:
+    parser = argparse.ArgumentParser(
+        prog="envshield audit",
+        description="Inspect and verify the cryptographic tamper-evident access log.",
+    )
+    subparsers = parser.add_subparsers(dest="audit_cmd")
+
+    list_p = subparsers.add_parser("list", help="List recent audit events.")
+    list_p.add_argument("--limit", "-n", type=int, default=20, help="Number of entries to display.")
+    list_p.add_argument("--audit-file", default=None, help="Custom audit log path.")
+
+    verify_p = subparsers.add_parser("verify", help="Verify cryptographic hash chain integrity.")
+    verify_p.add_argument("--audit-file", default=None, help="Custom audit log path.")
+
+    parsed = parser.parse_args(args)
+    if parsed.audit_cmd == "verify":
+        valid, msg = verify_audit_chain(parsed.audit_file)
+        if valid:
+            console.print(f"[bold green]✓ {msg}[/bold green]")
+            sys.exit(0)
+        else:
+            console.print(f"[bold red]✗ Integrity Failure: {msg}[/bold red]")
+            sys.exit(1)
+
+    # Default to list
+    audit_file = getattr(parsed, "audit_file", None)
+    entries = read_audit_entries(audit_file)
+    if not entries:
+        console.print("[dim]No audit log entries recorded yet.[/dim]")
+        sys.exit(0)
+
+    limit = getattr(parsed, "limit", 20)
+    entries = entries[-limit:]
+
+    table = Table(
+        title="[bold cyan]EnvShield Cryptographic Audit Trail[/bold cyan]", show_header=True
+    )
+    table.add_column("#", style="dim", width=4)
+    table.add_column("Timestamp (UTC)", style="cyan")
+    table.add_column("Action", style="bold")
+    table.add_column("Target", style="magenta")
+    table.add_column("User@Host", style="green")
+    table.add_column("Key Fingerprint", style="yellow")
+    table.add_column("Chain Link", style="dim")
+
+    for e in entries:
+        action_name = str(e.get("action", ""))
+        action_style = (
+            "green"
+            if action_name in ("RUN", "SEAL")
+            else ("red" if "DECOY" in action_name else "blue")
+        )
+        table.add_row(
+            str(e.get("index", "")),
+            str(e.get("timestamp", ""))[:19].replace("T", " "),
+            f"[{action_style}]{action_name}[/{action_style}]",
+            str(Path(e.get("target_file", "")).name),
+            f"{e.get('user', '')}@{e.get('hostname', '')[:10]}",
+            str(e.get("key_fingerprint", ""))[:8],
+            str(e.get("entry_hash", ""))[:8] + "...",
+        )
+
+    console.print(table)
+    sys.exit(0)
+
+
+def handle_hook(args: list[str], console: Console) -> None:
+    parser = argparse.ArgumentParser(
+        prog="envshield hook",
+        description="Manage Git self-healing pre-commit hooks to block and auto-seal secrets.",
+    )
+    subparsers = parser.add_subparsers(dest="hook_cmd")
+
+    install_p = subparsers.add_parser(
+        "install", help="Install self-healing pre-commit hook in current repo."
+    )
+    install_p.add_argument(
+        "--force", "-f", action="store_true", help="Overwrite existing hook if present."
+    )
+
+    subparsers.add_parser("uninstall", help="Remove pre-commit hook.")
+
+    run_p = subparsers.add_parser("run", help="Run pre-commit protection scan.")
+    run_p.add_argument("--interactive", action="store_true", default=sys.stdin.isatty())
+    run_p.add_argument("--non-interactive", action="store_false", dest="interactive")
+
+    parsed = parser.parse_args(args)
+    if parsed.hook_cmd == "install":
+        success, msg = install_hook(force=parsed.force)
+        color = "green" if success else "red"
+        console.print(f"[{color}]{msg}[/{color}]")
+        sys.exit(0 if success else 1)
+
+    if parsed.hook_cmd == "uninstall":
+        success, msg = uninstall_hook()
+        color = "green" if success else "yellow"
+        console.print(f"[{color}]{msg}[/{color}]")
+        sys.exit(0 if success else 1)
+
+    if parsed.hook_cmd == "run":
+        exit_code = run_pre_commit_scan(interactive=parsed.interactive, console=console)
+        sys.exit(exit_code)
+
+    parser.print_help()
+    sys.exit(0)
+
+
 def handle_scan(args: list[str]) -> None:
     parser = argparse.ArgumentParser(
         prog="envshield",
@@ -377,10 +539,16 @@ def handle_scan(args: list[str]) -> None:
         "  diff [A] [B]                Compare encrypted vaults in RAM\n"
         "  key {set,get,delete}        Manage OS keyring credentials\n",
     )
-    parser.add_argument("paths", nargs="*", default=["."], help="Paths to scan (directories or files).")
+    parser.add_argument(
+        "paths", nargs="*", default=["."], help="Paths to scan (directories or files)."
+    )
     parser.add_argument("--staged", action="store_true", help="Scan only git staged files.")
-    parser.add_argument("--ci", action="store_true", help="CI mode: suppress animations, exit code 1 on findings.")
-    parser.add_argument("--format", choices=["text", "json", "sarif"], default="text", help="Output format.")
+    parser.add_argument(
+        "--ci", action="store_true", help="CI mode: suppress animations, exit code 1 on findings."
+    )
+    parser.add_argument(
+        "--format", choices=["text", "json", "sarif"], default="text", help="Output format."
+    )
     parser.add_argument("--install-hook", action="store_true", help="Install git pre-commit hook.")
 
     parsed = parser.parse_args(args)
@@ -391,7 +559,9 @@ def handle_scan(args: list[str]) -> None:
             console.print("[green]Successfully installed pre-commit hook![/green]")
             sys.exit(0)
         else:
-            console.print("[red]Failed to install pre-commit hook. Are you in a git repository?[/red]")
+            console.print(
+                "[red]Failed to install pre-commit hook. Are you in a git repository?[/red]"
+            )
             sys.exit(1)
 
     ignore_manager = IgnoreManager(os.getcwd())
@@ -501,6 +671,12 @@ def main(argv: list[str] | None = None) -> None:
             return
         if cmd == "key":
             handle_key(argv[1:], console)
+            return
+        if cmd == "audit":
+            handle_audit(argv[1:], console)
+            return
+        if cmd == "hook":
+            handle_hook(argv[1:], console)
             return
         if cmd == "scan":
             handle_scan(argv[1:])

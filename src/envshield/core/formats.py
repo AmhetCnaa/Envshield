@@ -11,9 +11,7 @@ else:
     tomllib = None  # type: ignore
 
 
-def flatten_dict(
-    nested: dict[str, Any], prefix: str = "", sep: str = "__"
-) -> dict[str, str]:
+def flatten_dict(nested: dict[str, Any], prefix: str = "", sep: str = "__") -> dict[str, str]:
     """
     Recursively flattens nested dictionaries into single-level KEY_SUBKEY=VALUE strings.
     Example: {"database": {"port": 5432}} -> {"DATABASE__PORT": "5432"}
