@@ -5,6 +5,7 @@ import binascii
 import json
 import os
 import struct
+import tempfile
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
@@ -58,26 +59,46 @@ def derive_key(password: str, salt: bytes) -> bytes:
 def shred_file(path: Path | str, passes: int = 3) -> None:
     """
     Securely overwrites and removes a file to prevent forensic recovery.
-    Overwrites with random bytes in multiple passes followed by zeros before deletion.
+    Overwrites in 64 KB chunks with random bytes in multiple passes followed by zeros,
+    and renames the file to an anonymous random name before unlinking so directory
+    journal metadata does not retain the original filename.
     """
     target = Path(path)
-    if not target.is_file():
+    if not target.is_file() or target.is_symlink():
+        if target.is_symlink():
+            target.unlink(missing_ok=True)
         return
 
     size = target.stat().st_size
+    chunk_size = 65536
     if size > 0:
-        with open(target, "ba+", buffering=0) as f:
+        with open(target, "r+b", buffering=0) as f:
             for _ in range(passes):
                 f.seek(0)
-                f.write(os.urandom(size))
+                remaining = size
+                while remaining > 0:
+                    n = min(chunk_size, remaining)
+                    f.write(os.urandom(n))
+                    remaining -= n
                 f.flush()
                 os.fsync(f.fileno())
             f.seek(0)
-            f.write(b"\x00" * size)
+            zero_chunk = b"\x00" * min(chunk_size, size)
+            remaining = size
+            while remaining > 0:
+                n = min(chunk_size, remaining)
+                f.write(zero_chunk[:n])
+                remaining -= n
             f.flush()
             os.fsync(f.fileno())
 
-    target.unlink()
+    try:
+        anon_path = target.parent / f".shred_{os.urandom(8).hex()}"
+        target.rename(anon_path)
+        anon_path.unlink(missing_ok=True)
+    except OSError:
+        target.unlink(missing_ok=True)
+
 
 
 def seal_payload(
@@ -100,10 +121,6 @@ def seal_payload(
     )
     dek = bytearray(os.urandom(KEY_SIZE))
     payload_nonce = os.urandom(NONCE_SIZE)
-
-    # Encrypt the plaintext payload with DEK using AES-256-GCM
-    aesgcm = AESGCM(bytes(dek))
-    ciphertext = aesgcm.encrypt(payload_nonce, plaintext, None)
 
     slots: list[dict[str, Any]] = []
     salt: bytes | None = None
@@ -135,9 +152,6 @@ def seal_payload(
             slot_info = encrypt_dek_for_recipient(bytes(dek), recipient)
             slots.append(slot_info)
 
-    # Wipe DEK from memory after sealing
-    secure_wipe(dek)
-
     header_data = {
         "version": 2,
         "format": format_type,
@@ -147,10 +161,32 @@ def seal_payload(
     header_bytes = json.dumps(header_data, separators=(",", ":")).encode("utf-8")
 
     # Layout: [V2_MAGIC (6B)] + [header_len (4B)] + [header_bytes] + [ciphertext + tag]
-    payload = V2_MAGIC + struct.pack(">I", len(header_bytes)) + header_bytes + ciphertext
+    # Note: Header is passed as AAD (Associated Authenticated Data) into AES-256-GCM so any
+    # tampering with `format` or `slots` in the JSON header invalidates the payload GCM tag.
+    aad = V2_MAGIC + struct.pack(">I", len(header_bytes)) + header_bytes
+    aesgcm = AESGCM(bytes(dek))
+    ciphertext = aesgcm.encrypt(payload_nonce, plaintext, aad)
+    # Wipe DEK from memory immediately after encrypting payload and slots
+    secure_wipe(dek)
+    payload = aad + ciphertext
+
 
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(payload)
+    # Atomic write via temporary file in target directory + os.replace to prevent half-written vault corruption
+    fd, tmp_name = tempfile.mkstemp(prefix=f".{target.name}.tmp_", dir=str(target.parent))
+    try:
+        with os.fdopen(fd, "wb") as tf:
+            tf.write(payload)
+            tf.flush()
+            os.fsync(tf.fileno())
+        os.replace(tmp_name, target)
+    except Exception:
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
+
 
     record_audit_event(
         action="SEAL",
@@ -310,12 +346,18 @@ def unseal_raw_payload(
                 "Authentication failed: no matching private key, valid password, or authorized KMS identity for this vault."
             )
 
-        with SecureBuffer(bytes(dek)) as sec_dek:
+        with SecureBuffer(dek) as sec_dek:
             aesgcm = AESGCM(sec_dek.to_bytes())
+            aad = raw_bytes[:header_end]
             try:
-                decrypted_bytes = aesgcm.decrypt(payload_nonce, ciphertext, None)
-            except InvalidTag as exc:
-                raise InvalidKey("Authentication failed: payload tag mismatch.") from exc
+                decrypted_bytes = aesgcm.decrypt(payload_nonce, ciphertext, aad)
+            except InvalidTag:
+                # Backward-compatible fallback for v2 vaults sealed before AAD header binding
+                try:
+                    decrypted_bytes = aesgcm.decrypt(payload_nonce, ciphertext, None)
+                except InvalidTag as exc:
+                    raise InvalidKey("Authentication failed: payload tag mismatch.") from exc
+
 
         try:
             plaintext = decrypted_bytes.decode("utf-8")

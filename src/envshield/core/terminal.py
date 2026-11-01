@@ -64,6 +64,24 @@ def setup_windows_virtual_terminal() -> bool:
         return False
 
 
+def _write_all(fd: int, payload: bytes) -> None:
+    """
+    Writes the entire byte payload to a file descriptor, handling partial writes
+    and EAGAIN / InterruptedError so high-throughput TUI outputs never corrupt.
+    """
+    view = memoryview(payload)
+    while view:
+        try:
+            written = os.write(fd, view)
+            if written <= 0:
+                break
+            view = view[written:]
+        except InterruptedError:
+            continue
+        except BlockingIOError:
+            continue
+
+
 def _execute_posix_pty(
     command: list[str],
     merged_env: dict[str, str],
@@ -80,17 +98,19 @@ def _execute_posix_pty(
     import select
 
     master_fd, slave_fd = pty.openpty()
+    stdin_fd = sys.stdin.fileno()
+    stdout_fd = sys.stdout.fileno()
 
     # Copy window size from current terminal to PTY slave
     try:
-        winsize = fcntl.ioctl(sys.stdin.fileno(), termios.TIOCGWINSZ, b"\x00" * 8)
+        winsize = fcntl.ioctl(stdin_fd, termios.TIOCGWINSZ, b"\x00" * 8)
         fcntl.ioctl(slave_fd, termios.TIOCSWINSZ, winsize)
     except Exception:
         pass
 
     def _handle_winch(signum: int, frame: Any) -> None:
         try:
-            ws = fcntl.ioctl(sys.stdin.fileno(), termios.TIOCGWINSZ, b"\x00" * 8)
+            ws = fcntl.ioctl(stdin_fd, termios.TIOCGWINSZ, b"\x00" * 8)
             fcntl.ioctl(master_fd, termios.TIOCSWINSZ, ws)
         except Exception:
             pass
@@ -110,8 +130,8 @@ def _execute_posix_pty(
                 pass
 
     try:
-        old_term_settings = termios.tcgetattr(sys.stdin.fileno())
-        tty.setraw(sys.stdin.fileno())
+        old_term_settings = termios.tcgetattr(stdin_fd)
+        tty.setraw(stdin_fd)
 
         proc = subprocess.Popen(
             command,
@@ -127,8 +147,13 @@ def _execute_posix_pty(
         slave_closed = True
         merged_env.clear()
 
+        watch_fds: list[int] = [stdin_fd, master_fd]
+
         while True:
-            r, _, _ = select.select([sys.stdin.fileno(), master_fd], [], [], 0.05)
+            try:
+                r, _, _ = select.select(watch_fds, [], [], 0.05)
+            except InterruptedError:
+                continue
 
             if not r:
                 # 1. Idle Flush: If the child paused output for 50ms (e.g. waiting at an interactive
@@ -137,7 +162,7 @@ def _execute_posix_pty(
                 if redactor and redactor._pending_buffer:
                     flushed = redactor.redact_chunk("", is_eof=True)
                     if flushed:
-                        os.write(sys.stdout.fileno(), flushed.encode("utf-8"))
+                        _write_all(stdout_fd, flushed.encode("utf-8"))
 
                 # 2. Drain-First Exit Check: Only break when `master_fd` has no unread data left
                 # AND the child process has terminated, preventing output truncation on fast commands.
@@ -145,15 +170,18 @@ def _execute_posix_pty(
                     break
                 continue
 
-            if sys.stdin.fileno() in r:
-                # Forward user keystrokes into PTY master
+            if stdin_fd in r:
+                # Forward user keystrokes into PTY master; if stdin hits EOF (e.g. piped input),
+                # stop watching stdin_fd but continue draining master_fd until child exits.
                 try:
-                    data = os.read(sys.stdin.fileno(), 1024)
+                    data = os.read(stdin_fd, 1024)
                     if not data:
-                        break
-                    os.write(master_fd, data)
+                        watch_fds.remove(stdin_fd)
+                    else:
+                        _write_all(master_fd, data)
                 except OSError:
-                    break
+                    if stdin_fd in watch_fds:
+                        watch_fds.remove(stdin_fd)
 
             if master_fd in r:
                 # Read from PTY master and display to user
@@ -166,9 +194,9 @@ def _execute_posix_pty(
                         if text:
                             sanitized = redactor.redact_chunk(text, is_eof=False)
                             if sanitized:
-                                os.write(sys.stdout.fileno(), sanitized.encode("utf-8"))
+                                _write_all(stdout_fd, sanitized.encode("utf-8"))
                     else:
-                        os.write(sys.stdout.fileno(), data)
+                        _write_all(stdout_fd, data)
                 except OSError:
                     break
 
@@ -176,10 +204,11 @@ def _execute_posix_pty(
             rem_utf8 = utf8_decoder.decode(b"", final=True)
             tail = redactor.redact_chunk(rem_utf8, is_eof=True)
             if tail:
-                os.write(sys.stdout.fileno(), tail.encode("utf-8"))
+                _write_all(stdout_fd, tail.encode("utf-8"))
 
         proc.wait()
         return proc.returncode
+
 
     finally:
         signal.signal(signal.SIGWINCH, old_handler)
