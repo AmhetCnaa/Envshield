@@ -1,6 +1,13 @@
 from __future__ import annotations
 
-from envshield.core.memory import SecureBuffer, lock_memory, secure_wipe, unlock_memory
+from envshield.core.memory import (
+    ObfuscatedSecretStore,
+    SecureBuffer,
+    disable_core_dumps,
+    lock_memory,
+    secure_wipe,
+    unlock_memory,
+)
 
 
 def test_lock_and_unlock_memory():
@@ -34,3 +41,31 @@ def test_secure_buffer_context_manager():
 
     # After exit, memory should be wiped
     assert all(b == 0 for b in sec_buf.buffer)
+
+
+def test_disable_core_dumps():
+    res = disable_core_dumps()
+    assert isinstance(res, bool)
+
+
+def test_obfuscated_secret_store():
+    raw_secrets = {
+        "AWS_SECRET_KEY": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        "DB_PASS": "hunter2_ultra_secret",
+    }
+    with ObfuscatedSecretStore(raw_secrets) as store:
+        # Ensure raw bytes in memory are XOR-masked and do NOT equal plaintext
+        cipher_buf, pad_buf = store._entries["AWS_SECRET_KEY"]
+        assert cipher_buf.to_bytes() != raw_secrets["AWS_SECRET_KEY"].encode("utf-8")
+        assert len(cipher_buf.buffer) == len(pad_buf.buffer)
+
+        # Just-in-time reveal works accurately
+        assert store.reveal("AWS_SECRET_KEY") == raw_secrets["AWS_SECRET_KEY"]
+        assert store.reveal("DB_PASS") == raw_secrets["DB_PASS"]
+        assert store.reveal("NON_EXISTENT") is None
+        assert store.reveal_all() == raw_secrets
+
+    # After context exit, all internal buffers are zero-wiped and cleared
+    assert len(store._entries) == 0
+
+

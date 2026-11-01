@@ -136,15 +136,22 @@ def _execute_posix_pty(
                         break
                     if redactor and redactor.pattern:
                         text = data.decode("utf-8", errors="replace")
-                        sanitized = redactor.redact_text(text)
-                        os.write(sys.stdout.fileno(), sanitized.encode("utf-8"))
+                        sanitized = redactor.redact_chunk(text, is_eof=False)
+                        if sanitized:
+                            os.write(sys.stdout.fileno(), sanitized.encode("utf-8"))
                     else:
                         os.write(sys.stdout.fileno(), data)
                 except OSError:
                     break
 
+        if redactor and redactor.pattern:
+            tail = redactor.redact_chunk("", is_eof=True)
+            if tail:
+                os.write(sys.stdout.fileno(), tail.encode("utf-8"))
+
         proc.wait()
         return proc.returncode
+
 
     finally:
         signal.signal(signal.SIGWINCH, old_handler)

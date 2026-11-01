@@ -4,8 +4,8 @@
 
 <br>
 
-[![PyPI Version](https://img.shields.io/pypi/v/envshield-cli?style=flat-square&logo=pypi&logoColor=white&label=PyPI&color=10B981)](https://pypi.org/project/envshield-cli/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/envshield-cli?style=flat-square&logo=python&logoColor=white&label=Python&color=3B82F6)](https://pypi.org/project/envshield-cli/)
+[![PyPI Version](https://img.shields.io/badge/Release-v0.4.0-10B981?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/envshield-cli/)
+[![Python Versions](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3B82F6?style=flat-square&logo=python&logoColor=white)](https://pypi.org/project/envshield-cli/)
 [![Cryptography](https://img.shields.io/badge/Cipher-AES--256--GCM-6366F1?style=flat-square&logo=letsencrypt&logoColor=white)](https://github.com/AmhetCnaa/Envshield)
 [![Memory Protection](https://img.shields.io/badge/Memory-VirtualLock%20%2F%20mlock-059669?style=flat-square)](https://github.com/AmhetCnaa/Envshield)
 [![License](https://img.shields.io/badge/License-AGPLv3%20%7C%20Commercial-6366F1?style=flat-square)](LICENSE)
@@ -390,7 +390,7 @@ Envshield is dual-licensed to support both the open-source community and commerc
 | **Interactive PTY / ConPTY Runner** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **SSH Public Key Recipients** | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
 | **Zero Infrastructure / Offline** | ✅ | ✅ | ✅ | ❌ Cloud | ❌ Server | ❌ Cloud |
-| **Cold-Start Overhead** | **< 20 ms** | ~ 5 ms | ~ 60 ms | ~ 150 ms | ~ 200 ms | ~ 120 ms |
+| **Cold-Start Overhead** | **~ 35 ms (Lazy CLI)** | ~ 5 ms | ~ 60 ms | ~ 180 ms | ~ 220 ms | ~ 120 ms |
 
 ---
 
@@ -403,14 +403,23 @@ Envshield is dual-licensed to support both the open-source community and commerc
 ---
 
 <details>
-<summary><b>🔬 Deep Dive: Cryptographic Specifications & Python API</b></summary>
+<summary><b>🔬 Deep Dive: Cryptographic Specifications, Memory Hardening & Python API</b></summary>
 <br>
 
-### Cryptographic Primitives
+### Cryptographic & Systems Hardening Primitives
 * **AEAD Payload Cipher:** `AES-256-GCM` with 96-bit CSPRNG nonces and 128-bit authentication tags.
 * **Key Derivation:** `PBKDF2-HMAC-SHA256` (100,000 iterations, 16-byte random salt).
 * **Asymmetric Key Exchange:** Ephemeral-Static `X25519` ECDH (via birational Ed25519 curve mapping) + `HKDF-SHA256`, and `RSA-OAEP-SHA256`.
-* **Forensic Sanitization:** 3-pass random overwrite (`os.urandom`), zero-fill pass (`0x00`), `os.fsync()` hardware cache flush, and `ctypes.memset` RAM zeroing.
+* **Physical Memory Locking & XOR Obfuscation (`memory.py`):**
+  * Mutable `bytearray` buffers are locked in physical RAM via Win32 `VirtualLock` and POSIX `mlock`.
+  * Crash core dumps are disabled at the OS level via `RLIMIT_CORE = (0, 0)`, Linux `prctl(PR_SET_DUMPABLE, 0)`, and Windows `SetErrorMode`.
+  * `ObfuscatedSecretStore` masks secrets in RAM using ephemeral CSPRNG one-time XOR pads inside locked `SecureBuffer` instances, zeroing buffers in-place via `ctypes.memset` on exit.
+* **Sliding-Window Multi-Encoding Redactor (`redactor.py`):**
+  * Automatically indexes raw, Base64-encoded, and URL-encoded representations of every secret.
+  * Maintains a lookahead sliding window (`max_secret_len - 1` bytes) across stream chunks so secrets split across arbitrary `read()` boundaries are never leaked.
+* **RAM-Backed Editor Sandbox (`editor.py`):**
+  * Mounts isolated `0700` edit sandboxes inside `/dev/shm` or `$XDG_RUNTIME_DIR` (`tmpfs` RAM disk on Linux).
+  * Injects `-n -i NONE --cmd "set nobackup nowritebackup noswapfile noundofile"` into `vim`/`nvim` and forensically 3-pass shreds the entire sandbox directory on exit.
 * **Audit Chaining:** `HMAC-SHA256` continuous Merkle-linked event log with integrity verification.
 
 ### Python SDK Usage

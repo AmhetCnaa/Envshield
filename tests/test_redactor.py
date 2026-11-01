@@ -68,3 +68,41 @@ def test_execute_with_env_no_redact(monkeypatch) -> None:
 
     exit_code = execute_with_env(cmd, secrets, redact=False)
     assert exit_code == 0
+
+
+def test_secret_redactor_chunk_boundary_sliding_window() -> None:
+    """Verify secrets split across two arbitrary read() chunks are still caught."""
+    secrets = {"STRIPE_KEY": "sk_live_9876543210abcdef"}
+    redactor = SecretRedactor(secrets)
+
+    # Split "sk_live_9876543210abcdef" across two chunks
+    out1 = redactor.redact_chunk("Payment init with key=sk_li", is_eof=False)
+    out2 = redactor.redact_chunk("ve_9876543210abcdef completed!\n", is_eof=True)
+    combined = out1 + out2
+
+    assert "sk_live_9876543210abcdef" not in combined
+    assert "[REDACTED:STRIPE_KEY]" in combined
+    assert "Payment init with key=" in combined
+    assert " completed!\n" in combined
+
+
+def test_secret_redactor_base64_and_urlencoded_variants() -> None:
+    """Verify Base64-encoded and URL-encoded leaks are automatically redacted."""
+    import base64
+    import urllib.parse
+
+    raw_secret = "p@ssw0rd/with+special=chars!"
+    secrets = {"DB_SECRET": raw_secret}
+    redactor = SecretRedactor(secrets)
+
+    b64_secret = base64.b64encode(raw_secret.encode("utf-8")).decode("ascii")
+    url_secret = urllib.parse.quote(raw_secret, safe="")
+
+    log_line = f"Auth header: Basic {b64_secret} | Redirect: ?token={url_secret}"
+    redacted = redactor.redact_text(log_line)
+
+    assert b64_secret not in redacted
+    assert url_secret not in redacted
+    assert redacted.count("[REDACTED:DB_SECRET]") == 2
+
+

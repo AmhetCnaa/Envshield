@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import base64
 import re
 import threading
+import urllib.parse
 from typing import IO, Callable
 
 COMMON_NON_SECRETS = {
@@ -28,26 +30,50 @@ COMMON_NON_SECRETS = {
 class SecretRedactor:
     """
     Real-time stream and string sanitizer that masks sensitive secret values.
-    Replaces exposed secrets with [REDACTED:<KEY_NAME>] to prevent accidental
-    leaks in stdout, stderr, stack traces, and terminal logs.
+    Features:
+      - Multi-encoding detection: masks raw, Base64-encoded, and URL-encoded forms of secrets.
+      - Sliding window lookahead buffer: prevents secrets split across arbitrary read() chunk
+        boundaries from leaking to stdout/stderr.
     """
 
     def __init__(self, secrets: dict[str, str], min_length: int = 4) -> None:
         self.min_length = min_length
         self.val_to_key: dict[str, str] = {}
+        self._pending_buffer: str = ""
 
-        # Collect secrets worthy of redaction (avoid trivial substrings like '1', 'true')
+        # Collect secrets and their encoded variants (Base64, URL-encoded)
         for key, val in secrets.items():
             sval = str(val).strip()
-            if (
-                len(sval) >= self.min_length
-                and sval.lower() not in COMMON_NON_SECRETS
-                and sval not in self.val_to_key
-            ):
+            if len(sval) < self.min_length or sval.lower() in COMMON_NON_SECRETS:
+                continue
+
+            # 1. Raw secret
+            if sval not in self.val_to_key:
                 self.val_to_key[sval] = key
+
+            # 2. Base64-encoded variants (standard and unpadded URL-safe)
+            raw_bytes = sval.encode("utf-8")
+            b64_std = base64.b64encode(raw_bytes).decode("ascii")
+            b64_unpadded = b64_std.rstrip("=")
+            b64_urlsafe = base64.urlsafe_b64encode(raw_bytes).decode("ascii").rstrip("=")
+
+            for encoded_variant in (b64_std, b64_unpadded, b64_urlsafe):
+                if len(encoded_variant) >= self.min_length and encoded_variant not in self.val_to_key:
+                    self.val_to_key[encoded_variant] = key
+
+            # 3. URL-encoded variant (e.g. p@ssword! -> p%40ssword%21)
+            url_encoded = urllib.parse.quote(sval, safe="")
+            if (
+                url_encoded != sval
+                and len(url_encoded) >= self.min_length
+                and url_encoded not in self.val_to_key
+            ):
+                self.val_to_key[url_encoded] = key
 
         # Sort values by length descending so longer matching secrets get redacted first
         sorted_vals = sorted(self.val_to_key.keys(), key=len, reverse=True)
+        self.max_secret_len: int = len(sorted_vals[0]) if sorted_vals else 0
+
         if sorted_vals:
             escaped = [re.escape(v) for v in sorted_vals]
             self.pattern: re.Pattern[str] | None = re.compile("|".join(escaped))
@@ -55,7 +81,7 @@ class SecretRedactor:
             self.pattern = None
 
     def redact_text(self, text: str) -> str:
-        """Sanitizes a single text string or log line."""
+        """Sanitizes a complete text string or log line."""
         if not self.pattern or not text:
             return text
 
@@ -66,6 +92,47 @@ class SecretRedactor:
 
         return self.pattern.sub(_repl, text)
 
+    def redact_chunk(self, chunk: str, is_eof: bool = False) -> str:
+        """
+        Stateful sliding-window chunk redactor.
+        Handles secrets that are split across two consecutive read() chunks by holding back
+        a lookahead tail of (max_secret_len - 1) characters when no newline boundary is present.
+        """
+        if not self.pattern:
+            return chunk
+
+        combined = self._pending_buffer + chunk
+        self._pending_buffer = ""
+
+        if is_eof or not combined:
+            return self.redact_text(combined)
+
+        # First redact any complete matches already visible in `combined`
+        redacted = self.redact_text(combined)
+
+        # If the chunk ends with a newline, flush everything immediately for interactive responsiveness
+        if redacted.endswith("\n"):
+            return redacted
+
+        # Otherwise, retain up to (max_secret_len - 1) characters in the sliding lookahead window
+        # in case a secret is currently split across the end of this chunk and the start of the next.
+        lookahead = max(0, self.max_secret_len - 1)
+        if lookahead > 0 and len(redacted) > lookahead:
+            # Avoid splitting inside an already formatted [REDACTED:...] tag
+            safe_cutoff = len(redacted) - lookahead
+            last_open_bracket = redacted.rfind("[REDACTED:", 0, len(redacted))
+            if last_open_bracket != -1 and last_open_bracket < safe_cutoff:
+                close_bracket = redacted.find("]", last_open_bracket)
+                if close_bracket != -1 and close_bracket >= safe_cutoff:
+                    safe_cutoff = close_bracket + 1
+
+            emit = redacted[:safe_cutoff]
+            self._pending_buffer = redacted[safe_cutoff:]
+            return emit
+
+        self._pending_buffer = redacted
+        return ""
+
     def stream_pipe(
         self,
         pipe_in: IO[str],
@@ -73,16 +140,25 @@ class SecretRedactor:
         on_line: Callable[[str], None] | None = None,
     ) -> None:
         """
-        Continuously reads lines from pipe_in, sanitizes them, and flushes to pipe_out.
-        Runs until pipe_in reaches EOF.
+        Continuously reads from pipe_in, sanitizes via sliding window & line boundaries,
+        and flushes to pipe_out until EOF.
         """
         try:
             for line in iter(pipe_in.readline, ""):
-                sanitized = self.redact_text(line)
-                pipe_out.write(sanitized)
+                sanitized = self.redact_chunk(line, is_eof=False)
+                if sanitized:
+                    pipe_out.write(sanitized)
+                    pipe_out.flush()
+                    if on_line:
+                        on_line(sanitized)
+
+            # Flush any remaining lookahead buffer at EOF
+            tail = self.redact_chunk("", is_eof=True)
+            if tail:
+                pipe_out.write(tail)
                 pipe_out.flush()
                 if on_line:
-                    on_line(sanitized)
+                    on_line(tail)
         except (ValueError, OSError):
             pass
         finally:
