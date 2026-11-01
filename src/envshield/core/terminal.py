@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import codecs
 import os
 import signal
 import subprocess
@@ -96,6 +97,17 @@ def _execute_posix_pty(
 
     old_handler = signal.signal(signal.SIGWINCH, _handle_winch)
     old_term_settings = None
+    slave_closed = False
+    utf8_decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+
+    def _setup_controlling_tty() -> None:
+        """Creates a new session and binds stdin (slave_fd) as the controlling terminal."""
+        os.setsid()
+        if hasattr(termios, "TIOCSCTTY"):
+            try:
+                fcntl.ioctl(0, termios.TIOCSCTTY, 0)
+            except Exception:
+                pass
 
     try:
         old_term_settings = termios.tcgetattr(sys.stdin.fileno())
@@ -108,15 +120,30 @@ def _execute_posix_pty(
             stdout=slave_fd,
             stderr=slave_fd,
             close_fds=True,
+            preexec_fn=_setup_controlling_tty,  # noqa: PLW1509
         )
+
         os.close(slave_fd)  # Close slave in parent; child keeps it open
+        slave_closed = True
+        merged_env.clear()
 
         while True:
-            # Check if process exited
-            if proc.poll() is not None:
-                break
-
             r, _, _ = select.select([sys.stdin.fileno(), master_fd], [], [], 0.05)
+
+            if not r:
+                # 1. Idle Flush: If the child paused output for 50ms (e.g. waiting at an interactive
+                # "Password: " prompt without a trailing newline, or echoing single keystrokes),
+                # flush any held lookahead buffer immediately to prevent prompt starvation.
+                if redactor and redactor._pending_buffer:
+                    flushed = redactor.redact_chunk("", is_eof=True)
+                    if flushed:
+                        os.write(sys.stdout.fileno(), flushed.encode("utf-8"))
+
+                # 2. Drain-First Exit Check: Only break when `master_fd` has no unread data left
+                # AND the child process has terminated, preventing output truncation on fast commands.
+                if proc.poll() is not None:
+                    break
+                continue
 
             if sys.stdin.fileno() in r:
                 # Forward user keystrokes into PTY master
@@ -135,23 +162,24 @@ def _execute_posix_pty(
                     if not data:
                         break
                     if redactor and redactor.pattern:
-                        text = data.decode("utf-8", errors="replace")
-                        sanitized = redactor.redact_chunk(text, is_eof=False)
-                        if sanitized:
-                            os.write(sys.stdout.fileno(), sanitized.encode("utf-8"))
+                        text = utf8_decoder.decode(data, final=False)
+                        if text:
+                            sanitized = redactor.redact_chunk(text, is_eof=False)
+                            if sanitized:
+                                os.write(sys.stdout.fileno(), sanitized.encode("utf-8"))
                     else:
                         os.write(sys.stdout.fileno(), data)
                 except OSError:
                     break
 
         if redactor and redactor.pattern:
-            tail = redactor.redact_chunk("", is_eof=True)
+            rem_utf8 = utf8_decoder.decode(b"", final=True)
+            tail = redactor.redact_chunk(rem_utf8, is_eof=True)
             if tail:
                 os.write(sys.stdout.fileno(), tail.encode("utf-8"))
 
         proc.wait()
         return proc.returncode
-
 
     finally:
         signal.signal(signal.SIGWINCH, old_handler)
@@ -160,10 +188,16 @@ def _execute_posix_pty(
                 termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old_term_settings)
             except Exception:
                 pass
+        if not slave_closed:
+            try:
+                os.close(slave_fd)
+            except Exception:
+                pass
         try:
             os.close(master_fd)
         except Exception:
             pass
+
 
 
 def _execute_windows_interactive(

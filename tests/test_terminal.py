@@ -71,3 +71,40 @@ def test_cli_run_with_pty_flag(mock_exit, tmp_path: Path, monkeypatch):
 
     mock_exec.assert_called_once()
     assert mock_exec.call_args[1]["pty"] is True
+
+
+def test_pty_idle_prompt_flush_and_utf8_incremental_decode() -> None:
+    """
+    Verifies two critical PTY behaviors highlighted by security review:
+      1. Prompt Starvation Prevention: short prompts without trailing newline (e.g. 'Password: ')
+         held in the lookahead buffer are immediately flushed when the PTY stream goes idle.
+      2. Multi-Byte UTF-8 Split Prevention: UTF-8 characters (Turkish ğ, ü, ş, emoji) split
+         across 4096-byte os.read() boundaries are reassembled cleanly via incremental decoder.
+    """
+    import codecs
+
+    from envshield.core.redactor import SecretRedactor
+
+    secrets = {"API_TOKEN": "sk_live_very_long_secret_token_9876543210"}
+    redactor = SecretRedactor(secrets)
+    utf8_decoder = codecs.getincrementaldecoder("utf-8")(errors="replace")
+
+    # 1. Simulate a 2-byte Turkish character ('ş' = 0xC5 0x9F) and 4-byte emoji ('🛡️') split across reads
+    raw_bytes = "Şifre girin 🛡️ Password: ".encode()
+    part1 = raw_bytes[:7]  # Splits right inside multi-byte UTF-8 sequence
+    part2 = raw_bytes[7:]
+
+    dec1 = utf8_decoder.decode(part1, final=False)
+    dec2 = utf8_decoder.decode(part2, final=False)
+
+    # First pass without newline holds short prompt inside lookahead buffer
+    out1 = redactor.redact_chunk(dec1, is_eof=False)
+    out2 = redactor.redact_chunk(dec2, is_eof=False)
+    assert out1 + out2 == ""
+    assert redactor._pending_buffer == "Şifre girin 🛡️ Password: "
+
+    # When select() times out (idle after 50ms), PTY flushes the pending buffer with is_eof=True
+    idle_flushed = redactor.redact_chunk("", is_eof=True)
+    assert idle_flushed == "Şifre girin 🛡️ Password: "
+    assert "\ufffd" not in idle_flushed
+
