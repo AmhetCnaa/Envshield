@@ -1,36 +1,33 @@
 /**
- * Envshield — Enterprise Security Infrastructure Stylesheet
- * Crafted with Linear / Vercel / Resend architectural precision
- * High-density Bento layouts, 1px structural grid lines, mouse-tracking spotlights
+ * Envshield — Visual Motion & Interactive Design System
+ * Scroll-Triggered Choreography, Kinetic Typography, 3D Tilt & Laser Circuitry
  */
 
 :root {
-    --section-py: clamp(72px, 7vw, 112px);
+    --section-py: clamp(76px, 7.5vw, 118px);
     --container-max-w: 1200px;
     --container-px: 24px;
 
     /* OKLCH & Hex Surface Hierarchy */
-    --bg-canvas: #06070a;
+    --bg-canvas: #050609;
     --bg-obsidian: oklch(0.11 0.012 255);
     --bg-surface: oklch(0.14 0.016 255);
     --bg-panel: oklch(0.17 0.02 255);
-    --bg-card: rgba(13, 16, 23, 0.72);
-    --bg-card-hover: rgba(18, 22, 32, 0.85);
+    --bg-card: rgba(12, 15, 22, 0.72);
 
     /* Structural Hairlines & Specular Borders */
     --border-grid: rgba(255, 255, 255, 0.06);
     --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-strong: rgba(255, 255, 255, 0.15);
-    --inner-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+    --inner-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 
     /* Surgical Accents */
     --accent-emerald: #10b981;
     --accent-cyan: #38bdf8;
     --accent-indigo: #818cf8;
-    --accent-amber: #f59e0b;
 
-    /* Motion */
+    /* Physics Easing Curves */
     --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 html {
@@ -38,7 +35,6 @@ html {
     box-sizing: border-box;
     background-color: var(--bg-canvas);
     color: #f8fafc;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 *, *::before, *::after {
@@ -53,17 +49,29 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle Architectural Dot/Grid Matrix Backdrop */
+/* Top Scroll Progress Laser Bar */
+#scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, #10b981, #38bdf8, #818cf8);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.8);
+    z-index: 100;
+    transition: width 0.08s linear;
+}
+
+/* Subtle Architectural Grid Matrix */
 .bg-grid-matrix {
     background-size: 48px 48px;
     background-image: 
         linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 25%, #000 60%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 25%, #000 60%, transparent 100%);
+    mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, #000 55%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, #000 55%, transparent 100%);
 }
 
 /* Unified 1200px Container */
@@ -102,7 +110,160 @@ body {
 }
 
 .section.has-bg-alt {
-    background: linear-gradient(180deg, rgba(12, 15, 22, 0.65) 0%, rgba(6, 7, 10, 0.9) 100%);
+    background: linear-gradient(180deg, rgba(12, 15, 22, 0.65) 0%, rgba(5, 6, 9, 0.95) 100%);
+}
+
+/* ============================================================================
+   SCROLL-TRIGGERED ENTRANCE CHOREOGRAPHY (Linear / Apple Style)
+   ============================================================================ */
+
+/* Base Reveal Element */
+.reveal {
+    opacity: 0;
+    transform: translateY(36px) scale(0.985);
+    filter: blur(8px);
+    transition: 
+        opacity 0.85s var(--ease-spring),
+        transform 0.85s var(--ease-spring),
+        filter 0.85s var(--ease-spring);
+    transition-delay: var(--delay, 0ms);
+    will-change: opacity, transform, filter;
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+}
+
+/* Kinetic Split-Word Headline Animation */
+.kinetic-heading .word-wrap {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+}
+
+.kinetic-heading .word-inner {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(105%) rotateX(-20deg);
+    filter: blur(6px);
+    transition: 
+        transform 0.8s var(--ease-spring),
+        opacity 0.7s var(--ease-spring),
+        filter 0.7s var(--ease-spring);
+    transition-delay: var(--word-delay, 0ms);
+    will-change: transform, opacity, filter;
+}
+
+.kinetic-heading.is-visible .word-inner {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+    filter: blur(0px);
+}
+
+/* Section Divider Line Draw Animation */
+.draw-line {
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 1.2s var(--ease-out-expo);
+}
+.draw-line.is-visible {
+    transform: scaleX(1);
+}
+
+/* ============================================================================
+   3D TILT & DUAL-LAYER SPOTLIGHT CARDS
+   ============================================================================ */
+.spotlight-card {
+    position: relative;
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--inner-specular), 0 14px 34px -12px rgba(0, 0, 0, 0.65);
+    border-radius: 16px;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition: 
+        border-color 0.3s var(--ease-spring),
+        box-shadow 0.3s var(--ease-spring),
+        transform 0.2s ease-out;
+}
+
+/* Surface Radial Glow following cursor */
+.spotlight-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        520px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+        rgba(56, 189, 248, 0.11),
+        rgba(16, 185, 129, 0.04) 40%,
+        transparent 75%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.spotlight-card:hover::before {
+    opacity: 1;
+}
+
+.spotlight-card:hover {
+    border-color: rgba(56, 189, 248, 0.28);
+    box-shadow: var(--inner-specular), 0 24px 48px -15px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(56, 189, 248, 0.12);
+}
+
+/* Animated Laser Scanline on Card Hover */
+.scanline-sweep {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(52, 211, 153, 0.06) 50%, rgba(52, 211, 153, 0.25) 51%, transparent 52%, transparent 100%);
+    background-size: 100% 200%;
+    background-position: 0% 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.spotlight-card:hover .scanline-sweep {
+    opacity: 1;
+    animation: scanSweep 3s infinite linear;
+}
+
+@keyframes scanSweep {
+    0% { background-position: 0% 120%; }
+    100% { background-position: 0% -80%; }
+}
+
+/* ============================================================================
+   SVG LASER CIRCUIT BEAMS & PULSES
+   ============================================================================ */
+.laser-beam {
+    stroke-dasharray: 8 12;
+    animation: beamFlow 1.6s linear infinite;
+}
+
+@keyframes beamFlow {
+    to {
+        stroke-dashoffset: -40;
+    }
+}
+
+.pulse-ring {
+    animation: pulseRing 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    transform-origin: center;
+}
+
+@keyframes pulseRing {
+    0% { transform: scale(0.85); opacity: 0.7; }
+    70% { transform: scale(1.55); opacity: 0; }
+    100% { transform: scale(1.55); opacity: 0; }
 }
 
 /* Architectural Crosshair Marker (+) */
@@ -119,18 +280,8 @@ body {
     position: absolute;
     background-color: rgba(255, 255, 255, 0.28);
 }
-.crosshair::before {
-    top: 5px;
-    left: 0;
-    width: 11px;
-    height: 1px;
-}
-.crosshair::after {
-    top: 0;
-    left: 5px;
-    width: 1px;
-    height: 11px;
-}
+.crosshair::before { top: 5px; left: 0; width: 11px; height: 1px; }
+.crosshair::after { top: 0; left: 5px; width: 1px; height: 11px; }
 
 /* Floating Glass Dock Navbar */
 .glass-dock {
@@ -141,44 +292,7 @@ body {
     box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.7), var(--inner-specular);
 }
 
-/* Spotlight Bento Card */
-.spotlight-card {
-    position: relative;
-    background: var(--bg-card);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border-subtle);
-    box-shadow: var(--inner-specular), 0 12px 32px -12px rgba(0, 0, 0, 0.6);
-    border-radius: 16px;
-    overflow: hidden;
-    transition: border-color 0.25s var(--ease-spring), transform 0.25s var(--ease-spring), box-shadow 0.25s var(--ease-spring);
-}
-
-.spotlight-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-        480px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
-        rgba(56, 189, 248, 0.09),
-        transparent 70%
-    );
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.spotlight-card:hover::before {
-    opacity: 1;
-}
-
-.spotlight-card:hover {
-    border-color: rgba(255, 255, 255, 0.16);
-    box-shadow: var(--inner-specular), 0 20px 40px -15px rgba(0, 0, 0, 0.75);
-}
-
-/* Primary High-Contrast Button with Subtle Sheen */
+/* Primary High-Contrast Button with Sheen */
 .btn-primary {
     position: relative;
     overflow: hidden;
@@ -189,10 +303,24 @@ body {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 255, 255, 0.12);
     transition: all 0.2s var(--ease-spring);
 }
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -75%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+    transform: rotate(28deg);
+    transition: transform 0.55s ease;
+}
+.btn-primary:hover::after {
+    transform: rotate(28deg) translate(320%, 0);
+}
 .btn-primary:hover {
-    background: #e2e8f0;
+    background: #f1f5f9;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 28px rgba(255, 255, 255, 0.22);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), 0 0 28px rgba(255, 255, 255, 0.25);
 }
 .btn-primary:active {
     transform: translateY(0) scale(0.98);
@@ -208,11 +336,9 @@ body {
 }
 .btn-secondary:hover {
     background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.2);
     color: #ffffff;
-}
-.btn-secondary:active {
-    transform: scale(0.98);
+    transform: translateY(-1px);
 }
 
 /* Custom Range Slider */
@@ -238,7 +364,7 @@ input[type="range"].pro-slider::-webkit-slider-thumb {
     transition: transform 0.15s ease;
 }
 input[type="range"].pro-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.12);
+    transform: scale(1.15);
 }
 
 /* Footer */
@@ -252,6 +378,6 @@ input[type="range"].pro-slider::-webkit-slider-thumb:hover {
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #06070a; }
+::-webkit-scrollbar-track { background: #050609; }
 ::-webkit-scrollbar-thumb { background: #1e2433; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #334155; }

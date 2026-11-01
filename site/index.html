@@ -22,7 +22,7 @@
             theme: {
                 extend: {
                     colors: {
-                        canvas: '#06070a',
+                        canvas: '#050609',
                         obsidian: '#090b10',
                         surface: '#0d1017',
                         panel: '#121620',
@@ -44,10 +44,13 @@
 </head>
 <body class="bg-canvas text-slate-100 font-sans antialiased selection:bg-emerald-500/25 selection:text-emerald-200">
 
+    <!-- Top Laser Scroll Progress Bar -->
+    <div id="scroll-progress"></div>
+
     <!-- Ambient Radial Lighting & Grid Matrix -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div class="absolute inset-0 bg-grid-matrix"></div>
-        <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[420px] bg-gradient-to-b from-sky-500/[0.08] via-emerald-500/[0.03] to-transparent blur-[120px] rounded-full"></div>
+        <div id="cursor-ambient-glow" class="absolute w-[650px] h-[650px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-tr from-emerald-500/[0.05] via-sky-500/[0.05] to-transparent blur-[110px] transition-transform duration-300 ease-out" style="left: 50%; top: 25%;"></div>
     </div>
 
     <!-- Floating Island Glass Dock Navbar -->
@@ -71,16 +74,16 @@
                 </span>
             </div>
 
-            <!-- Navigation Links -->
-            <div class="hidden lg:flex items-center gap-6 text-xs font-medium text-slate-400">
-                <a href="#architecture" class="hover:text-white transition-colors">Architecture</a>
-                <a href="#demo" class="hover:text-white transition-colors">Runtime Trace</a>
-                <a href="#features" class="hover:text-white transition-colors">Primitives</a>
-                <a href="#comparison" class="hover:text-white transition-colors">Benchmarks</a>
-                <a href="#calculator" class="hover:text-white transition-colors">Economics</a>
-                <a href="#pricing" class="hover:text-white transition-colors">Licensing</a>
-                <a href="#quickstart" class="hover:text-white transition-colors">Quickstart</a>
-                <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+            <!-- Navigation Links with Scroll Spy Highlight -->
+            <div class="hidden lg:flex items-center gap-1 text-xs font-medium text-slate-400">
+                <a href="#architecture" data-nav="architecture" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Architecture</a>
+                <a href="#demo" data-nav="demo" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Runtime Trace</a>
+                <a href="#features" data-nav="features" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Primitives</a>
+                <a href="#comparison" data-nav="comparison" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Benchmarks</a>
+                <a href="#calculator" data-nav="calculator" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Economics</a>
+                <a href="#pricing" data-nav="pricing" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Licensing</a>
+                <a href="#quickstart" data-nav="quickstart" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">Quickstart</a>
+                <a href="#faq" data-nav="faq" class="nav-spy-link px-3 py-1.5 rounded-lg hover:text-white transition-all">FAQ</a>
             </div>
 
             <!-- Right Actions & Command Palette Trigger -->
@@ -119,21 +122,21 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
                     <!-- Left Column: High-Density Engineering Pitch -->
                     <div class="lg:col-span-6 space-y-6">
-                        <div class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 text-xs text-slate-300 font-mono">
+                        <div class="reveal inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 text-xs text-slate-300 font-mono" style="--delay: 0ms;">
                             <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold text-[10px]">AUDIT PASSED</span>
                             <span>145/145 invariant tests · RFC 9180 HPKE · mlock()</span>
                         </div>
 
-                        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-[-0.035em] text-white leading-[1.08]">
-                            Zero-disk secret execution for <span class="bg-gradient-to-r from-white via-slate-200 to-emerald-400 bg-clip-text text-transparent">paranoid engineering teams.</span>
+                        <h1 data-kinetic class="kinetic-heading text-4xl sm:text-5xl font-extrabold tracking-[-0.035em] text-white leading-[1.08]">
+                            Zero-disk secret execution for paranoid engineering teams.
                         </h1>
 
-                        <p class="text-sm sm:text-base text-slate-400 leading-relaxed font-normal">
+                        <p class="reveal text-sm sm:text-base text-slate-400 leading-relaxed font-normal" style="--delay: 180ms;">
                             Stop leaving plaintext <code class="text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded">.env</code> files on developer NVMe drives or coupling production boots to third-party SaaS uptime. Envshield unseals AES-256-GCM envelopes directly into page-locked volatile RAM, sanitizes child PTY streams in flight, and mounts stealth <code class="text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded">/dev/shm</code> descriptors into Docker.
                         </p>
 
                         <!-- Interactive Package Manager Installer Widget -->
-                        <div class="rounded-xl border border-white/10 bg-[#050608] overflow-hidden shadow-2xl">
+                        <div class="reveal rounded-xl border border-white/10 bg-[#050608] overflow-hidden shadow-2xl" style="--delay: 260ms;">
                             <div class="flex items-center justify-between px-3 py-2 bg-white/[0.02] border-b border-white/[0.06] text-[11px] font-mono">
                                 <div class="flex items-center gap-1">
                                     <button onclick="setPkgManager('pip')" id="pkg-pip" class="px-2.5 py-1 rounded-md bg-white/10 text-white font-semibold transition">pip</button>
@@ -156,128 +159,89 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex flex-wrap items-center gap-3 pt-1">
+                        <div class="reveal flex flex-wrap items-center gap-3 pt-1" style="--delay: 340ms;">
                             <a href="#demo" class="btn-primary px-5 py-2.5 text-xs sm:text-sm inline-flex items-center gap-2">
                                 <i data-lucide="terminal" class="w-4 h-4"></i>
-                                <span>Interactive CLI Shell</span>
+                                <span>Explore Runtime Trace</span>
                             </a>
                             <a href="#architecture" class="btn-secondary px-5 py-2.5 text-xs sm:text-sm font-medium inline-flex items-center gap-2">
-                                <span>Inspect Threat Model</span>
+                                <span>Inspect Architecture</span>
                                 <i data-lucide="arrow-down-right" class="w-4 h-4 text-slate-400"></i>
                             </a>
                         </div>
                     </div>
 
-                    <!-- Right Column: INTERACTIVE SECURITY WORKBENCH (Live Sanitizer, Envelope Compiler & Attack Simulator) -->
-                    <div class="lg:col-span-6">
-                        <div class="rounded-2xl bg-[#050609] border border-white/10 overflow-hidden shadow-2xl flex flex-col">
-                            <!-- Workbench Header & Mode Tabs -->
-                            <div class="px-4 py-3 bg-[#0a0d14] border-b border-white/[0.07] flex flex-wrap items-center justify-between gap-2">
-                                <div class="flex items-center gap-2 font-mono text-[11px]">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                    <span class="text-slate-200 font-semibold">INTERACTIVE ENGINE WORKBENCH</span>
-                                </div>
-                                <div class="flex items-center gap-1 bg-black/60 p-1 rounded-lg border border-white/[0.06] font-mono text-[11px]">
-                                    <button onclick="switchWorkbench('sanitizer')" id="wb-tab-sanitizer" class="px-2.5 py-1 rounded bg-white/10 text-white font-semibold transition">01 · Redactor</button>
-                                    <button onclick="switchWorkbench('envelope')" id="wb-tab-envelope" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">02 · Envelope v2</button>
-                                    <button onclick="switchWorkbench('attacks')" id="wb-tab-attacks" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">03 · Attack Sim</button>
-                                </div>
-                            </div>
+                    <!-- Right Column: VISUAL INTERACTIVE LASER CIRCUIT & MAGNETIC NODE MATRIX -->
+                    <div class="lg:col-span-6 reveal" style="--delay: 200ms;">
+                        <div id="hero-visual-card" class="spotlight-card relative h-[430px] rounded-2xl bg-[#04060a] border border-white/10 overflow-hidden select-none cursor-crosshair shadow-2xl" onmousemove="handleHeroTilt(event, this)" onmouseleave="resetHeroTilt(this)">
+                            <!-- Scanline sweep on hover -->
+                            <div class="scanline-sweep"></div>
 
-                            <!-- PANEL 1: LIVE STREAM SANITIZER PLAYGROUND -->
-                            <div id="wb-panel-sanitizer" class="p-5 space-y-4 font-mono text-xs">
-                                <div class="flex items-center justify-between text-[11px] text-slate-400">
-                                    <span>Loaded Vault Secrets: <code class="text-emerald-400">sk_live_98aF2kL9</code>, <code class="text-sky-400">pg_pass_77xQ</code></span>
-                                    <span class="text-slate-500">Plain + Base64 + URL</span>
-                                </div>
+                            <!-- Interactive Magnetic Particle & Circuit Canvas -->
+                            <canvas id="circuit-canvas" class="absolute inset-0 w-full h-full z-0"></canvas>
 
-                                <!-- Preset Leak Buttons -->
-                                <div class="space-y-1.5">
-                                    <label class="text-[11px] text-slate-500 uppercase">Inject Simulated Child Process Output (or type below):</label>
-                                    <div class="flex flex-wrap gap-1.5">
-                                        <button onclick="setSanitizerInput('Traceback: Auth failed for Bearer sk_live_98aF2kL9 on /v1/charges')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-[11px] text-slate-300 transition">
-                                            + Plaintext Leak
-                                        </button>
-                                        <button onclick="setSanitizerInput('DEBUG payload_b64=c2tfbGl2ZV85OGFGMmtMOQ== sent to worker')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-[11px] text-slate-300 transition">
-                                            + Base64 Encoded Leak
-                                        </button>
-                                        <button onclick="setSanitizerInput('Connecting to postgres://admin:pg_pass_77xQ@db.internal:5432/prod')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-[11px] text-slate-300 transition">
-                                            + Postgres URI Leak
-                                        </button>
+                            <!-- Architectural SVG Laser Pipeline Overlay -->
+                            <div class="relative z-10 w-full h-full p-6 flex flex-col justify-between pointer-events-none">
+                                <!-- Top HUD Telemetry Bar -->
+                                <div class="flex items-center justify-between font-mono text-[11px]">
+                                    <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-black/70 border border-white/10 backdrop-blur-md">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                        <span class="text-slate-200 font-semibold">ZERO-DISK SIGNAL TOPOLOGY</span>
                                     </div>
+                                    <span id="cursor-coords" class="px-2.5 py-1 rounded-md bg-black/70 border border-white/10 text-sky-400">
+                                        X: 0480 · Y: 0210
+                                    </span>
                                 </div>
 
-                                <!-- Live Editable Textarea -->
-                                <div>
-                                    <textarea id="sanitizer-input" oninput="runLiveSanitizer()" rows="2" class="w-full rounded-xl bg-black border border-white/15 p-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-400/60 resize-none font-mono" placeholder="Type any log line containing sk_live_98aF2kL9 or pg_pass_77xQ...">Traceback: Auth failed for Bearer sk_live_98aF2kL9 on /v1/charges</textarea>
+                                <!-- Center Interactive Nodes Schematic -->
+                                <div class="relative my-auto py-4">
+                                    <svg class="w-full h-44 overflow-visible" viewBox="0 0 500 170" fill="none">
+                                        <!-- Background Static Circuit Tracks -->
+                                        <path d="M 65 85 L 185 85" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+                                        <path d="M 250 85 L 365 40" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+                                        <path d="M 250 85 L 365 130" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+
+                                        <!-- Animated Laser Signal Beams -->
+                                        <path d="M 65 85 L 185 85" stroke="#10b981" stroke-width="2" class="laser-beam"/>
+                                        <path d="M 250 85 L 365 40" stroke="#38bdf8" stroke-width="2" class="laser-beam"/>
+                                        <path d="M 250 85 L 365 130" stroke="#818cf8" stroke-width="2" class="laser-beam"/>
+
+                                        <!-- Node 1: Sealed Envelope (.env.enc) -->
+                                        <g transform="translate(15, 55)">
+                                            <rect width="75" height="60" rx="10" fill="#090d16" stroke="rgba(52,211,153,0.4)" stroke-width="1.2"/>
+                                            <text x="37.5" y="27" text-anchor="middle" fill="#34d399" font-family="JetBrains Mono" font-size="9" font-weight="600">.env.enc</text>
+                                            <text x="37.5" y="42" text-anchor="middle" fill="#64748b" font-family="JetBrains Mono" font-size="8">AES-256</text>
+                                        </g>
+
+                                        <!-- Node 2: Central Volatile RAM Shield (Pulsing Core) -->
+                                        <g transform="translate(218, 85)">
+                                            <circle r="38" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.35)" stroke-width="1" class="pulse-ring"/>
+                                            <circle r="32" fill="#090d16" stroke="#10b981" stroke-width="1.5"/>
+                                            <text x="0" y="-3" text-anchor="middle" fill="#ffffff" font-family="JetBrains Mono" font-size="9" font-weight="700">mlock()</text>
+                                            <text x="0" y="10" text-anchor="middle" fill="#34d399" font-family="JetBrains Mono" font-size="7.5">0x7ffe8400</text>
+                                        </g>
+
+                                        <!-- Node 3: PTY Stream Sanitizer -->
+                                        <g transform="translate(365, 12)">
+                                            <rect width="118" height="54" rx="10" fill="#090d16" stroke="rgba(56,189,248,0.45)" stroke-width="1.2"/>
+                                            <text x="59" y="24" text-anchor="middle" fill="#38bdf8" font-family="JetBrains Mono" font-size="9" font-weight="600">PTY REDACTOR</text>
+                                            <text x="59" y="39" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="8">[REDACTED:KEY]</text>
+                                        </g>
+
+                                        <!-- Node 4: Docker Stealth /dev/shm -->
+                                        <g transform="translate(365, 102)">
+                                            <rect width="118" height="54" rx="10" fill="#090d16" stroke="rgba(129,140,248,0.45)" stroke-width="1.2"/>
+                                            <text x="59" y="24" text-anchor="middle" fill="#818cf8" font-family="JetBrains Mono" font-size="9" font-weight="600">/dev/shm MOUNT</text>
+                                            <text x="59" y="39" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="8">0o400 · 0 Inspect</text>
+                                        </g>
+                                    </svg>
                                 </div>
 
-                                <!-- Sanitized PTY Output -->
-                                <div class="rounded-xl bg-[#080b11] border border-white/10 p-3.5 space-y-2">
-                                    <div class="flex items-center justify-between text-[11px]">
-                                        <span class="text-slate-500">SANITIZED TERMINAL / CI STREAM OUTPUT</span>
-                                        <span id="sanitizer-stats" class="text-emerald-400">1 secret masked · 0.04ms</span>
-                                    </div>
-                                    <div id="sanitizer-output" class="p-2.5 rounded-lg bg-black/70 border border-white/5 text-slate-200 break-all leading-relaxed">
-                                        <!-- Populated dynamically -->
-                                    </div>
+                                <!-- Bottom Interactive Hint Bar -->
+                                <div class="flex items-center justify-between font-mono text-[11px] bg-black/75 border border-white/10 rounded-xl px-3.5 py-2 backdrop-blur-md">
+                                    <span class="text-slate-400">Move cursor to bend field · <strong class="text-white font-normal">Click to emit verification pulse</strong></span>
+                                    <span class="text-emerald-400 font-semibold">LIVE FIELD</span>
                                 </div>
-                            </div>
-
-                            <!-- PANEL 2: ENVELOPE V2 LIVE CRYPTOGRAPHIC COMPILER -->
-                            <div id="wb-panel-envelope" class="hidden p-5 space-y-4 font-mono text-xs">
-                                <div class="flex items-center justify-between text-[11px]">
-                                    <span class="text-slate-400">AES-256-GCM + AAD Header Authentication</span>
-                                    <div class="flex items-center gap-1.5">
-                                        <button onclick="reSealEnvelope()" class="px-2 py-1 rounded bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition">
-                                            Rotate Nonce & DEK
-                                        </button>
-                                        <button onclick="tamperEnvelopeAAD()" class="px-2 py-1 rounded bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-[11px] font-semibold transition">
-                                            Simulate Header Tamper
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div id="envelope-json-box" class="rounded-xl bg-black border border-white/10 p-3.5 text-[11px] leading-relaxed overflow-x-auto">
-                                    <!-- Populated by JS -->
-                                </div>
-
-                                <div id="envelope-verify-bar" class="rounded-lg px-3.5 py-2.5 bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 flex items-center justify-between text-[11px]">
-                                    <span>✓ AAD Tag Verified: Header metadata cryptographically bound to ciphertext</span>
-                                    <span class="font-bold">OK</span>
-                                </div>
-                            </div>
-
-                            <!-- PANEL 3: KERNEL & PROCESS ATTACK VECTOR SIMULATOR -->
-                            <div id="wb-panel-attacks" class="hidden p-5 space-y-3.5 font-mono text-xs">
-                                <div class="text-[11px] text-slate-400">
-                                    Select a post-exploitation technique to compare standard <code class="text-slate-200">.env</code> / Docker workflows against Envshield runtime isolation:
-                                </div>
-
-                                <div class="grid grid-cols-3 gap-2">
-                                    <button onclick="runAttackSim('ps')" id="atk-btn-ps" class="p-2.5 rounded-xl bg-white/10 border border-white/20 text-left transition">
-                                        <div class="text-white font-semibold text-[11px]">1. ps aux / proc</div>
-                                        <div class="text-[10px] text-slate-400">Argv / environ snoop</div>
-                                    </button>
-                                    <button onclick="runAttackSim('ptrace')" id="atk-btn-ptrace" class="p-2.5 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-left transition">
-                                        <div class="text-white font-semibold text-[11px]">2. gcore / ptrace</div>
-                                        <div class="text-[10px] text-slate-400">Process core dump</div>
-                                    </button>
-                                    <button onclick="runAttackSim('swap')" id="atk-btn-swap" class="p-2.5 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-left transition">
-                                        <div class="text-white font-semibold text-[11px]">3. Swap / Forensics</div>
-                                        <div class="text-[10px] text-slate-400">NVMe pagefile grep</div>
-                                    </button>
-                                </div>
-
-                                <div id="attack-sim-output" class="rounded-xl bg-black border border-white/10 p-3.5 space-y-2.5 text-[11px]">
-                                    <!-- Populated by JS -->
-                                </div>
-                            </div>
-
-                            <!-- Workbench Bottom Telemetry Bar -->
-                            <div class="px-4 py-2.5 bg-[#080a10] border-t border-white/[0.06] flex items-center justify-between font-mono text-[11px] text-slate-500">
-                                <span>SYSCALLS: <strong class="text-slate-300 font-normal">mlock() · prctl(PR_SET_DUMPABLE, 0) · os.open(0o400)</strong></span>
-                                <span class="text-emerald-400">0 B DISK I/O</span>
                             </div>
                         </div>
                     </div>
@@ -285,23 +249,23 @@
 
                 <!-- Bottom 4-Column Architectural Telemetry Ribbon -->
                 <div class="mt-10 pt-8 border-t border-white/[0.07] grid grid-cols-2 lg:grid-cols-4 gap-6 font-mono">
-                    <div class="space-y-1">
-                        <div class="text-[11px] text-slate-500">01 // FILESYSTEM FOOTPRINT</div>
+                    <div class="reveal space-y-1" style="--delay: 100ms;">
+                        <div class="text-[11px] text-slate-500" data-scramble="01 // FILESYSTEM FOOTPRINT">01 // FILESYSTEM FOOTPRINT</div>
                         <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">0 Bytes <span class="text-xs font-normal text-emerald-400">verified</span></div>
                         <div class="text-xs text-slate-400 font-sans">No temp files, swap pages, or SSD inodes</div>
                     </div>
-                    <div class="space-y-1">
-                        <div class="text-[11px] text-slate-500">02 // UNSEAL LATENCY</div>
+                    <div class="reveal space-y-1" style="--delay: 200ms;">
+                        <div class="text-[11px] text-slate-500" data-scramble="02 // UNSEAL LATENCY">02 // UNSEAL LATENCY</div>
                         <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">0.14 ms <span class="text-xs font-normal text-sky-400">p99</span></div>
                         <div class="text-xs text-slate-400 font-sans">Local AES-256-GCM + X25519 HKDF</div>
                     </div>
-                    <div class="space-y-1">
-                        <div class="text-[11px] text-slate-500">03 // PTY STREAM PROXY</div>
+                    <div class="reveal space-y-1" style="--delay: 300ms;">
+                        <div class="text-[11px] text-slate-500" data-scramble="03 // PTY STREAM PROXY">03 // PTY STREAM PROXY</div>
                         <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">4096 B <span class="text-xs font-normal text-indigo-400">lookahead</span></div>
                         <div class="text-xs text-slate-400 font-sans">UTF-8 boundary & Base64 leak masking</div>
                     </div>
-                    <div class="space-y-1">
-                        <div class="text-[11px] text-slate-500">04 // SAAS DEPENDENCY</div>
+                    <div class="reveal space-y-1" style="--delay: 400ms;">
+                        <div class="text-[11px] text-slate-500" data-scramble="04 // SAAS DEPENDENCY">04 // SAAS DEPENDENCY</div>
                         <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">100% <span class="text-xs font-normal text-emerald-400">air-gapped</span></div>
                         <div class="text-xs text-slate-400 font-sans">Immune to external cloud API outages</div>
                     </div>
@@ -313,14 +277,16 @@
     <!-- 2. ASYMMETRIC BENTO ARCHITECTURE SECTION -->
     <section id="architecture" class="section architecture">
         <div class="container">
-            <!-- Section Header -->
+            <!-- Section Header with Scroll-Triggered Kinetic Text -->
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2">01 // Defense-in-Depth Architecture</div>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">Engineered against real kernel & process attack vectors.</h2>
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="01 // Defense-in-Depth Architecture">01 // Defense-in-Depth Architecture</div>
+                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                        Engineered against real kernel & process attack vectors.
+                    </h2>
                 </div>
-                <p class="text-xs sm:text-sm text-slate-400 max-w-md">
-                    Every claim is backed by verifiable system calls. Interact with the modules below to inspect how Envshield isolates credentials in memory.
+                <p class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
+                    Every claim is backed by verifiable system calls. Hover or interact with the modules below to inspect how Envshield isolates credentials in memory.
                 </p>
             </div>
 
@@ -328,7 +294,8 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
                 <!-- Bento Card 1 (2 Cols): Interactive Volatile RAM Page Inspector -->
-                <div class="spotlight-card lg:col-span-2 p-6 sm:p-7 flex flex-col justify-between" onmousemove="handleSpotlight(event, this)">
+                <div class="reveal spotlight-card lg:col-span-2 p-6 sm:p-7 flex flex-col justify-between" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
                             <span class="inline-flex items-center gap-1.5 text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-md">
@@ -362,7 +329,8 @@
                 </div>
 
                 <!-- Bento Card 2 (1 Col): Sliding-Window PTY Stream Redactor -->
-                <div class="spotlight-card p-6 sm:p-7 flex flex-col justify-between" onmousemove="handleSpotlight(event, this)">
+                <div class="reveal spotlight-card p-6 sm:p-7 flex flex-col justify-between" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
                             <span class="inline-flex items-center gap-1.5 text-xs font-mono text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2.5 py-0.5 rounded-md">
@@ -397,7 +365,8 @@
                 </div>
 
                 <!-- Bento Card 3 (1 Col): Docker Stealth /dev/shm Bridge -->
-                <div class="spotlight-card p-6 sm:p-7 flex flex-col justify-between" onmousemove="handleSpotlight(event, this)">
+                <div class="reveal spotlight-card p-6 sm:p-7 flex flex-col justify-between" style="--delay: 300ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
                             <span class="inline-flex items-center gap-1.5 text-xs font-mono text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-md">
@@ -430,7 +399,8 @@
                 </div>
 
                 <!-- Bento Card 4 (2 Cols): Zero-Server GitHub SSH Envelope + Canary Honeypot -->
-                <div class="spotlight-card lg:col-span-2 p-6 sm:p-7 flex flex-col justify-between" onmousemove="handleSpotlight(event, this)">
+                <div class="reveal spotlight-card lg:col-span-2 p-6 sm:p-7 flex flex-col justify-between" style="--delay: 400ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
                             <span class="inline-flex items-center gap-1.5 text-xs font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-md">
@@ -486,21 +456,23 @@
         </div>
     </section>
 
-    <!-- 3. INTERACTIVE RUNTIME TERMINAL SANDBOX (WITH LIVE COMMAND INPUT) -->
+    <!-- 3. INTERACTIVE RUNTIME TERMINAL SANDBOX -->
     <section id="demo" class="section demo has-bg-alt">
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="text-xs font-mono uppercase tracking-widest text-sky-400 mb-2">02 // Live Runtime Verification</div>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">Interactive CLI & execution trace.</h2>
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="02 // Live Runtime Verification">02 // Live Runtime Verification</div>
+                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                        Interactive CLI & execution trace.
+                    </h2>
                 </div>
-                <p class="text-xs sm:text-sm text-slate-400 max-w-md">
+                <p class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
                     Switch between operational traces or type commands directly into the interactive shell prompt (<code class="text-slate-200 font-mono">help</code>, <code class="text-slate-200 font-mono">seal</code>, <code class="text-slate-200 font-mono">run</code>, <code class="text-slate-200 font-mono">audit</code>, <code class="text-slate-200 font-mono">clear</code>).
                 </p>
             </div>
 
             <!-- Terminal Window -->
-            <div class="rounded-2xl bg-[#050608] border border-white/10 shadow-2xl overflow-hidden font-mono text-xs sm:text-sm">
+            <div class="reveal rounded-2xl bg-[#050608] border border-white/10 shadow-2xl overflow-hidden font-mono text-xs sm:text-sm" style="--delay: 200ms;">
                 <!-- Window Top Bar & Segmented Tabs -->
                 <div class="bg-[#0b0e14] px-4 py-3 border-b border-white/[0.07] flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
@@ -557,83 +529,91 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2">03 // Production Primitives</div>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">Built for local speed and CI/CD scale.</h2>
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="03 // Production Primitives">03 // Production Primitives</div>
+                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                        Built for local speed and CI/CD scale.
+                    </h2>
                 </div>
-                <p class="text-xs sm:text-sm text-slate-400 max-w-md">
+                <p class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
                     Every workflow—from git pre-commit hooks to multi-cloud KMS envelopes—operates with zero external daemon overhead.
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 <!-- Primitive 1 -->
-                <div class="spotlight-card p-6 space-y-3" onmousemove="handleSpotlight(event, this)">
-                    <div class="flex items-center justify-between text-xs font-mono text-slate-500">
+                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 80ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
+                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
                         <span>01 / CLOUD KMS BRIDGE</span>
-                        <i data-lucide="cloud-cog" class="w-4 h-4 text-slate-300"></i>
+                        <i data-lucide="cloud-cog" class="w-4 h-4 text-emerald-400"></i>
                     </div>
-                    <h3 class="text-base font-bold text-white">Hybrid Local SSH + Cloud KMS</h3>
-                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 class="relative z-10 text-base font-bold text-white">Hybrid Local SSH + Cloud KMS</h3>
+                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         Developers unlock envelopes offline in 0.14ms via local SSH keys. CI/CD runners (GitHub Actions, GitLab) unseal the exact same file via AWS KMS, GCP KMS, or Azure Key Vault using IAM OIDC.
                     </p>
                 </div>
 
                 <!-- Primitive 2 -->
-                <div class="spotlight-card p-6 space-y-3" onmousemove="handleSpotlight(event, this)">
-                    <div class="flex items-center justify-between text-xs font-mono text-slate-500">
+                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 160ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
+                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
                         <span>02 / SELF-HEALING HOOK</span>
-                        <i data-lucide="git-commit" class="w-4 h-4 text-slate-300"></i>
+                        <i data-lucide="git-commit" class="w-4 h-4 text-sky-400"></i>
                     </div>
-                    <h3 class="text-base font-bold text-white">Pre-Commit Auto-Seal & Shred</h3>
-                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 class="relative z-10 text-base font-bold text-white">Pre-Commit Auto-Seal & Shred</h3>
+                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         If a plaintext <code class="text-slate-200 font-mono">.env</code> is accidentally staged, Envshield intercepts the commit, seals it into an authenticated AES-256-GCM envelope, multi-pass shreds the plaintext file, and continues cleanly.
                     </p>
                 </div>
 
                 <!-- Primitive 3 -->
-                <div class="spotlight-card p-6 space-y-3" onmousemove="handleSpotlight(event, this)">
-                    <div class="flex items-center justify-between text-xs font-mono text-slate-500">
+                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 240ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
+                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
                         <span>03 / ZERO-DISK EDITOR</span>
-                        <i data-lucide="file-lock-2" class="w-4 h-4 text-slate-300"></i>
+                        <i data-lucide="file-lock-2" class="w-4 h-4 text-indigo-400"></i>
                     </div>
-                    <h3 class="text-base font-bold text-white">RAM-Disk Sandboxed Editing</h3>
-                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 class="relative z-10 text-base font-bold text-white">RAM-Disk Sandboxed Editing</h3>
+                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         Running <code class="text-slate-200 font-mono">envshield edit</code> materializes temporary buffers exclusively inside <code class="text-slate-200 font-mono">/dev/shm</code> (Linux RAM tmpfs) and passes anti-swap flags (<code class="text-slate-200 font-mono">-n -i NONE</code>) to Vim/Nano so no backup files touch disk.
                     </p>
                 </div>
 
                 <!-- Primitive 4 -->
-                <div class="spotlight-card p-6 space-y-3" onmousemove="handleSpotlight(event, this)">
-                    <div class="flex items-center justify-between text-xs font-mono text-slate-500">
+                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 320ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
+                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
                         <span>04 / TAMPER-EVIDENT LEDGER</span>
-                        <i data-lucide="file-check-2" class="w-4 h-4 text-slate-300"></i>
+                        <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-400"></i>
                     </div>
-                    <h3 class="text-base font-bold text-white">HMAC-SHA256 Chained Audit Log</h3>
-                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 class="relative z-10 text-base font-bold text-white">HMAC-SHA256 Chained Audit Log</h3>
+                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         Every unseal, edit, and canary event is appended to an HMAC-chained JSONL ledger verified via constant-time <code class="text-slate-200 font-mono">hmac.compare_digest</code>. Export executive SOC 2 / ISO 27001 HTML certificates in one command.
                     </p>
                 </div>
 
                 <!-- Primitive 5 -->
-                <div class="spotlight-card p-6 space-y-3" onmousemove="handleSpotlight(event, this)">
-                    <div class="flex items-center justify-between text-xs font-mono text-slate-500">
+                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 400ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
+                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
                         <span>05 / STATIC AST SENTINEL</span>
-                        <i data-lucide="radar" class="w-4 h-4 text-slate-300"></i>
+                        <i data-lucide="radar" class="w-4 h-4 text-amber-400"></i>
                     </div>
-                    <h3 class="text-base font-bold text-white">Secret Drift & Dead Key Detection</h3>
-                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 class="relative z-10 text-base font-bold text-white">Secret Drift & Dead Key Detection</h3>
+                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         Scans Python, TypeScript, Go, Rust, and Dockerfiles to detect missing keys referenced in code, unused orphan variables in vaults, and schema drift between staging and production profiles.
                     </p>
                 </div>
 
                 <!-- Primitive 6 -->
-                <div class="spotlight-card p-6 space-y-3" onmousemove="handleSpotlight(event, this)">
-                    <div class="flex items-center justify-between text-xs font-mono text-slate-500">
+                <div class="reveal spotlight-card p-6 space-y-3" style="--delay: 480ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
+                    <div class="relative z-10 flex items-center justify-between text-xs font-mono text-slate-500">
                         <span>06 / ATOMIC PERSISTENCE</span>
-                        <i data-lucide="hard-drive" class="w-4 h-4 text-slate-300"></i>
+                        <i data-lucide="hard-drive" class="w-4 h-4 text-sky-400"></i>
                     </div>
-                    <h3 class="text-base font-bold text-white">Crash-Safe Atomic Vault Writes</h3>
-                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                    <h3 class="relative z-10 text-base font-bold text-white">Crash-Safe Atomic Vault Writes</h3>
+                    <p class="relative z-10 text-xs sm:text-sm text-slate-400 leading-relaxed">
                         Vault updates write to an isolated sibling descriptor, flush hardware buffers via <code class="text-slate-200 font-mono">os.fsync()</code>, execute atomic POSIX/NTFS <code class="text-slate-200 font-mono">os.replace()</code>, and sync the parent directory descriptor.
                     </p>
                 </div>
@@ -646,15 +626,17 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="text-xs font-mono uppercase tracking-widest text-sky-400 mb-2">04 // Technical Benchmark</div>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">Architectural comparison against industry tools.</h2>
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="04 // Technical Benchmark">04 // Technical Benchmark</div>
+                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                        Architectural comparison against industry tools.
+                    </h2>
                 </div>
-                <p class="text-xs sm:text-sm text-slate-400 max-w-md">
+                <p class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
                     Evaluated across memory isolation, process argument exposure, stream sanitization, and operational sovereignty.
                 </p>
             </div>
 
-            <div class="overflow-x-auto rounded-2xl border border-white/10 bg-[#07090d] shadow-2xl">
+            <div class="reveal overflow-x-auto rounded-2xl border border-white/10 bg-[#07090d] shadow-2xl" style="--delay: 200ms;">
                 <table class="w-full text-left text-xs sm:text-sm border-collapse">
                     <thead>
                         <tr class="border-b border-white/10 bg-white/[0.02] font-mono text-[11px] uppercase tracking-wider text-slate-400">
@@ -736,12 +718,15 @@
     <!-- 6. INFRASTRUCTURE & TCO CALCULATOR -->
     <section id="calculator" class="section calculator">
         <div class="container">
-            <div class="spotlight-card p-6 sm:p-10" onmousemove="handleSpotlight(event, this)">
+            <div class="reveal spotlight-card p-6 sm:p-10" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                <div class="scanline-sweep"></div>
                 <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                     <div class="lg:col-span-7 space-y-6">
                         <div>
-                            <div class="text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2">05 // Infrastructure Economics</div>
-                            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Eliminate per-seat SaaS tax & cluster ops.</h2>
+                            <div class="text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="05 // Infrastructure Economics">05 // Infrastructure Economics</div>
+                            <h2 data-kinetic class="kinetic-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                                Eliminate per-seat SaaS tax & cluster ops.
+                            </h2>
                             <p class="text-xs sm:text-sm text-slate-400 mt-2">
                                 Envshield runs deterministically inside your existing Git and CI/CD pipelines with zero hosted database servers, zero Consul/Raft clusters, and zero egress fees.
                             </p>
@@ -812,15 +797,17 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                 <div>
-                    <div class="text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2">06 // Dual-Licensing Model</div>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">Built for Open Source & Enterprise.</h2>
-                    <p class="text-xs sm:text-sm text-slate-400 mt-2 max-w-xl">
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="06 // Dual-Licensing Model">06 // Dual-Licensing Model</div>
+                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                        Built for Open Source & Enterprise.
+                    </h2>
+                    <p class="reveal text-xs sm:text-sm text-slate-400 mt-2 max-w-xl" style="--delay: 150ms;">
                         Free forever under GNU AGPLv3 for open-source projects and individual developers. Commercial EULA exemptions available for proprietary enterprise teams.
                     </p>
                 </div>
 
                 <!-- Billing Cycle Toggle -->
-                <div class="inline-flex items-center p-1 rounded-xl bg-[#06080c] border border-white/10 font-mono text-xs self-start">
+                <div class="reveal inline-flex items-center p-1 rounded-xl bg-[#06080c] border border-white/10 font-mono text-xs self-start" style="--delay: 200ms;">
                     <button onclick="setBilling('monthly')" id="bill-monthly" class="px-3 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition">Monthly</button>
                     <button onclick="setBilling('annual')" id="bill-annual" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5">
                         <span>Annual</span>
@@ -831,7 +818,8 @@
 
             <div class="pricing-grid grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch pt-4">
                 <!-- Tier 1: Community Edition -->
-                <div class="spotlight-card p-7 flex flex-col justify-between space-y-6" onmousemove="handleSpotlight(event, this)">
+                <div class="reveal spotlight-card p-7 flex flex-col justify-between space-y-6" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
                             <span class="text-slate-400">01 // OPEN SOURCE</span>
@@ -863,7 +851,8 @@
                 </div>
 
                 <!-- Tier 2: Team Commercial Edition -->
-                <div class="spotlight-card p-7 flex flex-col justify-between space-y-6 border-emerald-500/40 bg-[#0b1018]" onmousemove="handleSpotlight(event, this)">
+                <div class="reveal spotlight-card p-7 flex flex-col justify-between space-y-6 border-emerald-500/40 bg-[#0b1018]" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
                             <span class="text-emerald-400 font-semibold">02 // COMMERCIAL LICENSE</span>
@@ -895,7 +884,8 @@
                 </div>
 
                 <!-- Tier 3: Enterprise Tier -->
-                <div class="spotlight-card p-7 flex flex-col justify-between space-y-6" onmousemove="handleSpotlight(event, this)">
+                <div class="reveal spotlight-card p-7 flex flex-col justify-between space-y-6" style="--delay: 340ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
                             <span class="text-sky-400">03 // ORGANIZATION</span>
@@ -934,17 +924,20 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="text-xs font-mono uppercase tracking-widest text-sky-400 mb-2">07 // Zero-Friction Onboarding</div>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">Up and running in 3 commands.</h2>
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="07 // Zero-Friction Onboarding">07 // Zero-Friction Onboarding</div>
+                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                        Up and running in 3 commands.
+                    </h2>
                 </div>
-                <p class="text-xs sm:text-sm text-slate-400 max-w-md">
+                <p class="reveal text-xs sm:text-sm text-slate-400 max-w-md" style="--delay: 150ms;">
                     No accounts to register, no background agents to configure. Initialize a cryptographic vault in your repo in under 30 seconds.
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
                 <!-- Step 1 -->
-                <div class="spotlight-card p-6 flex flex-col justify-between space-y-4" onmousemove="handleSpotlight(event, this)">
+                <div class="reveal spotlight-card p-6 flex flex-col justify-between space-y-4" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between font-mono text-xs">
                             <span class="text-emerald-400 font-semibold">STEP 01 // INSTALL</span>
@@ -961,7 +954,8 @@
                 </div>
 
                 <!-- Step 2 -->
-                <div class="spotlight-card p-6 flex flex-col justify-between space-y-4" onmousemove="handleSpotlight(event, this)">
+                <div class="reveal spotlight-card p-6 flex flex-col justify-between space-y-4" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between font-mono text-xs">
                             <span class="text-sky-400 font-semibold">STEP 02 // SEAL VAULT</span>
@@ -978,7 +972,8 @@
                 </div>
 
                 <!-- Step 3 -->
-                <div class="spotlight-card p-6 flex flex-col justify-between space-y-4" onmousemove="handleSpotlight(event, this)">
+                <div class="reveal spotlight-card p-6 flex flex-col justify-between space-y-4" style="--delay: 340ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between font-mono text-xs">
                             <span class="text-indigo-400 font-semibold">STEP 03 // EXECUTE</span>
@@ -1002,13 +997,15 @@
         <div class="container">
             <div class="max-w-3xl mx-auto">
                 <div class="mb-10">
-                    <div class="text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2">08 // Security & Licensing FAQ</div>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">Technical questions, answered directly.</h2>
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-emerald-400 mb-2" data-scramble="08 // Security & Licensing FAQ">08 // Security & Licensing FAQ</div>
+                    <h2 data-kinetic class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
+                        Technical questions, answered directly.
+                    </h2>
                 </div>
 
                 <div class="space-y-3">
                     <!-- FAQ 1 -->
-                    <div class="spotlight-card" onmousemove="handleSpotlight(event, this)">
+                    <div class="reveal spotlight-card" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)">
                         <button onclick="toggleFaq(0)" class="relative z-10 w-full p-5 text-left flex items-center justify-between gap-4">
                             <span class="text-sm sm:text-base font-bold text-white">What is Envshield's exact OS threat model? Can root dump memory?</span>
                             <i data-lucide="chevron-down" id="faq-icon-0" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
@@ -1019,7 +1016,7 @@
                     </div>
 
                     <!-- FAQ 2 -->
-                    <div class="spotlight-card" onmousemove="handleSpotlight(event, this)">
+                    <div class="reveal spotlight-card" style="--delay: 180ms;" onmousemove="handleSpotlight(event, this)">
                         <button onclick="toggleFaq(1)" class="relative z-10 w-full p-5 text-left flex items-center justify-between gap-4">
                             <span class="text-sm sm:text-base font-bold text-white">How does GitHub SSH team sharing work without a central server?</span>
                             <i data-lucide="chevron-down" id="faq-icon-1" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
@@ -1030,7 +1027,7 @@
                     </div>
 
                     <!-- FAQ 3 -->
-                    <div class="spotlight-card" onmousemove="handleSpotlight(event, this)">
+                    <div class="reveal spotlight-card" style="--delay: 260ms;" onmousemove="handleSpotlight(event, this)">
                         <button onclick="toggleFaq(2)" class="relative z-10 w-full p-5 text-left flex items-center justify-between gap-4">
                             <span class="text-sm sm:text-base font-bold text-white">Does the PTY stream redactor break interactive prompts like sudo, ssh, or Python REPL?</span>
                             <i data-lucide="chevron-down" id="faq-icon-2" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
@@ -1041,7 +1038,7 @@
                     </div>
 
                     <!-- FAQ 4 -->
-                    <div class="spotlight-card" onmousemove="handleSpotlight(event, this)">
+                    <div class="reveal spotlight-card" style="--delay: 340ms;" onmousemove="handleSpotlight(event, this)">
                         <button onclick="toggleFaq(3)" class="relative z-10 w-full p-5 text-left flex items-center justify-between gap-4">
                             <span class="text-sm sm:text-base font-bold text-white">When do we need a Commercial License instead of the free AGPLv3 Community Edition?</span>
                             <i data-lucide="chevron-down" id="faq-icon-3" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
@@ -1092,10 +1089,6 @@
                     <span class="text-slate-200">Copy CLI Install Command (<code class="text-emerald-400">pip install envshield-cli</code>)</span>
                     <span class="text-slate-500">Action</span>
                 </button>
-                <button onclick="switchWorkbench('envelope'); tamperEnvelopeAAD(); toggleCmdModal(); location.href='#hero';" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition">
-                    <span class="text-slate-200">Test Envelope v2 AAD Tamper Detection</span>
-                    <span class="text-slate-500">Workbench</span>
-                </button>
                 <button onclick="toggleMemoryWipe(); toggleCmdModal(); location.href='#architecture';" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition">
                     <span class="text-slate-200">Simulate Volatile Memory Wipe (<code class="text-sky-400">ctypes.memset</code>)</span>
                     <span class="text-slate-500">Simulation</span>
@@ -1112,16 +1105,254 @@
         </div>
     </div>
 
-    <!-- INTERACTIVE CONTROLLERS & WORKBENCH ENGINE -->
+    <!-- ========================================================================
+         VISUAL INTERACTIVITY, SCROLL CHOREOGRAPHY & MAGNETIC CANVAS ENGINE
+         ======================================================================== -->
     <script>
-        // 1. Mouse Spotlight Effect on Bento Cards
-        function handleSpotlight(e, card) {
-            const rect = card.getBoundingClientRect();
-            card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-            card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        // 1. KINETIC TEXT SPLITTER & SCROLL-TRIGGERED CHOREOGRAPHY
+        document.querySelectorAll('[data-kinetic]').forEach(heading => {
+            const words = heading.innerText.trim().split(/\s+/);
+            heading.innerHTML = words.map((word, idx) => {
+                const isHighlight = ['paranoid', 'engineering', 'teams.', 'kernel', '&', 'process', 'attack', 'vectors.'].includes(word.toLowerCase());
+                const colorSpan = isHighlight
+                    ? `<span class="bg-gradient-to-r from-white via-slate-200 to-emerald-400 bg-clip-text text-transparent">${word}</span>`
+                    : word;
+                return `<span class="word-wrap"><span class="word-inner" style="--word-delay: ${idx * 48}ms">${colorSpan}</span></span>`;
+            }).join(' ');
+        });
+
+        // Cipher Hex Scramble Decoder for Eyebrow Tags on Scroll
+        const hexChars = "0123456789ABCDEF#/_";
+        function scrambleDecode(el) {
+            if (el.dataset.scrambled === "true") return;
+            el.dataset.scrambled = "true";
+            const target = el.dataset.scramble || el.innerText;
+            let iteration = 0;
+            const interval = setInterval(() => {
+                el.innerText = target.split("").map((char, idx) => {
+                    if (char === " ") return " ";
+                    if (idx < iteration) return target[idx];
+                    return hexChars[Math.floor(Math.random() * hexChars.length)];
+                }).join("");
+                iteration += 1.2;
+                if (iteration >= target.length) {
+                    el.innerText = target;
+                    clearInterval(interval);
+                }
+            }, 22);
         }
 
-        // 2. Package Manager Switcher
+        // IntersectionObserver for Scroll Entrance Animations
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    if (entry.target.dataset.scramble) {
+                        scrambleDecode(entry.target);
+                    }
+                }
+            });
+        }, { threshold: 0.14, rootMargin: "0px 0px -40px 0px" });
+
+        document.querySelectorAll('.reveal, .kinetic-heading, [data-scramble]').forEach(el => {
+            revealObserver.observe(el);
+        });
+
+        // 2. TOP SCROLL PROGRESS BAR & NAVBAR ACTIVE SECTION SPY
+        const progressBar = document.getElementById('scroll-progress');
+        const navLinks = document.querySelectorAll('.nav-spy-link');
+        const trackedSections = ['architecture', 'demo', 'features', 'comparison', 'calculator', 'pricing', 'quickstart', 'faq'];
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            progressBar.style.width = `${pct}%`;
+
+            // Active Section Spy
+            let currentSection = '';
+            trackedSections.forEach(id => {
+                const sec = document.getElementById(id);
+                if (sec && scrollTop >= sec.offsetTop - 240) {
+                    currentSection = id;
+                }
+            });
+            navLinks.forEach(link => {
+                if (link.dataset.nav === currentSection) {
+                    link.className = "nav-spy-link px-3 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition-all";
+                } else {
+                    link.className = "nav-spy-link px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition-all";
+                }
+            });
+        }, { passive: true });
+
+        // Ambient Cursor Follower Glow
+        const ambientGlow = document.getElementById('cursor-ambient-glow');
+        window.addEventListener('mousemove', (e) => {
+            if (ambientGlow) {
+                ambientGlow.style.left = `${e.clientX}px`;
+                ambientGlow.style.top = `${e.clientY}px`;
+            }
+        }, { passive: true });
+
+        // 3. 3D PERSPECTIVE TILT & SPOTLIGHT ON BENTO CARDS
+        function handleSpotlight(e, card) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+
+            // Subtle 3D tilt (max 2.5 deg)
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -2.2;
+            const rotateY = ((x - centerX) / centerX) * 2.2;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-2px)`;
+        }
+
+        function resetCardTilt(card) {
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
+        }
+
+        function handleHeroTilt(e, card) {
+            handleSpotlight(e, card);
+            const rect = card.getBoundingClientRect();
+            const x = Math.round(e.clientX - rect.left);
+            const y = Math.round(e.clientY - rect.top);
+            const coordEl = document.getElementById('cursor-coords');
+            if (coordEl) {
+                coordEl.innerText = `X: ${String(x).padStart(4, '0')} · Y: ${String(y).padStart(4, '0')}`;
+            }
+        }
+        function resetHeroTilt(card) {
+            resetCardTilt(card);
+        }
+
+        // 4. INTERACTIVE MAGNETIC PARTICLE & CIRCUIT CANVAS IN HERO
+        const canvas = document.getElementById('circuit-canvas');
+        const ctx = canvas.getContext('2d');
+        let cw = 0, ch = 0;
+        let mouse = { x: -999, y: -999 };
+        const nodes = [];
+        const shockwaves = [];
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            cw = canvas.width = rect.width;
+            ch = canvas.height = rect.height;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        for (let i = 0; i < 48; i++) {
+            nodes.push({
+                x: Math.random() * 550,
+                y: Math.random() * 430,
+                vx: (Math.random() - 0.5) * 0.45,
+                vy: (Math.random() - 0.5) * 0.45,
+                r: 1.4 + Math.random() * 1.4,
+                color: i % 3 === 0 ? '#34d399' : (i % 3 === 1 ? '#38bdf8' : '#818cf8')
+            });
+        }
+
+        canvas.parentElement.addEventListener('mousemove', (e) => {
+            const r = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - r.left;
+            mouse.y = e.clientY - r.top;
+        });
+        canvas.parentElement.addEventListener('mouseleave', () => {
+            mouse.x = -999;
+            mouse.y = -999;
+        });
+        canvas.parentElement.addEventListener('click', (e) => {
+            const r = canvas.getBoundingClientRect();
+            shockwaves.push({
+                x: e.clientX - r.left,
+                y: e.clientY - r.top,
+                radius: 4,
+                alpha: 0.9
+            });
+        });
+
+        function animateCircuitCanvas() {
+            ctx.clearRect(0, 0, cw, ch);
+
+            // Draw cursor magnetic halo
+            if (mouse.x > 0 && mouse.y > 0) {
+                const grad = ctx.createRadialGradient(mouse.x, mouse.y, 2, mouse.x, mouse.y, 130);
+                grad.addColorStop(0, 'rgba(52, 211, 153, 0.16)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(mouse.x, mouse.y, 130, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Update & draw shockwaves on click
+            for (let s = shockwaves.length - 1; s >= 0; s--) {
+                const sw = shockwaves[s];
+                sw.radius += 4.2;
+                sw.alpha -= 0.022;
+                if (sw.alpha <= 0) {
+                    shockwaves.splice(s, 1);
+                    continue;
+                }
+                ctx.strokeStyle = `rgba(52, 211, 153, ${sw.alpha})`;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Update & connect magnetic nodes
+            for (let i = 0; i < nodes.length; i++) {
+                const n = nodes[i];
+                n.x += n.vx;
+                n.y += n.vy;
+                if (n.x < 0 || n.x > cw) n.vx *= -1;
+                if (n.y < 0 || n.y > ch) n.vy *= -1;
+
+                // Magnetic attraction/repulsion to cursor
+                const dx = mouse.x - n.x;
+                const dy = mouse.y - n.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist < 130 && dist > 1) {
+                    n.x += (dx / dist) * 0.55;
+                    n.y += (dy / dist) * 0.55;
+                    ctx.strokeStyle = `rgba(56, 189, 248, ${(1 - dist / 130) * 0.45})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(n.x, n.y);
+                    ctx.lineTo(mouse.x, mouse.y);
+                    ctx.stroke();
+                }
+
+                // Connect nearby nodes
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const n2 = nodes[j];
+                    const d = Math.hypot(n.x - n2.x, n.y - n2.y);
+                    if (d < 85) {
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${(1 - d / 85) * 0.09})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(n.x, n.y);
+                        ctx.lineTo(n2.x, n2.y);
+                        ctx.stroke();
+                    }
+                }
+
+                ctx.fillStyle = n.color;
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            requestAnimationFrame(animateCircuitCanvas);
+        }
+        animateCircuitCanvas();
+
+        // 5. Package Manager Switcher
         const pkgCommands = {
             pip: "pip install envshield-cli",
             uv: "uv tool install envshield-cli",
@@ -1146,150 +1377,7 @@
             setTimeout(() => { btnText.innerText = 'Copy'; }, 1800);
         }
 
-        // 3. HERO WORKBENCH CONTROLLER (Sanitizer, Envelope v2, Attack Simulator)
-        function switchWorkbench(tab) {
-            ['sanitizer', 'envelope', 'attacks'].forEach(t => {
-                const btn = document.getElementById('wb-tab-' + t);
-                const panel = document.getElementById('wb-panel-' + t);
-                if (t === tab) {
-                    btn.className = "px-2.5 py-1 rounded bg-white/10 text-white font-semibold transition";
-                    panel.classList.remove('hidden');
-                } else {
-                    btn.className = "px-2.5 py-1 rounded text-slate-400 hover:text-white transition";
-                    panel.classList.add('hidden');
-                }
-            });
-        }
-
-        // 3A. Live Stream Sanitizer Engine
-        function setSanitizerInput(val) {
-            document.getElementById('sanitizer-input').value = val;
-            runLiveSanitizer();
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        function runLiveSanitizer() {
-            const raw = document.getElementById('sanitizer-input').value;
-            let safe = escapeHtml(raw);
-            let count = 0;
-
-            const rules = [
-                { pattern: /sk_live_98aF2kL9/g, label: "STRIPE_SECRET_KEY (PLAIN)" },
-                { pattern: /c2tfbGl2ZV85OGFGMmtMOQ==/g, label: "STRIPE_SECRET_KEY (BASE64)" },
-                { pattern: /pg_pass_77xQ/g, label: "DB_PASSWORD (PLAIN)" },
-                { pattern: /cGdfcGFzc183N3hR/g, label: "DB_PASSWORD (BASE64)" }
-            ];
-
-            rules.forEach(r => {
-                safe = safe.replace(r.pattern, () => {
-                    count++;
-                    return `<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">[REDACTED:${r.label}]</span>`;
-                });
-            });
-
-            document.getElementById('sanitizer-output').innerHTML = safe || '<span class="text-slate-600">// Stream empty</span>';
-            const stats = document.getElementById('sanitizer-stats');
-            if (count > 0) {
-                stats.className = "text-emerald-400 font-semibold";
-                stats.innerText = `${count} secret${count > 1 ? 's' : ''} masked · 0.04ms`;
-            } else {
-                stats.className = "text-slate-500";
-                stats.innerText = "0 secrets detected · pass-through";
-            }
-        }
-        runLiveSanitizer();
-
-        // 3B. Envelope v2 Live Compiler & AAD Tamper Simulator
-        function randomHex(len) {
-            const chars = '0123456789abcdef';
-            let out = '';
-            for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * 16)];
-            return out;
-        }
-
-        function reSealEnvelope() {
-            const nonce = randomHex(24);
-            const ct = randomHex(44);
-            const tag = randomHex(32);
-            const box = document.getElementById('envelope-json-box');
-            const bar = document.getElementById('envelope-verify-bar');
-
-            box.innerHTML = `<pre class="text-slate-300"><code>{
-  "version": <span class="text-emerald-400">2</span>,
-  "profile": <span class="text-sky-400">"production"</span>,
-  "cipher": "AES-256-GCM",
-  "kdf": { "alg": "PBKDF2-HMAC-SHA256", "iterations": <span class="text-indigo-400">600000</span> },
-  "recipients": [
-    { "type": "ssh-ed25519", "user": "@ahmet", "epk": "0x${randomHex(16)}..." },
-    { "type": "aws-kms", "arn": "arn:aws:kms:eu-central-1:key/prod" }
-  ],
-  "nonce": "${nonce}",
-  "ciphertext": "${ct}...",
-  "auth_tag": "${tag}"
-}</code></pre>`;
-
-            bar.className = "rounded-lg px-3.5 py-2.5 bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 flex items-center justify-between text-[11px]";
-            bar.innerHTML = `<span>✓ AAD Tag Verified: Header metadata cryptographically bound to ciphertext</span><span class="font-bold">VERIFIED</span>`;
-        }
-
-        function tamperEnvelopeAAD() {
-            const box = document.getElementById('envelope-json-box');
-            const bar = document.getElementById('envelope-verify-bar');
-
-            box.innerHTML = `<pre class="text-slate-300"><code>{
-  "version": <span class="text-emerald-400">2</span>,
-  "profile": <span class="text-rose-400 font-bold">"staging_downgrade_attack"</span>, // <-- MODIFIED BY ATTACKER
-  "cipher": "AES-256-GCM",
-  "kdf": { "alg": "PBKDF2-HMAC-SHA256", "iterations": <span class="text-rose-400 font-bold">100000</span> },
-  "recipients": [ ... ],
-  "ciphertext": "8f91a2c409b1e7d5...",
-  "auth_tag": "4c8819a02f71e30b..."
-}</code></pre>`;
-
-            bar.className = "rounded-lg px-3.5 py-2.5 bg-rose-500/15 border border-rose-500/30 text-rose-300 flex items-center justify-between text-[11px]";
-            bar.innerHTML = `<span>✗ VaultIntegrityError: AES-GCM AAD authentication tag mismatch! Unseal aborted.</span><span class="font-bold">BLOCKED</span>`;
-        }
-        reSealEnvelope();
-
-        // 3C. Kernel & Process Attack Simulator
-        const attackData = {
-            ps: {
-                cmd: "$ ps aux | grep python && cat /proc/4812/cmdline",
-                legacy: "❌ Standard Docker (-e KEY=VAL): Exposes 'STRIPE_KEY=sk_live_98aF2...' to all local users.",
-                shield: "✓ Envshield: Passes '-e KEY' (no value in argv) + /dev/shm 0o400 descriptor. 0 secrets in /proc."
-            },
-            ptrace: {
-                cmd: "$ gdb -p 4812 -batch -ex 'generate-core-file'",
-                legacy: "❌ Standard Process: Generates core.4812 dump containing full heap plaintext credentials.",
-                shield: "✓ Envshield: Invokes prctl(PR_SET_DUMPABLE, 0) on startup -> Kernel returns EACCES (Permission denied)."
-            },
-            swap: {
-                cmd: "$ strings /swapfile | grep -i 'sk_live_'",
-                legacy: "❌ Standard Python/Node: OS pages inactive heap memory to NVMe swapfile in plaintext.",
-                shield: "✓ Envshield: Pins 4096B pages in physical RAM via mlock() / VirtualLock() + zeroes via memset(0x00)."
-            }
-        };
-
-        function runAttackSim(key) {
-            ['ps', 'ptrace', 'swap'].forEach(k => {
-                const btn = document.getElementById('atk-btn-' + k);
-                btn.className = (k === key)
-                    ? "p-2.5 rounded-xl bg-white/10 border border-white/25 text-left transition"
-                    : "p-2.5 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-left transition";
-            });
-            const d = attackData[key];
-            document.getElementById('attack-sim-output').innerHTML = `
-                <div class="text-slate-400 pb-1.5 border-b border-white/[0.06]">${d.cmd}</div>
-                <div class="text-rose-400">${d.legacy}</div>
-                <div class="text-emerald-400 font-semibold">${d.shield}</div>
-            `;
-        }
-        runAttackSim('ps');
-
-        // 4. Interactive Volatile Memory Hex Inspector (Bento Card 1)
+        // 6. Interactive Volatile Memory Hex Inspector (Bento Card 1)
         let isMemWiped = false;
         function renderHexGrid() {
             const grid = document.getElementById('hex-dump-grid');
@@ -1322,7 +1410,7 @@
         }
         renderHexGrid();
 
-        // 5. Interactive Canary Honeypot Trigger (Bento Card 4)
+        // 7. Interactive Canary Honeypot Trigger (Bento Card 4)
         function triggerCanaryDemo() {
             const out = document.getElementById('canary-output');
             out.innerHTML = `<code class="text-amber-300">POST https://siem.internal/webhook HTTP/1.1
@@ -1334,7 +1422,11 @@
 }</code>`;
         }
 
-        // 6. Interactive Runtime Terminal Sandbox & Live Shell Prompt
+        // 8. Interactive Runtime Terminal Sandbox
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
         const scenarios = {
             run: {
                 title: "envshield run -- python app.py",
@@ -1426,7 +1518,11 @@
 
             const containerEl = document.getElementById('terminal-content');
             containerEl.innerHTML = '';
-            s.lines.forEach(line => appendTerminalLine(line.ts, line.type, line.text));
+            s.lines.forEach((line, idx) => {
+                setTimeout(() => {
+                    appendTerminalLine(line.ts, line.type, line.text);
+                }, idx * 55);
+            });
         }
 
         function handleTerminalSubmit(e) {
@@ -1464,7 +1560,7 @@
         }
         switchTerminalDemo('run');
 
-        // 7. TCO / ROI Calculator
+        // 9. TCO / ROI Calculator
         function calculateSavings() {
             const seats = parseInt(document.getElementById('team-size-slider').value);
             const comp = document.getElementById('competitor-select').value;
@@ -1482,7 +1578,7 @@
         }
         calculateSavings();
 
-        // 8. Billing Toggle
+        // 10. Billing Toggle
         function setBilling(mode) {
             const bMonthly = document.getElementById('bill-monthly');
             const bAnnual = document.getElementById('bill-annual');
@@ -1502,7 +1598,7 @@
             }
         }
 
-        // 9. FAQ Accordion
+        // 11. FAQ Accordion
         function toggleFaq(idx) {
             const body = document.getElementById('faq-body-' + idx);
             const icon = document.getElementById('faq-icon-' + idx);
@@ -1516,7 +1612,7 @@
             }
         }
 
-        // 10. Command Palette Modal (⌘K / Ctrl+K)
+        // 12. Command Palette Modal (⌘K / Ctrl+K)
         function toggleCmdModal() {
             const modal = document.getElementById('cmd-modal');
             modal.classList.toggle('hidden');
