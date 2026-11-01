@@ -119,6 +119,19 @@ If an attacker attempts unauthorized decryption, trigger a decoy trap:
 envshield run --enable-decoy --alert-webhook https://alerts.internal/webhook -- ./app
 ```
 
+### 7. 🐳 Docker & Container Zero-Disk Bridge (`docker`)
+Run Docker containers and Docker Compose services with secrets injected from RAM without exposing plaintext variables in `docker inspect`:
+```bash
+# Standard in-memory injection for docker run (no unencrypted .env file needed on host):
+envshield docker run -d -p 8080:80 nginx
+
+# Stealth mode (hides secrets from `docker inspect <container>` using tmpfs RAM mount):
+envshield docker --stealth -- run -d my-secure-app
+
+# Docker compose zero-disk injection:
+envshield docker compose up -d
+```
+
 ---
 
 ## 👥 Team SSH Workflow & GitHub Integration
@@ -234,6 +247,34 @@ envshield team remove ahmet
 
 </td>
 </tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🐳 `envshield docker`
+Run Docker and Compose services with zero-disk injection & inspect immunity.
+```bash
+# Standard in-memory docker run
+envshield docker run -p 80:80 nginx
+
+# Stealth mode (hides from docker inspect)
+envshield docker --stealth -- run my-app
+
+# Docker compose zero-disk injection
+envshield docker compose up -d
+```
+
+</td>
+<td width="50%" valign="top">
+
+### 🔍 `envshield diff`
+Compare two encrypted vaults or inspect changes in RAM with colored unified diffs.
+```bash
+# Compare staging vs production vaults in RAM
+envshield diff staging.env.enc prod.env.enc
+```
+
+</td>
+</tr>
 </table>
 
 ---
@@ -245,6 +286,8 @@ envshield team remove ahmet
 | **100% RAM-Only Injection** | ✅ | ❌ | ⚠️ Partial | ✅ | ✅ | ✅ |
 | **Live Stream Redaction (Stdout/Stderr)**| ✅ | ❌ | ❌ | ⚠️ Cloud Only | ❌ | ❌ |
 | **Self-Healing Git Pre-Commit Hook** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Docker `inspect` Stealth Bridge** | ✅ | ❌ | ❌ | ❌ (Extra Binary)| ⚠️ Agent Required | ❌ |
+| **GitHub Team Key Sync (`team add`)** | ✅ | ❌ | ❌ | ⚠️ Cloud Only | ❌ | ❌ |
 | **Local Tamper-Evident Audit Chain** | ✅ | ❌ | ❌ | ⚠️ Cloud Only | ⚠️ Heavy Server | ❌ |
 | **Multi-Profile Single Envelope** | ✅ | ❌ | ❌ | ⚠️ Cloud Only | ⚠️ Heavy Server | ❌ |
 | **Dynamic In-Memory Interpolation** | ✅ | ❌ | ❌ | ✅ | ❌ | ⚠️ Basic |

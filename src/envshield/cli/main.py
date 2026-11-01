@@ -13,6 +13,7 @@ from rich.table import Table
 from envshield.core.audit import read_audit_entries, record_audit_event, verify_audit_chain
 from envshield.core.decoy import load_decoy_secrets, trigger_canary_alert
 from envshield.core.diff_engine import compute_in_memory_diff, render_diff
+from envshield.core.docker_bridge import execute_docker_with_secrets
 from envshield.core.editor import edit_vault
 from envshield.core.git_hook import install_hook, run_pre_commit_scan, uninstall_hook
 from envshield.core.keyring_manager import delete_key, get_key, save_key
@@ -746,6 +747,135 @@ def handle_team(args: list[str], console: Console) -> None:
     sys.exit(0)
 
 
+def handle_docker(args: list[str], console: Console) -> None:
+    if "--" in args:
+        dash_idx = args.index("--")
+        opt_args = args[:dash_idx]
+        docker_args = args[dash_idx + 1 :]
+        parser = argparse.ArgumentParser(
+            prog="envshield docker",
+            description="Run Docker containers with decrypted secrets injected into memory.",
+        )
+        parser.add_argument("--env-file", default=".env.enc")
+        parser.add_argument("-p", "--profile", "--env", dest="profile", default=None)
+        parser.add_argument("--auto-branch", action="store_true")
+        parser.add_argument("-i", "--identity", default=None)
+        parser.add_argument("--keyring-name", default=None)
+        parser.add_argument("--stealth", action="store_true")
+        parser.add_argument("--no-redact", action="store_true")
+        parsed = parser.parse_args(opt_args)
+    else:
+        parser = argparse.ArgumentParser(
+            prog="envshield docker",
+            description="Run Docker containers with decrypted secrets injected into memory.",
+            add_help=False,
+        )
+        parser.add_argument("--env-file", default=".env.enc")
+        parser.add_argument("-p", "--profile", "--env", dest="profile", default=None)
+        parser.add_argument("--auto-branch", action="store_true")
+        parser.add_argument("-i", "--identity", default=None)
+        parser.add_argument("--keyring-name", default=None)
+        parser.add_argument("--stealth", action="store_true")
+        parser.add_argument("--no-redact", action="store_true")
+        parser.add_argument("-h", "--help", action="store_true")
+
+        parsed_opts, docker_args = parser.parse_known_args(args)
+        if parsed_opts.help or not docker_args:
+            full_parser = argparse.ArgumentParser(
+                prog="envshield docker",
+                description="Run Docker containers with decrypted secrets injected into memory.\n\n"
+                "Examples:\n"
+                "  envshield docker run -p 8080:80 nginx\n"
+                "  envshield docker compose up -d\n"
+                "  envshield docker --stealth -- run -d myapp\n",
+                formatter_class=argparse.RawDescriptionHelpFormatter,
+            )
+            full_parser.add_argument(
+                "--env-file", default=".env.enc", help="Vault file (default: .env.enc)"
+            )
+            full_parser.add_argument(
+                "-p",
+                "--profile",
+                "--env",
+                dest="profile",
+                default=None,
+                help="Environment profile.",
+            )
+            full_parser.add_argument(
+                "--auto-branch", action="store_true", help="Auto-detect profile from Git branch."
+            )
+            full_parser.add_argument("-i", "--identity", default=None, help="SSH private key.")
+            full_parser.add_argument("--keyring-name", default=None, help="OS keyring lookup.")
+            full_parser.add_argument(
+                "--stealth",
+                action="store_true",
+                help="Hide secrets from `docker inspect` using in-memory tmpfs mount.",
+            )
+            full_parser.add_argument(
+                "--no-redact", action="store_true", help="Disable live stream redaction."
+            )
+            full_parser.add_argument(
+                "docker_args",
+                nargs=argparse.REMAINDER,
+                help="Docker arguments (e.g. run -p 80:80 my-image)",
+            )
+            full_parser.print_help()
+            sys.exit(0)
+        parsed = parsed_opts
+
+    if not docker_args:
+        console.print(
+            "[red]Error: No docker command specified. Usage: envshield docker [OPTIONS] -- COMMAND [ARGS...][/red]"
+        )
+        sys.exit(1)
+
+    env_path = Path(parsed.env_file)
+    if not env_path.is_file():
+        console.print(f"[red]Error: Encrypted environment file '{env_path}' not found.[/red]")
+        sys.exit(1)
+
+    selected_profile = parsed.profile
+    if parsed.auto_branch and not selected_profile:
+        selected_profile = detect_git_branch_profile()
+        console.print(f"[dim]Git branch profile detected: '[cyan]{selected_profile}[/cyan]'[/dim]")
+
+    password: str | None = None
+    if not parsed.identity:
+        password = resolve_password(
+            keyring_name=parsed.keyring_name,
+            prompt_message="Enter decryption password for Docker run: ",
+        )
+
+    try:
+        secrets = unseal_to_memory(
+            env_path,
+            password=password,
+            identity_path=parsed.identity,
+            profile=selected_profile,
+        )
+    except (InvalidKey, AuthError) as exc:
+        console.print(f"[red]Decryption failed: {exc}[/red]")
+        sys.exit(1)
+    except Exception as exc:
+        console.print(f"[red]Error unsealing environment file: {exc}[/red]")
+        sys.exit(1)
+
+    record_audit_event(
+        action="DOCKER_RUN",
+        target_path=env_path,
+        key_id="active_docker_session",
+        details={"docker_args": docker_args, "stealth": parsed.stealth},
+    )
+
+    exit_code = execute_docker_with_secrets(
+        docker_args=docker_args,
+        secrets=secrets,
+        stealth=parsed.stealth,
+        redact=not parsed.no_redact,
+    )
+    sys.exit(exit_code)
+
+
 def handle_scan(args: list[str]) -> None:
     parser = argparse.ArgumentParser(
         prog="envshield",
@@ -895,6 +1025,9 @@ def main(argv: list[str] | None = None) -> None:
             return
         if cmd == "team":
             handle_team(argv[1:], console)
+            return
+        if cmd == "docker":
+            handle_docker(argv[1:], console)
             return
         if cmd == "hook":
             handle_hook(argv[1:], console)
