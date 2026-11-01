@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="100%" height="100%">
+  <defs>
+    <linearGradient id="termBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0D1117" />
+      <stop offset="100%" stop-color="#090D14" />
+    </linearGradient>
+    <filter id="termShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <!-- Window Frame -->
+  <rect x="10" y="10" width="980" height="395" rx="14" fill="url(#termBg)" stroke="#30363D" stroke-width="1.5" filter="url(#termShadow)" />
+
+  <!-- Top Bar -->
+  <path d="M 10 24 Q 10 10 24 10 L 976 10 Q 990 10 990 24 L 990 48 L 10 48 Z" fill="#161B22" />
+  <line x1="10" y1="48" x2="990" y2="48" stroke="#30363D" stroke-width="1" />
+
+  <!-- macOS Traffic Lights -->
+  <circle cx="34" cy="29" r="6.5" fill="#FF5F56" />
+  <circle cx="56" cy="29" r="6.5" fill="#FFBD2E" />
+  <circle cx="78" cy="29" r="6.5" fill="#27C93F" />
+
+  <!-- Window Title -->
+  <text x="500" y="34" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#8B949E">zsh — envshield — 100×24</text>
+
+  <!-- Terminal Content -->
+  <g transform="translate(36, 82)" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="14.5">
+    <!-- Command 1 -->
+    <text x="0" y="0">
+      <tspan fill="#34D399" font-weight="bold">➜</tspan>
+      <tspan fill="#38BDF8" font-weight="bold"> ~/api-service</tspan>
+      <tspan fill="#8B949E"> git:(</tspan><tspan fill="#F43F5E">main</tspan><tspan fill="#8B949E">)</tspan>
+      <tspan fill="#F8FAFC"> envshield seal .env -r ~/.ssh/id_ed25519.pub --shred</tspan>
+    </text>
+    <text x="0" y="26" fill="#34D399">✔ Sealed '.env' ➔ '.env.enc' [Envelope v2 | AES-256-GCM | Ed25519 ECDH]</text>
+    <text x="0" y="50" fill="#FBBF24">✔ Shredded original '.env' (3-pass CSPRNG + zero fill + fsync)</text>
+
+    <!-- Command 2 -->
+    <text x="0" y="95">
+      <tspan fill="#34D399" font-weight="bold">➜</tspan>
+      <tspan fill="#38BDF8" font-weight="bold"> ~/api-service</tspan>
+      <tspan fill="#8B949E"> git:(</tspan><tspan fill="#F43F5E">main</tspan><tspan fill="#8B949E">)</tspan>
+      <tspan fill="#F8FAFC"> envshield diff staging.env.enc prod.env.enc</tspan>
+    </text>
+    <text x="0" y="121" fill="#E2E8F0" font-weight="bold">--- staging.env.enc (in-memory)</text>
+    <text x="0" y="143" fill="#E2E8F0" font-weight="bold">+++ prod.env.enc (in-memory)</text>
+    <text x="0" y="165" fill="#38BDF8">@@ -1,3 +1,3 @@</text>
+    <text x="0" y="187" fill="#8B949E"> DB_HOST=10.0.14.82</text>
+    <text x="0" y="209" fill="#F87171">-STRIPE_MODE=test_sk_89a1f...</text>
+    <text x="0" y="231" fill="#34D399">+STRIPE_MODE=live_sk_99c4e...</text>
+
+    <!-- Command 3 -->
+    <text x="0" y="274">
+      <tspan fill="#34D399" font-weight="bold">➜</tspan>
+      <tspan fill="#38BDF8" font-weight="bold"> ~/api-service</tspan>
+      <tspan fill="#8B949E"> git:(</tspan><tspan fill="#F43F5E">main</tspan><tspan fill="#8B949E">)</tspan>
+      <tspan fill="#F8FAFC"> envshield run -i ~/.ssh/id_ed25519 -- uvicorn app:main</tspan>
+    </text>
+    <text x="0" y="300" fill="#A78BFA">⚡ Unsealed 14 secrets strictly in locked RAM (VirtualLock / mlock active, 0 disk bytes)</text>
+    <text x="0" y="324" fill="#E2E8F0">INFO:     Uvicorn running on <tspan fill="#38BDF8" text-decoration="underline">http://0.0.0.0:8000</tspan> (Press CTRL+C to quit)</text>
+  </g>
+</svg>
