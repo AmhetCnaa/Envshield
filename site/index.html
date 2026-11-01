@@ -41,10 +41,6 @@
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- Three.js + OrbitControls -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body class="bg-canvas text-slate-100 font-sans antialiased selection:bg-emerald-500/25 selection:text-emerald-200">
 
@@ -122,22 +118,22 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
                     <!-- Left Column: High-Density Engineering Pitch -->
-                    <div class="lg:col-span-7 space-y-6">
+                    <div class="lg:col-span-6 space-y-6">
                         <div class="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 text-xs text-slate-300 font-mono">
                             <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold text-[10px]">AUDIT PASSED</span>
-                            <span>145/145 invariant tests · RFC 9180 HPKE · mlock() hardened</span>
+                            <span>145/145 invariant tests · RFC 9180 HPKE · mlock()</span>
                         </div>
 
-                        <h1 class="text-4xl sm:text-5xl lg:text-[54px] font-extrabold tracking-[-0.035em] text-white leading-[1.06]">
+                        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-[-0.035em] text-white leading-[1.08]">
                             Zero-disk secret execution for <span class="bg-gradient-to-r from-white via-slate-200 to-emerald-400 bg-clip-text text-transparent">paranoid engineering teams.</span>
                         </h1>
 
-                        <p class="text-sm sm:text-base text-slate-400 max-w-xl leading-relaxed font-normal">
+                        <p class="text-sm sm:text-base text-slate-400 leading-relaxed font-normal">
                             Stop leaving plaintext <code class="text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded">.env</code> files on developer NVMe drives or coupling production boots to third-party SaaS uptime. Envshield unseals AES-256-GCM envelopes directly into page-locked volatile RAM, sanitizes child PTY streams in flight, and mounts stealth <code class="text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded">/dev/shm</code> descriptors into Docker.
                         </p>
 
                         <!-- Interactive Package Manager Installer Widget -->
-                        <div class="max-w-lg rounded-xl border border-white/10 bg-[#050608] overflow-hidden shadow-2xl">
+                        <div class="rounded-xl border border-white/10 bg-[#050608] overflow-hidden shadow-2xl">
                             <div class="flex items-center justify-between px-3 py-2 bg-white/[0.02] border-b border-white/[0.06] text-[11px] font-mono">
                                 <div class="flex items-center gap-1">
                                     <button onclick="setPkgManager('pip')" id="pkg-pip" class="px-2.5 py-1 rounded-md bg-white/10 text-white font-semibold transition">pip</button>
@@ -163,56 +159,125 @@
                         <div class="flex flex-wrap items-center gap-3 pt-1">
                             <a href="#demo" class="btn-primary px-5 py-2.5 text-xs sm:text-sm inline-flex items-center gap-2">
                                 <i data-lucide="terminal" class="w-4 h-4"></i>
-                                <span>Inspect Runtime Trace</span>
+                                <span>Interactive CLI Shell</span>
                             </a>
                             <a href="#architecture" class="btn-secondary px-5 py-2.5 text-xs sm:text-sm font-medium inline-flex items-center gap-2">
-                                <span>Read Threat Model</span>
+                                <span>Inspect Threat Model</span>
                                 <i data-lucide="arrow-down-right" class="w-4 h-4 text-slate-400"></i>
-                            </a>
-                            <a href="3d-preview.html" target="_blank" class="px-3.5 py-2.5 text-xs font-mono text-slate-400 hover:text-white transition inline-flex items-center gap-1.5">
-                                <i data-lucide="box" class="w-3.5 h-3.5 text-sky-400"></i>
-                                <span>Fullscreen 3D Core</span>
                             </a>
                         </div>
                     </div>
 
-                    <!-- Right Column: 3D WebGL Cryptographic Core + Technical Telemetry HUD -->
-                    <div class="lg:col-span-5">
-                        <div class="relative h-[400px] rounded-xl bg-[#050609] border border-white/10 overflow-hidden flex flex-col justify-between shadow-2xl">
-                            <!-- Top Telemetry Header -->
-                            <div class="relative z-10 px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.06] flex items-center justify-between font-mono text-[11px]">
-                                <div class="flex items-center gap-2">
-                                    <span id="hud-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                    <span id="vault-status-text" class="text-slate-200 font-semibold">STATE: VOLATILE_LOCKED</span>
+                    <!-- Right Column: INTERACTIVE SECURITY WORKBENCH (Live Sanitizer, Envelope Compiler & Attack Simulator) -->
+                    <div class="lg:col-span-6">
+                        <div class="rounded-2xl bg-[#050609] border border-white/10 overflow-hidden shadow-2xl flex flex-col">
+                            <!-- Workbench Header & Mode Tabs -->
+                            <div class="px-4 py-3 bg-[#0a0d14] border-b border-white/[0.07] flex flex-wrap items-center justify-between gap-2">
+                                <div class="flex items-center gap-2 font-mono text-[11px]">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                    <span class="text-slate-200 font-semibold">INTERACTIVE ENGINE WORKBENCH</span>
                                 </div>
-                                <div class="flex items-center gap-2 text-slate-500">
-                                    <span>0x7ffd8a40</span>
-                                    <button onclick="reset3DCamera()" title="Reset Camera" class="hover:text-white transition">
-                                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                                    </button>
+                                <div class="flex items-center gap-1 bg-black/60 p-1 rounded-lg border border-white/[0.06] font-mono text-[11px]">
+                                    <button onclick="switchWorkbench('sanitizer')" id="wb-tab-sanitizer" class="px-2.5 py-1 rounded bg-white/10 text-white font-semibold transition">01 · Redactor</button>
+                                    <button onclick="switchWorkbench('envelope')" id="wb-tab-envelope" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">02 · Envelope v2</button>
+                                    <button onclick="switchWorkbench('attacks')" id="wb-tab-attacks" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition">03 · Attack Sim</button>
                                 </div>
                             </div>
 
-                            <!-- Three.js Canvas -->
-                            <div id="three-container" class="w-full flex-1 cursor-grab active:cursor-grabbing relative"></div>
+                            <!-- PANEL 1: LIVE STREAM SANITIZER PLAYGROUND -->
+                            <div id="wb-panel-sanitizer" class="p-5 space-y-4 font-mono text-xs">
+                                <div class="flex items-center justify-between text-[11px] text-slate-400">
+                                    <span>Loaded Vault Secrets: <code class="text-emerald-400">sk_live_98aF2kL9</code>, <code class="text-sky-400">pg_pass_77xQ</code></span>
+                                    <span class="text-slate-500">Plain + Base64 + URL</span>
+                                </div>
 
-                            <!-- Bottom Interactive Mode Switcher & Kernel Flags -->
-                            <div class="relative z-10 p-3 bg-black/80 backdrop-blur-md border-t border-white/[0.07] space-y-2 font-mono text-[11px]">
-                                <div class="flex items-center justify-between text-slate-400">
-                                    <span>SYSCALL: <strong id="hud-syscall" class="text-emerald-400 font-normal">mlock(4096B) · PR_SET_DUMPABLE=0</strong></span>
-                                    <span>DISK: <strong class="text-white font-normal">0 B</strong></span>
+                                <!-- Preset Leak Buttons -->
+                                <div class="space-y-1.5">
+                                    <label class="text-[11px] text-slate-500 uppercase">Inject Simulated Child Process Output (or type below):</label>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <button onclick="setSanitizerInput('Traceback: Auth failed for Bearer sk_live_98aF2kL9 on /v1/charges')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-[11px] text-slate-300 transition">
+                                            + Plaintext Leak
+                                        </button>
+                                        <button onclick="setSanitizerInput('DEBUG payload_b64=c2tfbGl2ZV85OGFGMmtMOQ== sent to worker')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-[11px] text-slate-300 transition">
+                                            + Base64 Encoded Leak
+                                        </button>
+                                        <button onclick="setSanitizerInput('Connecting to postgres://admin:pg_pass_77xQ@db.internal:5432/prod')" class="px-2 py-1 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-[11px] text-slate-300 transition">
+                                            + Postgres URI Leak
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="grid grid-cols-3 gap-1.5 pt-1">
-                                    <button onclick="setVaultMode('locked')" id="btn-mode-locked" class="py-1.5 px-2 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold text-center transition">
-                                        01 · LOCKED
+
+                                <!-- Live Editable Textarea -->
+                                <div>
+                                    <textarea id="sanitizer-input" oninput="runLiveSanitizer()" rows="2" class="w-full rounded-xl bg-black border border-white/15 p-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-400/60 resize-none font-mono" placeholder="Type any log line containing sk_live_98aF2kL9 or pg_pass_77xQ...">Traceback: Auth failed for Bearer sk_live_98aF2kL9 on /v1/charges</textarea>
+                                </div>
+
+                                <!-- Sanitized PTY Output -->
+                                <div class="rounded-xl bg-[#080b11] border border-white/10 p-3.5 space-y-2">
+                                    <div class="flex items-center justify-between text-[11px]">
+                                        <span class="text-slate-500">SANITIZED TERMINAL / CI STREAM OUTPUT</span>
+                                        <span id="sanitizer-stats" class="text-emerald-400">1 secret masked · 0.04ms</span>
+                                    </div>
+                                    <div id="sanitizer-output" class="p-2.5 rounded-lg bg-black/70 border border-white/5 text-slate-200 break-all leading-relaxed">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PANEL 2: ENVELOPE V2 LIVE CRYPTOGRAPHIC COMPILER -->
+                            <div id="wb-panel-envelope" class="hidden p-5 space-y-4 font-mono text-xs">
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span class="text-slate-400">AES-256-GCM + AAD Header Authentication</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <button onclick="reSealEnvelope()" class="px-2 py-1 rounded bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition">
+                                            Rotate Nonce & DEK
+                                        </button>
+                                        <button onclick="tamperEnvelopeAAD()" class="px-2 py-1 rounded bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-[11px] font-semibold transition">
+                                            Simulate Header Tamper
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="envelope-json-box" class="rounded-xl bg-black border border-white/10 p-3.5 text-[11px] leading-relaxed overflow-x-auto">
+                                    <!-- Populated by JS -->
+                                </div>
+
+                                <div id="envelope-verify-bar" class="rounded-lg px-3.5 py-2.5 bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 flex items-center justify-between text-[11px]">
+                                    <span>✓ AAD Tag Verified: Header metadata cryptographically bound to ciphertext</span>
+                                    <span class="font-bold">OK</span>
+                                </div>
+                            </div>
+
+                            <!-- PANEL 3: KERNEL & PROCESS ATTACK VECTOR SIMULATOR -->
+                            <div id="wb-panel-attacks" class="hidden p-5 space-y-3.5 font-mono text-xs">
+                                <div class="text-[11px] text-slate-400">
+                                    Select a post-exploitation technique to compare standard <code class="text-slate-200">.env</code> / Docker workflows against Envshield runtime isolation:
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button onclick="runAttackSim('ps')" id="atk-btn-ps" class="p-2.5 rounded-xl bg-white/10 border border-white/20 text-left transition">
+                                        <div class="text-white font-semibold text-[11px]">1. ps aux / proc</div>
+                                        <div class="text-[10px] text-slate-400">Argv / environ snoop</div>
                                     </button>
-                                    <button onclick="setVaultMode('unseal')" id="btn-mode-unseal" class="py-1.5 px-2 rounded bg-white/[0.03] text-slate-400 border border-white/10 hover:text-white text-center transition">
-                                        02 · STREAM
+                                    <button onclick="runAttackSim('ptrace')" id="atk-btn-ptrace" class="p-2.5 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-left transition">
+                                        <div class="text-white font-semibold text-[11px]">2. gcore / ptrace</div>
+                                        <div class="text-[10px] text-slate-400">Process core dump</div>
                                     </button>
-                                    <button onclick="setVaultMode('canary')" id="btn-mode-canary" class="py-1.5 px-2 rounded bg-white/[0.03] text-slate-400 border border-white/10 hover:text-amber-300 text-center transition">
-                                        03 · CANARY
+                                    <button onclick="runAttackSim('swap')" id="atk-btn-swap" class="p-2.5 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-left transition">
+                                        <div class="text-white font-semibold text-[11px]">3. Swap / Forensics</div>
+                                        <div class="text-[10px] text-slate-400">NVMe pagefile grep</div>
                                     </button>
                                 </div>
+
+                                <div id="attack-sim-output" class="rounded-xl bg-black border border-white/10 p-3.5 space-y-2.5 text-[11px]">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Workbench Bottom Telemetry Bar -->
+                            <div class="px-4 py-2.5 bg-[#080a10] border-t border-white/[0.06] flex items-center justify-between font-mono text-[11px] text-slate-500">
+                                <span>SYSCALLS: <strong class="text-slate-300 font-normal">mlock() · prctl(PR_SET_DUMPABLE, 0) · os.open(0o400)</strong></span>
+                                <span class="text-emerald-400">0 B DISK I/O</span>
                             </div>
                         </div>
                     </div>
@@ -255,7 +320,7 @@
                     <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">Engineered against real kernel & process attack vectors.</h2>
                 </div>
                 <p class="text-xs sm:text-sm text-slate-400 max-w-md">
-                    Every claim is backed by verifiable system calls. Hover or interact with the modules below to inspect how Envshield isolates credentials in memory.
+                    Every claim is backed by verifiable system calls. Interact with the modules below to inspect how Envshield isolates credentials in memory.
                 </p>
             </div>
 
@@ -421,16 +486,16 @@
         </div>
     </section>
 
-    <!-- 3. INTERACTIVE RUNTIME TERMINAL SANDBOX -->
+    <!-- 3. INTERACTIVE RUNTIME TERMINAL SANDBOX (WITH LIVE COMMAND INPUT) -->
     <section id="demo" class="section demo has-bg-alt">
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
                     <div class="text-xs font-mono uppercase tracking-widest text-sky-400 mb-2">02 // Live Runtime Verification</div>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">Inspect the CLI execution pipeline.</h2>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">Interactive CLI & execution trace.</h2>
                 </div>
                 <p class="text-xs sm:text-sm text-slate-400 max-w-md">
-                    Switch between the 5 core operational workflows below to observe exact system behavior, millisecond timing, and exit cleanup.
+                    Switch between operational traces or type commands directly into the interactive shell prompt (<code class="text-slate-200 font-mono">help</code>, <code class="text-slate-200 font-mono">seal</code>, <code class="text-slate-200 font-mono">run</code>, <code class="text-slate-200 font-mono">audit</code>, <code class="text-slate-200 font-mono">clear</code>).
                 </p>
             </div>
 
@@ -455,23 +520,32 @@
                 </div>
 
                 <!-- Terminal Output Stream -->
-                <div id="terminal-content" class="p-6 space-y-2.5 leading-relaxed text-slate-300 min-h-[300px]">
+                <div id="terminal-content" class="p-6 space-y-2.5 leading-relaxed text-slate-300 min-h-[280px] max-h-[380px] overflow-y-auto">
                     <!-- Dynamically populated -->
                 </div>
 
+                <!-- Interactive Command Input Prompt -->
+                <form onsubmit="handleTerminalSubmit(event)" class="bg-[#07090e] px-6 py-3 border-t border-white/[0.06] flex items-center gap-2.5">
+                    <span class="text-emerald-400 font-bold select-none">envshield@vault:~$</span>
+                    <input type="text" id="terminal-input" class="flex-1 bg-transparent text-xs sm:text-sm text-white placeholder-slate-600 focus:outline-none font-mono" placeholder="Type a command (e.g. help, status, seal, audit, clear) and press Enter...">
+                    <button type="submit" class="px-2.5 py-1 rounded bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-[11px] text-slate-300 transition">
+                        Run ↵
+                    </button>
+                </form>
+
                 <!-- Terminal Status Footer -->
-                <div class="bg-[#080a0f] px-6 py-3 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-400">
+                <div class="bg-[#080a0f] px-6 py-2.5 border-t border-white/[0.05] flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-500">
                     <div class="flex items-center gap-4">
                         <span class="inline-flex items-center gap-1.5 text-emerald-400">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                             PTY proxy active (UTF-8 incremental decoder)
                         </span>
-                        <span class="hidden sm:inline text-slate-600">|</span>
+                        <span class="hidden sm:inline text-slate-700">|</span>
                         <span class="hidden sm:inline">clear_source=True · redactor.close() verified</span>
                     </div>
-                    <button onclick="replayCurrentScenario()" class="text-slate-300 hover:text-white inline-flex items-center gap-1.5 transition">
-                        <i data-lucide="play" class="w-3 h-3 text-emerald-400"></i>
-                        <span>Replay Execution Trace</span>
+                    <button onclick="replayCurrentScenario()" class="text-slate-400 hover:text-white inline-flex items-center gap-1.5 transition">
+                        <i data-lucide="rotate-ccw" class="w-3 h-3 text-emerald-400"></i>
+                        <span>Replay Trace</span>
                     </button>
                 </div>
             </div>
@@ -912,7 +986,7 @@
                         </div>
                         <h3 class="text-base font-bold text-white">Run Process Under Shield</h3>
                         <p class="text-xs text-slate-400 leading-relaxed">
-                            Unseals into locked RAM, injects into child process environment, and actively masks accidental secret prints.
+                            Unseals into locked volatile RAM, injects into child process environment, and actively masks accidental secret prints.
                         </p>
                     </div>
                     <div class="relative z-10 bg-[#05070a] rounded-xl p-3.5 border border-white/10 font-mono text-xs flex items-center justify-between">
@@ -996,7 +1070,6 @@
                 <div class="flex flex-wrap items-center gap-6 text-xs text-slate-400 font-mono">
                     <a href="https://github.com/AmhetCnaa/Envshield" target="_blank" class="hover:text-white transition">GitHub</a>
                     <a href="https://pypi.org/project/envshield-cli/" target="_blank" class="hover:text-white transition">PyPI</a>
-                    <a href="3d-preview.html" target="_blank" class="hover:text-white transition">3D Core</a>
                     <a href="https://github.com/AmhetCnaa/Envshield/blob/main/COMMERCIAL.md" target="_blank" class="hover:text-white transition">Commercial EULA</a>
                     <a href="https://github.com/AmhetCnaa/Envshield/blob/main/LICENSE" target="_blank" class="hover:text-white transition">AGPLv3</a>
                 </div>
@@ -1019,6 +1092,10 @@
                     <span class="text-slate-200">Copy CLI Install Command (<code class="text-emerald-400">pip install envshield-cli</code>)</span>
                     <span class="text-slate-500">Action</span>
                 </button>
+                <button onclick="switchWorkbench('envelope'); tamperEnvelopeAAD(); toggleCmdModal(); location.href='#hero';" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition">
+                    <span class="text-slate-200">Test Envelope v2 AAD Tamper Detection</span>
+                    <span class="text-slate-500">Workbench</span>
+                </button>
                 <button onclick="toggleMemoryWipe(); toggleCmdModal(); location.href='#architecture';" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition">
                     <span class="text-slate-200">Simulate Volatile Memory Wipe (<code class="text-sky-400">ctypes.memset</code>)</span>
                     <span class="text-slate-500">Simulation</span>
@@ -1031,182 +1108,11 @@
                     <span class="text-slate-200">Jump to Commercial Licensing & Pricing</span>
                     <span class="text-slate-500">Navigation</span>
                 </a>
-                <a href="https://github.com/AmhetCnaa/Envshield" target="_blank" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition block">
-                    <span class="text-slate-200">Open Official GitHub Repository</span>
-                    <span class="text-slate-500">External</span>
-                </a>
             </div>
         </div>
     </div>
 
-    <!-- THREE.JS 3D CRYPTOGRAPHIC CORE SCRIPT -->
-    <script>
-        const container = document.getElementById('three-container');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 7.2);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.15;
-        container.appendChild(renderer.domElement);
-
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 1.8;
-        controls.enableZoom = false;
-
-        // Subtle Architectural Grid Floor inside 3D Scene
-        const gridHelper = new THREE.GridHelper(12, 12, 0x1e293b, 0x0f172a);
-        gridHelper.position.y = -2.1;
-        scene.add(gridHelper);
-
-        // Studio Lighting
-        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x06070a, 0.85);
-        scene.add(hemiLight);
-
-        const dirLight = new THREE.DirectionalLight(0x34d399, 2.2);
-        dirLight.position.set(5, 6, 5);
-        scene.add(dirLight);
-
-        const rimLight = new THREE.PointLight(0x38bdf8, 3.0, 12);
-        rimLight.position.set(-4, -2, 3);
-        scene.add(rimLight);
-
-        // Inner Vault Core (PBR Metallic)
-        const coreGeo = new THREE.IcosahedronGeometry(1.45, 1);
-        const coreMat = new THREE.MeshPhysicalMaterial({
-            color: 0x090d16,
-            emissive: 0x059669,
-            emissiveIntensity: 0.35,
-            roughness: 0.18,
-            metalness: 0.92,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.12,
-            flatShading: true
-        });
-        const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-        scene.add(coreMesh);
-
-        // Outer Geodesic Cage
-        const outerGeo = new THREE.IcosahedronGeometry(1.95, 1);
-        const outerMat = new THREE.MeshBasicMaterial({
-            color: 0x34d399,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.32
-        });
-        const outerMesh = new THREE.Mesh(outerGeo, outerMat);
-        scene.add(outerMesh);
-
-        // Precision Orbital Rings
-        const ringGeo = new THREE.TorusGeometry(2.55, 0.018, 16, 120);
-        const ringMat1 = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.5 });
-        const ring1 = new THREE.Mesh(ringGeo, ringMat1);
-        ring1.rotation.x = Math.PI / 2.6;
-        scene.add(ring1);
-
-        const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x34d399, transparent: true, opacity: 0.35 });
-        const ring2 = new THREE.Mesh(ringGeo, ringMat2);
-        ring2.rotation.x = -Math.PI / 3.2;
-        ring2.rotation.y = Math.PI / 5;
-        scene.add(ring2);
-
-        // Particle Field
-        const pCount = 160;
-        const pGeo = new THREE.BufferGeometry();
-        const pPos = new Float32Array(pCount * 3);
-        for (let i = 0; i < pCount * 3; i += 3) {
-            const r = 2.1 + Math.random() * 1.4;
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos((Math.random() * 2) - 1);
-            pPos[i] = r * Math.sin(phi) * Math.cos(theta);
-            pPos[i + 1] = r * Math.sin(phi) * Math.sin(theta);
-            pPos[i + 2] = r * Math.cos(phi);
-        }
-        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-        const pMat = new THREE.PointsMaterial({ color: 0x34d399, size: 0.04, transparent: true, opacity: 0.75 });
-        const particles = new THREE.Points(pGeo, pMat);
-        scene.add(particles);
-
-        function setVaultMode(mode) {
-            const statusText = document.getElementById('vault-status-text');
-            const hudDot = document.getElementById('hud-dot');
-            const hudSyscall = document.getElementById('hud-syscall');
-            const bLocked = document.getElementById('btn-mode-locked');
-            const bUnseal = document.getElementById('btn-mode-unseal');
-            const bCanary = document.getElementById('btn-mode-canary');
-
-            const inactiveClass = "py-1.5 px-2 rounded bg-white/[0.03] text-slate-400 border border-white/10 hover:text-white text-center transition";
-            bLocked.className = inactiveClass;
-            bUnseal.className = inactiveClass;
-            bCanary.className = inactiveClass;
-
-            if (mode === 'locked') {
-                bLocked.className = "py-1.5 px-2 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold text-center transition";
-                statusText.innerText = "STATE: VOLATILE_LOCKED";
-                hudDot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
-                hudSyscall.innerText = "mlock(4096B) · PR_SET_DUMPABLE=0";
-                hudSyscall.className = "text-emerald-400 font-normal";
-                coreMat.emissive.setHex(0x059669);
-                outerMat.color.setHex(0x34d399);
-                pMat.color.setHex(0x34d399);
-                controls.autoRotateSpeed = 1.8;
-            } else if (mode === 'unseal') {
-                bUnseal.className = "py-1.5 px-2 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30 font-semibold text-center transition";
-                statusText.innerText = "STATE: PTY_STREAM_PROXY";
-                hudDot.className = "w-2 h-2 rounded-full bg-sky-400 animate-ping";
-                hudSyscall.innerText = "redact_chunk(lookahead=4096B)";
-                hudSyscall.className = "text-sky-400 font-normal";
-                coreMat.emissive.setHex(0x0284c7);
-                outerMat.color.setHex(0x38bdf8);
-                pMat.color.setHex(0x38bdf8);
-                controls.autoRotateSpeed = 4.2;
-            } else if (mode === 'canary') {
-                bCanary.className = "py-1.5 px-2 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold text-center transition";
-                statusText.innerText = "ALERT: CANARY_DECOY_ACTIVE";
-                hudDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
-                hudSyscall.innerText = "SIEM_WEBHOOK_DISPATCHED (200 OK)";
-                hudSyscall.className = "text-amber-400 font-normal";
-                coreMat.emissive.setHex(0xd97706);
-                outerMat.color.setHex(0xf59e0b);
-                pMat.color.setHex(0xf59e0b);
-                controls.autoRotateSpeed = 7.5;
-            }
-        }
-
-        function reset3DCamera() {
-            camera.position.set(0, 0, 7.2);
-            controls.target.set(0, 0, 0);
-            controls.update();
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            coreMesh.rotation.y += 0.004;
-            coreMesh.rotation.x += 0.002;
-            outerMesh.rotation.y -= 0.003;
-            ring1.rotation.z += 0.007;
-            ring2.rotation.z -= 0.005;
-            particles.rotation.y += 0.0015;
-            controls.update();
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            if (!container) return;
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        });
-    </script>
-
-    <!-- INTERACTIVE UI & SIMULATION CONTROLLERS -->
+    <!-- INTERACTIVE CONTROLLERS & WORKBENCH ENGINE -->
     <script>
         // 1. Mouse Spotlight Effect on Bento Cards
         function handleSpotlight(e, card) {
@@ -1240,7 +1146,150 @@
             setTimeout(() => { btnText.innerText = 'Copy'; }, 1800);
         }
 
-        // 3. Interactive Volatile Memory Hex Inspector (Bento Card 1)
+        // 3. HERO WORKBENCH CONTROLLER (Sanitizer, Envelope v2, Attack Simulator)
+        function switchWorkbench(tab) {
+            ['sanitizer', 'envelope', 'attacks'].forEach(t => {
+                const btn = document.getElementById('wb-tab-' + t);
+                const panel = document.getElementById('wb-panel-' + t);
+                if (t === tab) {
+                    btn.className = "px-2.5 py-1 rounded bg-white/10 text-white font-semibold transition";
+                    panel.classList.remove('hidden');
+                } else {
+                    btn.className = "px-2.5 py-1 rounded text-slate-400 hover:text-white transition";
+                    panel.classList.add('hidden');
+                }
+            });
+        }
+
+        // 3A. Live Stream Sanitizer Engine
+        function setSanitizerInput(val) {
+            document.getElementById('sanitizer-input').value = val;
+            runLiveSanitizer();
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function runLiveSanitizer() {
+            const raw = document.getElementById('sanitizer-input').value;
+            let safe = escapeHtml(raw);
+            let count = 0;
+
+            const rules = [
+                { pattern: /sk_live_98aF2kL9/g, label: "STRIPE_SECRET_KEY (PLAIN)" },
+                { pattern: /c2tfbGl2ZV85OGFGMmtMOQ==/g, label: "STRIPE_SECRET_KEY (BASE64)" },
+                { pattern: /pg_pass_77xQ/g, label: "DB_PASSWORD (PLAIN)" },
+                { pattern: /cGdfcGFzc183N3hR/g, label: "DB_PASSWORD (BASE64)" }
+            ];
+
+            rules.forEach(r => {
+                safe = safe.replace(r.pattern, () => {
+                    count++;
+                    return `<span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">[REDACTED:${r.label}]</span>`;
+                });
+            });
+
+            document.getElementById('sanitizer-output').innerHTML = safe || '<span class="text-slate-600">// Stream empty</span>';
+            const stats = document.getElementById('sanitizer-stats');
+            if (count > 0) {
+                stats.className = "text-emerald-400 font-semibold";
+                stats.innerText = `${count} secret${count > 1 ? 's' : ''} masked · 0.04ms`;
+            } else {
+                stats.className = "text-slate-500";
+                stats.innerText = "0 secrets detected · pass-through";
+            }
+        }
+        runLiveSanitizer();
+
+        // 3B. Envelope v2 Live Compiler & AAD Tamper Simulator
+        function randomHex(len) {
+            const chars = '0123456789abcdef';
+            let out = '';
+            for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * 16)];
+            return out;
+        }
+
+        function reSealEnvelope() {
+            const nonce = randomHex(24);
+            const ct = randomHex(44);
+            const tag = randomHex(32);
+            const box = document.getElementById('envelope-json-box');
+            const bar = document.getElementById('envelope-verify-bar');
+
+            box.innerHTML = `<pre class="text-slate-300"><code>{
+  "version": <span class="text-emerald-400">2</span>,
+  "profile": <span class="text-sky-400">"production"</span>,
+  "cipher": "AES-256-GCM",
+  "kdf": { "alg": "PBKDF2-HMAC-SHA256", "iterations": <span class="text-indigo-400">600000</span> },
+  "recipients": [
+    { "type": "ssh-ed25519", "user": "@ahmet", "epk": "0x${randomHex(16)}..." },
+    { "type": "aws-kms", "arn": "arn:aws:kms:eu-central-1:key/prod" }
+  ],
+  "nonce": "${nonce}",
+  "ciphertext": "${ct}...",
+  "auth_tag": "${tag}"
+}</code></pre>`;
+
+            bar.className = "rounded-lg px-3.5 py-2.5 bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 flex items-center justify-between text-[11px]";
+            bar.innerHTML = `<span>✓ AAD Tag Verified: Header metadata cryptographically bound to ciphertext</span><span class="font-bold">VERIFIED</span>`;
+        }
+
+        function tamperEnvelopeAAD() {
+            const box = document.getElementById('envelope-json-box');
+            const bar = document.getElementById('envelope-verify-bar');
+
+            box.innerHTML = `<pre class="text-slate-300"><code>{
+  "version": <span class="text-emerald-400">2</span>,
+  "profile": <span class="text-rose-400 font-bold">"staging_downgrade_attack"</span>, // <-- MODIFIED BY ATTACKER
+  "cipher": "AES-256-GCM",
+  "kdf": { "alg": "PBKDF2-HMAC-SHA256", "iterations": <span class="text-rose-400 font-bold">100000</span> },
+  "recipients": [ ... ],
+  "ciphertext": "8f91a2c409b1e7d5...",
+  "auth_tag": "4c8819a02f71e30b..."
+}</code></pre>`;
+
+            bar.className = "rounded-lg px-3.5 py-2.5 bg-rose-500/15 border border-rose-500/30 text-rose-300 flex items-center justify-between text-[11px]";
+            bar.innerHTML = `<span>✗ VaultIntegrityError: AES-GCM AAD authentication tag mismatch! Unseal aborted.</span><span class="font-bold">BLOCKED</span>`;
+        }
+        reSealEnvelope();
+
+        // 3C. Kernel & Process Attack Simulator
+        const attackData = {
+            ps: {
+                cmd: "$ ps aux | grep python && cat /proc/4812/cmdline",
+                legacy: "❌ Standard Docker (-e KEY=VAL): Exposes 'STRIPE_KEY=sk_live_98aF2...' to all local users.",
+                shield: "✓ Envshield: Passes '-e KEY' (no value in argv) + /dev/shm 0o400 descriptor. 0 secrets in /proc."
+            },
+            ptrace: {
+                cmd: "$ gdb -p 4812 -batch -ex 'generate-core-file'",
+                legacy: "❌ Standard Process: Generates core.4812 dump containing full heap plaintext credentials.",
+                shield: "✓ Envshield: Invokes prctl(PR_SET_DUMPABLE, 0) on startup -> Kernel returns EACCES (Permission denied)."
+            },
+            swap: {
+                cmd: "$ strings /swapfile | grep -i 'sk_live_'",
+                legacy: "❌ Standard Python/Node: OS pages inactive heap memory to NVMe swapfile in plaintext.",
+                shield: "✓ Envshield: Pins 4096B pages in physical RAM via mlock() / VirtualLock() + zeroes via memset(0x00)."
+            }
+        };
+
+        function runAttackSim(key) {
+            ['ps', 'ptrace', 'swap'].forEach(k => {
+                const btn = document.getElementById('atk-btn-' + k);
+                btn.className = (k === key)
+                    ? "p-2.5 rounded-xl bg-white/10 border border-white/25 text-left transition"
+                    : "p-2.5 rounded-xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.06] text-left transition";
+            });
+            const d = attackData[key];
+            document.getElementById('attack-sim-output').innerHTML = `
+                <div class="text-slate-400 pb-1.5 border-b border-white/[0.06]">${d.cmd}</div>
+                <div class="text-rose-400">${d.legacy}</div>
+                <div class="text-emerald-400 font-semibold">${d.shield}</div>
+            `;
+        }
+        runAttackSim('ps');
+
+        // 4. Interactive Volatile Memory Hex Inspector (Bento Card 1)
         let isMemWiped = false;
         function renderHexGrid() {
             const grid = document.getElementById('hex-dump-grid');
@@ -1273,10 +1322,9 @@
         }
         renderHexGrid();
 
-        // 4. Interactive Canary Honeypot Trigger (Bento Card 4)
+        // 5. Interactive Canary Honeypot Trigger (Bento Card 4)
         function triggerCanaryDemo() {
             const out = document.getElementById('canary-output');
-            setVaultMode('canary');
             out.innerHTML = `<code class="text-amber-300">POST https://siem.internal/webhook HTTP/1.1
 {
   "event": "CANARY_DECOY_INJECTED",
@@ -1286,7 +1334,7 @@
 }</code>`;
         }
 
-        // 5. Interactive Runtime Terminal Sandbox
+        // 6. Interactive Runtime Terminal Sandbox & Live Shell Prompt
         const scenarios = {
             run: {
                 title: "envshield run -- python app.py",
@@ -1345,6 +1393,25 @@
         };
 
         let currentScenarioKey = 'run';
+        function appendTerminalLine(ts, type, htmlText) {
+            const containerEl = document.getElementById('terminal-content');
+            const row = document.createElement('div');
+            row.className = "flex items-baseline gap-3";
+            let colorClass = "text-slate-300";
+            if (type === 'dim') colorClass = "text-slate-500";
+            else if (type === 'ok') colorClass = "text-emerald-400";
+            else if (type === 'sky') colorClass = "text-sky-400";
+            else if (type === 'warn') colorClass = "text-amber-400";
+            else if (type === 'err') colorClass = "text-rose-400";
+
+            row.innerHTML = `
+                <span class="text-[11px] text-slate-600 select-none w-14 flex-shrink-0 text-right">${ts}</span>
+                <span class="${colorClass} flex-1">${htmlText}</span>
+            `;
+            containerEl.appendChild(row);
+            containerEl.scrollTop = containerEl.scrollHeight;
+        }
+
         function switchTerminalDemo(key) {
             currentScenarioKey = key;
             const s = scenarios[key];
@@ -1359,30 +1426,45 @@
 
             const containerEl = document.getElementById('terminal-content');
             containerEl.innerHTML = '';
-
-            s.lines.forEach(line => {
-                const row = document.createElement('div');
-                row.className = "flex items-baseline gap-3";
-                let colorClass = "text-slate-300";
-                if (line.type === 'dim') colorClass = "text-slate-500";
-                else if (line.type === 'ok') colorClass = "text-emerald-400";
-                else if (line.type === 'sky') colorClass = "text-sky-400";
-                else if (line.type === 'warn') colorClass = "text-amber-400";
-                else if (line.type === 'err') colorClass = "text-rose-400";
-
-                row.innerHTML = `
-                    <span class="text-[11px] text-slate-600 select-none w-14 flex-shrink-0 text-right">${line.ts}</span>
-                    <span class="${colorClass} flex-1">${line.text}</span>
-                `;
-                containerEl.appendChild(row);
-            });
+            s.lines.forEach(line => appendTerminalLine(line.ts, line.type, line.text));
         }
+
+        function handleTerminalSubmit(e) {
+            e.preventDefault();
+            const inputEl = document.getElementById('terminal-input');
+            const rawCmd = inputEl.value.trim();
+            if (!rawCmd) return;
+            inputEl.value = '';
+
+            appendTerminalLine("user $", "sky", escapeHtml(rawCmd));
+            const cmd = rawCmd.toLowerCase();
+
+            if (cmd === 'clear') {
+                document.getElementById('terminal-content').innerHTML = '';
+                return;
+            } else if (cmd === 'help') {
+                appendTerminalLine("0.01ms", "ok", "Available interactive commands: <span class='text-white'>status</span>, <span class='text-white'>seal</span>, <span class='text-white'>run</span>, <span class='text-white'>stealth</span>, <span class='text-white'>audit</span>, <span class='text-white'>clear</span>");
+            } else if (cmd === 'status') {
+                appendTerminalLine("0.04ms", "ok", "Envshield v0.4.0 · mlock() Page Arena: ACTIVE · Vault: .env.enc (AES-256-GCM v2) · Integrity: OK");
+            } else if (cmd.startsWith('seal')) {
+                appendTerminalLine("0.18ms", "ok", "✓ Sealed 14 keys into .env.enc (PBKDF2 600,000 iters + X25519 HKDF) & shredded plaintext .env.");
+            } else if (cmd.startsWith('run')) {
+                switchTerminalDemo('run');
+            } else if (cmd.startsWith('stealth') || cmd.startsWith('docker')) {
+                switchTerminalDemo('docker');
+            } else if (cmd.startsWith('audit')) {
+                switchTerminalDemo('audit');
+            } else {
+                appendTerminalLine("0.02ms", "dim", `Executed under shield: '${escapeHtml(rawCmd)}'. Try typing 'help' or 'status'.`);
+            }
+        }
+
         function replayCurrentScenario() {
             switchTerminalDemo(currentScenarioKey);
         }
         switchTerminalDemo('run');
 
-        // 6. TCO / ROI Calculator
+        // 7. TCO / ROI Calculator
         function calculateSavings() {
             const seats = parseInt(document.getElementById('team-size-slider').value);
             const comp = document.getElementById('competitor-select').value;
@@ -1400,7 +1482,7 @@
         }
         calculateSavings();
 
-        // 7. Billing Toggle
+        // 8. Billing Toggle
         function setBilling(mode) {
             const bMonthly = document.getElementById('bill-monthly');
             const bAnnual = document.getElementById('bill-annual');
@@ -1420,7 +1502,7 @@
             }
         }
 
-        // 8. FAQ Accordion
+        // 9. FAQ Accordion
         function toggleFaq(idx) {
             const body = document.getElementById('faq-body-' + idx);
             const icon = document.getElementById('faq-icon-' + idx);
@@ -1434,7 +1516,7 @@
             }
         }
 
-        // 9. Command Palette Modal (⌘K / Ctrl+K)
+        // 10. Command Palette Modal (⌘K / Ctrl+K)
         function toggleCmdModal() {
             const modal = document.getElementById('cmd-modal');
             modal.classList.toggle('hidden');
