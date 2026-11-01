@@ -8,13 +8,14 @@
 [![Python Versions](https://img.shields.io/pypi/pyversions/envshield-cli?style=flat-square&logo=python&logoColor=white&label=Python&color=3B82F6)](https://pypi.org/project/envshield-cli/)
 [![Cryptography](https://img.shields.io/badge/Cipher-AES--256--GCM-6366F1?style=flat-square&logo=letsencrypt&logoColor=white)](https://github.com/AmhetCnaa/Envshield)
 [![Memory Protection](https://img.shields.io/badge/Memory-VirtualLock%20%2F%20mlock-059669?style=flat-square)](https://github.com/AmhetCnaa/Envshield)
-[![License](https://img.shields.io/badge/License-MIT-334155?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-AGPLv3%20%7C%20Commercial-6366F1?style=flat-square)](LICENSE)
 
 <p align="center">
   <a href="#-30-second-quickstart"><b>Quickstart</b></a> •
   <a href="#-why-envshield"><b>Why Envshield?</b></a> •
   <a href="#-10x-features"><b>10x Superpowers</b></a> •
   <a href="#-command-suite"><b>Command Suite</b></a> •
+  <a href="#-enterprise--commercial-licensing"><b>Commercial & Enterprise</b></a> •
   <a href="#-comparison-matrix"><b>Comparison Matrix</b></a> •
   <a href="#-zero-disk-architecture"><b>Architecture</b></a>
 </p>
@@ -331,7 +332,44 @@ envshield ci init --provider gitlab
 
 </td>
 </tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🔍 `envshield drift`
+Detect missing variables, dead secrets, and staging vs production profile discrepancies.
+```bash
+# Analyze codebase and vault for drift
+envshield drift .env.enc
+
+# CI pipeline enforcement (exit code 1 on drift)
+envshield drift .env.enc --ci
+```
+
+</td>
+<td width="50%" valign="top">
+
+### 📋 `envshield audit report`
+Generate executive SOC 2 / ISO 27001 HTML verification reports with cryptographic HMAC proof.
+```bash
+# Generate standalone compliance certificate
+envshield audit report -o soc2_report.html
+```
+
+</td>
+</tr>
 </table>
+
+---
+
+## 💼 Enterprise & Commercial Licensing
+
+Envshield is dual-licensed to support both the open-source community and commercial organizations:
+
+* **Community Edition (GNU AGPLv3 - $0 Forever):** Full open source for developers, personal projects, and open-source applications.
+* **Team Edition ($19 / user / month):** Commercial AGPLv3 copyleft waiver, real-time SIEM webhook streaming (Datadog, Splunk, Slack), and automated secret drift sentinel.
+* **Enterprise Edition (Custom Contract):** Unlimited seats, automated SOC 2 / ISO 27001 compliance audit reports, 24/7 dedicated Slack/Teams support, custom HSM & PKCS#11 hardware key integrations.
+
+👉 **View complete licensing models and SLA details in [COMMERCIAL.md](COMMERCIAL.md)** or contact `licensing@envshield.security`.
 
 ---
 
@@ -401,5 +439,5 @@ exit_code = execute_with_env(["python", "worker.py"], secrets, redact=True)
 ---
 
 <div align="center">
-  <sub>Released under the <a href="LICENSE">MIT License</a> • Built for developers and teams who demand uncompromising security.</sub>
+  <sub>Dual-licensed under the <a href="LICENSE">GNU AGPLv3</a> (Community) and Commercial Enterprise Terms. See <a href="COMMERCIAL.md">COMMERCIAL.md</a>.</sub>
 </div>

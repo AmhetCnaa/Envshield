@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envshield - Zero-Disk Secret Engine & Runtime Shield</title>
+    <meta name="description" content="The world's first open-source, zero-disk runtime secret engine with live stream redaction, cloud KMS envelope encryption, and self-healing git hooks.">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#0B0F19',
+                        surface: '#111827',
+                        card: '#1E293B',
+                        cyan: { 400: '#38BDF8', 500: '#0EA5E9' },
+                        emerald: { 400: '#34D399', 500: '#10B981' }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Three.js + OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.4; filter: blur(40px); }
+            50% { opacity: 0.8; filter: blur(60px); }
+        }
+        .glow-sphere { animation: pulse-glow 6s infinite ease-in-out; }
+        .gradient-text { background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="bg-[#0B0F19] text-slate-100 antialiased selection:bg-cyan-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 bg-[#0B0F19]/80 backdrop-blur-md border-b border-white/10 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🛡️</span>
+                <span class="font-extrabold text-xl tracking-tight text-white">envshield</span>
+                <span class="bg-cyan-500/10 text-cyan-400 text-xs px-2.5 py-0.5 rounded-full font-mono border border-cyan-500/30">v0.4.0 AGPLv3</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+                <a href="#features" class="hover:text-cyan-400 transition">Features</a>
+                <a href="#comparison" class="hover:text-cyan-400 transition">Comparison</a>
+                <a href="#enterprise" class="hover:text-cyan-400 transition">Enterprise & Pricing</a>
+                <a href="#demo" class="hover:text-cyan-400 transition">Live Demo</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="https://github.com/AmhetCnaa/Envshield" target="_blank" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-semibold transition flex items-center space-x-2 border border-white/10">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    <span>GitHub ⭐</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with 3D Interactive Canvas -->
+    <section class="relative pt-32 pb-20 overflow-hidden">
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-cyan-500/20 glow-sphere rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+            <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 bg-cyan-950/60 border border-cyan-500/30 rounded-full text-cyan-400 text-xs font-semibold">
+                    <span>⚡ 10x Ahead of Mozilla SOPS & Doppler</span>
+                </div>
+                <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-tight">
+                    Never Leave Secrets on Disk. <br>
+                    <span class="gradient-text">Zero-Disk Runtime Shield.</span>
+                </h1>
+                <p class="text-lg text-slate-300 max-w-xl leading-relaxed">
+                    The enterprise secret engine that unseals encrypted envelopes directly into volatile RAM, redacts child process leaks in real-time, and bridges developer laptops with Cloud KMS in CI/CD without SaaS lock-in.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-2">
+                    <div class="flex items-center bg-black/60 border border-slate-700 rounded-xl px-4 py-3 font-mono text-sm text-cyan-400">
+                        <span class="text-slate-500 select-none mr-3">$</span>
+                        <span id="cli-cmd">pip install envshield-cli</span>
+                        <button onclick="navigator.clipboard.writeText('pip install envshield-cli'); alert('Copied to clipboard!')" class="ml-4 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition">Copy</button>
+                    </div>
+                    <a href="#enterprise" class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white rounded-xl font-bold shadow-lg shadow-cyan-500/25 transition flex items-center space-x-2">
+                        <span>Commercial Licensing</span>
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3D Interactive Shield Canvas -->
+            <div class="lg:col-span-5 h-[420px] rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 relative overflow-hidden flex items-center justify-center shadow-2xl">
+                <div id="three-container" class="w-full h-full"></div>
+                <div class="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-md border border-white/10 rounded-xl px-4 py-2 flex items-center justify-between text-xs text-slate-400 font-mono">
+                    <span>Active Security Core: AES-256-GCM</span>
+                    <span class="text-emerald-400 flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping mr-2"></span>RAM LOCKED</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Superpowers Grid -->
+    <section id="features" class="py-20 bg-[#0F172A]/50 border-t border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <h2 class="text-3xl font-extrabold text-white">Engineered for Zero Leaks, Built for Enterprise</h2>
+                <p class="text-slate-400">Why world-class engineering teams replace legacy .env files and expensive SaaS secret dashboards with Envshield.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-card/70 border border-white/10 p-8 rounded-2xl space-y-4 hover:border-cyan-500/50 transition duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-2xl">🛡️</div>
+                    <h3 class="text-xl font-bold text-white">Live Stream Redaction</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Intercepts child process <code class="text-cyan-400 font-mono">stdout</code> and <code class="text-cyan-400 font-mono">stderr</code> streams. If an unexpected traceback prints a secret, it is dynamically masked as <code class="text-amber-400 font-mono">[REDACTED:KEY]</code> before hitting the terminal.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-card/70 border border-white/10 p-8 rounded-2xl space-y-4 hover:border-indigo-500/50 transition duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-2xl">☁️</div>
+                    <h3 class="text-xl font-bold text-white">Cloud KMS Hybrid Envelope</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        One vault, two worlds. Developers unlock offline with local SSH keys in 1ms. CI/CD runners (GitHub Actions / GitLab) unlock via AWS KMS, GCP KMS, or Azure Key Vault via IAM OIDC without hardcoded passwords.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-card/70 border border-white/10 p-8 rounded-2xl space-y-4 hover:border-emerald-500/50 transition duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-2xl">⚡</div>
+                    <h3 class="text-xl font-bold text-white">Self-Healing Git Pre-Commit</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Never break developer flow. If an unencrypted <code class="text-emerald-400 font-mono">.env</code> is accidentally staged, Envshield catches it, offers to AES-256 encrypt it into a vault, shreds the plaintext, and proceeds cleanly.
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-card/70 border border-white/10 p-8 rounded-2xl space-y-4 hover:border-purple-500/50 transition duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-2xl">🐳</div>
+                    <h3 class="text-xl font-bold text-white">Docker Stealth Inspect Bridge</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Mounts secrets directly into Docker containers via RAM tmpfs. Running <code class="text-purple-400 font-mono">docker inspect</code> reveals zero plaintext environment variables to unauthorized host observers.
+                    </p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="bg-card/70 border border-white/10 p-8 rounded-2xl space-y-4 hover:border-amber-500/50 transition duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-2xl">📜</div>
+                    <h3 class="text-xl font-bold text-white">SOC 2 Tamper-Evident Audit</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Cryptographic HMAC-SHA256 chained ledger recording timestamp, PID, user, and key fingerprint for every access. Export executive SOC 2 / ISO 27001 HTML verification reports with one command.
+                    </p>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="bg-card/70 border border-white/10 p-8 rounded-2xl space-y-4 hover:border-rose-500/50 transition duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-2xl">🔍</div>
+                    <h3 class="text-xl font-bold text-white">Secret Drift & Health Sentinel</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Deep code scan across Python, JS, Go, Rust, and Dockerfiles. Flags missing variables, dead secrets, and staging vs production profile discrepancies before you trigger a deployment outage.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Terminal Playground -->
+    <section id="demo" class="py-20 max-w-7xl mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-extrabold text-white">Live Stream Redaction in Action</h2>
+            <p class="text-slate-400">See how Envshield guarantees zero secrets ever leak into terminal logs or CI output.</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto bg-black border border-slate-800 rounded-2xl shadow-2xl overflow-hidden font-mono text-sm">
+            <div class="bg-slate-900/80 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                    <span class="text-xs text-slate-400 ml-2">bash - envshield run -- python app.py</span>
+                </div>
+                <span class="text-xs text-emerald-400">STATUS: REDACTION ACTIVE</span>
+            </div>
+            <div class="p-6 space-y-3 leading-relaxed text-slate-300">
+                <p class="text-slate-500"># 1. Unsealing vault in volatile memory (0ms disk I/O)...</p>
+                <p class="text-cyan-400">✓ Injected 14 secrets into RAM environment from .env.enc (Profile: production)</p>
+                <p class="text-slate-500"># 2. Application executes and throws an accidental debug log:</p>
+                <p class="text-white">Connecting to PostgreSQL cluster at 10.0.4.15:5432...</p>
+                <p class="text-white">DEBUG: Auth Header = Bearer <span class="bg-amber-400/20 text-amber-300 px-1 py-0.5 rounded font-bold">[REDACTED:STRIPE_SECRET_KEY]</span></p>
+                <p class="text-white">Traceback (most recent call last):</p>
+                <p class="text-red-400">  File "app.py", line 42, in connect</p>
+                <p class="text-red-400">    raise ConnectionError(f"Database auth failed with password: <span class="bg-amber-400/20 text-amber-300 px-1 py-0.5 rounded font-bold">[REDACTED:DB_PASSWORD]</span>")</p>
+                <p class="text-emerald-400">✓ Cryptographic Audit Event Signed: HMAC #142 (Zero plaintext leaked)</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Competitive Matrix & ROI Calculator -->
+    <section id="comparison" class="py-20 bg-[#0F172A]/50 border-t border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <h2 class="text-3xl font-extrabold text-white">Compare Against Industry Standards</h2>
+                <p class="text-slate-400">Traditional tools force you to choose between slow SaaS clouds or primitive disk-writing scripts.</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 text-slate-400 uppercase text-xs tracking-wider">
+                            <th class="py-4 px-6">Capability</th>
+                            <th class="py-4 px-6 text-cyan-400 font-bold bg-cyan-950/20">envshield</th>
+                            <th class="py-4 px-6">Doppler</th>
+                            <th class="py-4 px-6">HashiCorp Vault</th>
+                            <th class="py-4 px-6">Mozilla SOPS</th>
+                            <th class="py-4 px-6">dotenvx</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 text-slate-300 font-medium">
+                        <tr>
+                            <td class="py-4 px-6 font-bold text-white">Zero-Disk RAM Decryption</td>
+                            <td class="py-4 px-6 text-emerald-400 font-bold bg-cyan-950/20">✅ Always</td>
+                            <td class="py-4 px-6 text-emerald-400">✅ Always</td>
+                            <td class="py-4 px-6 text-emerald-400">✅ Always</td>
+                            <td class="py-4 px-6 text-amber-400">⚠️ Partial</td>
+                            <td class="py-4 px-6 text-red-400">❌ Disk Writes</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 font-bold text-white">Live Stream Redaction</td>
+                            <td class="py-4 px-6 text-emerald-400 font-bold bg-cyan-950/20">✅ Real-time CLI</td>
+                            <td class="py-4 px-6 text-amber-400">⚠️ Cloud UI Only</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 font-bold text-white">Cloud KMS Envelope</td>
+                            <td class="py-4 px-6 text-emerald-400 font-bold bg-cyan-950/20">✅ Multi-Cloud</td>
+                            <td class="py-4 px-6 text-amber-400">⚠️ Cloud SaaS</td>
+                            <td class="py-4 px-6 text-amber-400">⚠️ Server Cluster</td>
+                            <td class="py-4 px-6 text-emerald-400">✅ Supported</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 font-bold text-white">Self-Healing Git Pre-Commit</td>
+                            <td class="py-4 px-6 text-emerald-400 font-bold bg-cyan-950/20">✅ Auto-Seals</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 font-bold text-white">Docker Stealth Mode</td>
+                            <td class="py-4 px-6 text-emerald-400 font-bold bg-cyan-950/20">✅ Zero Inspect Leak</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                            <td class="py-4 px-6 text-amber-400">⚠️ Agent Daemon</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                            <td class="py-4 px-6 text-red-400">❌ None</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-6 font-bold text-white">Pricing Model</td>
+                            <td class="py-4 px-6 text-cyan-400 font-bold bg-cyan-950/20">Free Core / $19 Team</td>
+                            <td class="py-4 px-6 text-slate-400">$18 - $49 / user / mo</td>
+                            <td class="py-4 px-6 text-slate-400">$10,000+ Enterprise</td>
+                            <td class="py-4 px-6 text-slate-400">Free (Complex Setup)</td>
+                            <td class="py-4 px-6 text-slate-400">Free / Paid Pro</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enterprise & Pricing Section -->
+    <section id="enterprise" class="py-20 max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+            <h2 class="text-4xl font-extrabold text-white">Dual-Licensed: Built for Freedom & Enterprise</h2>
+            <p class="text-slate-400">Independent developers get open-source power under AGPLv3. Enterprise teams get compliance, SLAs, and commercial immunity.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+            <!-- Community -->
+            <div class="bg-card/50 border border-white/10 rounded-2xl p-8 flex flex-col justify-between space-y-6">
+                <div class="space-y-4">
+                    <span class="text-xs uppercase tracking-wider text-cyan-400 font-bold">Open Source</span>
+                    <h3 class="text-2xl font-black text-white">Community Edition</h3>
+                    <div class="text-4xl font-black text-white">$0 <span class="text-sm font-normal text-slate-400">forever</span></div>
+                    <p class="text-slate-400 text-sm">For individual developers, indie hackers, and open-source projects.</p>
+                    <ul class="space-y-3 text-sm text-slate-300 pt-4">
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Zero-disk in-memory secret engine</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Real-time stream redactor (stdout/stderr)</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Self-healing git hook</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Multi-profile & Git auto-branching</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Cloud KMS envelope (AWS, GCP, Azure)</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> GNU AGPLv3 License</li>
+                    </ul>
+                </div>
+                <a href="https://github.com/AmhetCnaa/Envshield" class="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-center transition border border-white/10">Start Free on GitHub</a>
+            </div>
+
+            <!-- Team Tier (Featured) -->
+            <div class="bg-gradient-to-b from-card to-slate-900 border-2 border-cyan-500 rounded-2xl p-8 flex flex-col justify-between space-y-6 relative shadow-2xl shadow-cyan-500/10">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black text-xs font-black uppercase px-3 py-1 rounded-full tracking-wider">Most Popular</div>
+                <div class="space-y-4">
+                    <span class="text-xs uppercase tracking-wider text-cyan-400 font-bold">Commercial License</span>
+                    <h3 class="text-2xl font-black text-white">Team Edition</h3>
+                    <div class="text-4xl font-black text-white">$19 <span class="text-sm font-normal text-slate-400">/ user / month</span></div>
+                    <p class="text-slate-400 text-sm">For scaling engineering teams requiring AGPL copyleft waivers and SIEM streaming.</p>
+                    <ul class="space-y-3 text-sm text-slate-300 pt-4">
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> <strong>Everything in Community</strong></li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Commercial AGPLv3 copyleft waiver</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Real-time SIEM webhook streaming (Datadog/Slack)</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Secret drift & dead variable sentinel</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> GitHub Org automated onboarding</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Standard 24h response SLA</li>
+                    </ul>
+                </div>
+                <a href="mailto:licensing@envshield.security?subject=Envshield%20Team%20Edition%20Inquiry" class="w-full py-3 bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white rounded-xl font-bold text-center transition shadow-lg shadow-cyan-500/25">Get Team License</a>
+            </div>
+
+            <!-- Enterprise Tier -->
+            <div class="bg-card/50 border border-white/10 rounded-2xl p-8 flex flex-col justify-between space-y-6">
+                <div class="space-y-4">
+                    <span class="text-xs uppercase tracking-wider text-indigo-400 font-bold">Regulated & Scale</span>
+                    <h3 class="text-2xl font-black text-white">Enterprise Tier</h3>
+                    <div class="text-4xl font-black text-white">Custom <span class="text-sm font-normal text-slate-400">annual contract</span></div>
+                    <p class="text-slate-400 text-sm">For organizations with strict SOC 2, HIPAA, ISO 27001 compliance and 24/7 mission-critical needs.</p>
+                    <ul class="space-y-3 text-sm text-slate-300 pt-4">
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> <strong>Unlimited seats & repositories</strong></li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Automated SOC 2 / ISO 27001 HTML & PDF reports</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Custom HSM & PKCS#11 key hardware integration</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Dedicated Slack / Teams engineering bridge</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> 1-hour critical response SLA</li>
+                        <li class="flex items-center"><span class="text-emerald-400 mr-2">✓</span> Security architecture advisory</li>
+                    </ul>
+                </div>
+                <a href="mailto:licensing@envshield.security?subject=Envshield%20Enterprise%20Inquiry" class="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-center transition border border-white/10">Contact Enterprise Sales</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-12 px-6 text-center text-sm text-slate-500">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <span>🛡️</span>
+                <span class="font-bold text-slate-300">Envshield Security</span>
+                <span>© 2026 Ahmet Can. Dual-Licensed (AGPLv3 & Commercial).</span>
+            </div>
+            <div class="flex space-x-6 text-slate-400">
+                <a href="https://github.com/AmhetCnaa/Envshield" class="hover:text-white transition">GitHub</a>
+                <a href="https://github.com/AmhetCnaa/Envshield/blob/main/COMMERCIAL.md" class="hover:text-white transition">Commercial Terms</a>
+                <a href="https://github.com/AmhetCnaa/Envshield/blob/main/LICENSE" class="hover:text-white transition">AGPLv3 License</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js 3D Quantum Vault Shield Scene -->
+    <script>
+        const container = document.getElementById('three-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 0, 7);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 2.0;
+        controls.enableZoom = false;
+
+        // Balanced Studio Lights
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x0f172a, 0.8);
+        scene.add(hemiLight);
+
+        const dirLight = new THREE.DirectionalLight(0x38bdf8, 2.0);
+        dirLight.position.set(5, 5, 5);
+        scene.add(dirLight);
+
+        const pointLight = new THREE.PointLight(0x818cf8, 3.0, 10);
+        pointLight.position.set(-3, -2, 2);
+        scene.add(pointLight);
+
+        // Core Quantum Shield Geometry
+        const coreGeo = new THREE.IcosahedronGeometry(1.6, 2);
+        const coreMat = new THREE.MeshPhysicalMaterial({
+            color: 0x0b132b,
+            emissive: 0x0284c7,
+            emissiveIntensity: 0.4,
+            roughness: 0.1,
+            metalness: 0.9,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.1,
+            wireframe: false
+        });
+        const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+        scene.add(coreMesh);
+
+        // Outer Wireframe Forcefield
+        const outerGeo = new THREE.IcosahedronGeometry(2.1, 1);
+        const outerMat = new THREE.MeshBasicMaterial({
+            color: 0x38bdf8,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.35
+        });
+        const outerMesh = new THREE.Mesh(outerGeo, outerMat);
+        scene.add(outerMesh);
+
+        // Surrounding Orbital Rings
+        const ringGeo = new THREE.TorusGeometry(2.8, 0.03, 16, 100);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x818cf8, transparent: true, opacity: 0.6 });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = Math.PI / 3;
+        scene.add(ringMesh);
+
+        const ring2Mesh = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0x34d399, transparent: true, opacity: 0.4 }));
+        ring2Mesh.rotation.x = -Math.PI / 4;
+        ring2Mesh.rotation.y = Math.PI / 6;
+        scene.add(ring2Mesh);
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            coreMesh.rotation.y += 0.005;
+            coreMesh.rotation.x += 0.003;
+            outerMesh.rotation.y -= 0.003;
+            outerMesh.rotation.z += 0.002;
+            ringMesh.rotation.z += 0.008;
+            ring2Mesh.rotation.z -= 0.006;
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            if (!container) return;
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+    </script>
+</body>
+</html>

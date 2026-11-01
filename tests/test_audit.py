@@ -63,3 +63,18 @@ def test_audit_tampering_entry_deleted(tmp_path: Path) -> None:
     valid, msg = verify_audit_chain(audit_file)
     assert valid is False
     assert "discrepancy" in msg or "Tampering" in msg
+
+
+def test_compliance_report_generation(tmp_path: Path) -> None:
+    from envshield.core.audit import generate_compliance_report
+
+    audit_file = tmp_path / "compliance.audit.jsonl"
+    record_audit_event("SEAL", tmp_path / ".env", key_id="prod_key", audit_path=audit_file)
+    record_audit_event("UNSEAL", tmp_path / ".env.enc", key_id="prod_key", audit_path=audit_file)
+
+    report_html = generate_compliance_report(audit_file, title="Q4 SOC 2 Audit Report")
+    assert "<!DOCTYPE html>" in report_html
+    assert "Q4 SOC 2 Audit Report" in report_html
+    assert "VERIFIED: INTEGRITY CONFIRMED" in report_html
+    assert "prod_key" in report_html
+    assert "UNSEAL" in report_html

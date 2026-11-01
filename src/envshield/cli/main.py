@@ -460,7 +460,22 @@ def handle_audit(args: list[str], console: Console) -> None:
     verify_p = subparsers.add_parser("verify", help="Verify cryptographic hash chain integrity.")
     verify_p.add_argument("--audit-file", default=None, help="Custom audit log path.")
 
+    report_p = subparsers.add_parser("report", help="Generate executive SOC 2 / ISO 27001 HTML audit report.")
+    report_p.add_argument("-o", "--output", default="envshield_audit_report.html", help="HTML report output path (default: envshield_audit_report.html)")
+    report_p.add_argument("--audit-file", default=None, help="Custom audit log path.")
+    report_p.add_argument("--title", default="SOC 2 Type II Secret Access & Cryptographic Integrity Audit Report", help="Report header title.")
+
     parsed = parser.parse_args(args)
+    if parsed.audit_cmd == "report":
+        from envshield.core.audit import generate_compliance_report
+
+        report_html = generate_compliance_report(parsed.audit_file, title=parsed.title)
+        out_p = Path(parsed.output)
+        out_p.parent.mkdir(parents=True, exist_ok=True)
+        out_p.write_text(report_html, encoding="utf-8")
+        console.print(f"[bold green]✓ Successfully generated compliance audit report: [underline]{out_p}[/underline][/bold green]")
+        sys.exit(0)
+
     if parsed.audit_cmd == "verify":
         valid, msg = verify_audit_chain(parsed.audit_file)
         if valid:
@@ -1048,6 +1063,79 @@ def handle_ci(args: list[str], console: Console) -> None:
         sys.exit(0)
 
 
+def handle_drift(args: list[str], console: Console) -> None:
+    parser = argparse.ArgumentParser(
+        prog="envshield drift",
+        description="Detect missing variables, dead secrets, and configuration drift across codebase and vault profiles.",
+    )
+    parser.add_argument("vault", nargs="?", default=".env.enc", help="Vault file path (default: .env.enc)")
+    parser.add_argument("--example", "-e", default=None, help="Path to .env.example template file (default: .env.example if present)")
+    parser.add_argument("--dir", "-d", default=".", help="Root directory of codebase to scan (default: current directory)")
+    parser.add_argument("-i", "--identity", help="SSH identity path to unlock vault if required")
+    parser.add_argument("-p", "--password", help="Master password to unlock vault if required")
+    parser.add_argument("--ci", action="store_true", help="CI mode: exit code 1 if missing secrets or profile mismatch found")
+
+    parsed = parser.parse_args(args)
+    from envshield.core.drift import detect_secret_drift
+
+    vault_path = Path(parsed.vault)
+    if not vault_path.is_file():
+        console.print(f"[red]Error: Vault '{vault_path}' not found.[/red]")
+        sys.exit(1)
+
+    password = parsed.password
+    if not password and not parsed.identity and sys.stdin.isatty():
+        password = resolve_password(prompt_message="Enter password to unlock vault (or press Enter if using SSH/KMS): ")
+
+    try:
+        report = detect_secret_drift(
+            root_dir=parsed.dir,
+            vault_path=vault_path,
+            example_path=parsed.example,
+            password=password,
+            identity=parsed.identity,
+        )
+    except Exception as exc:
+        console.print(f"[red]Drift analysis failed: {exc}[/red]")
+        sys.exit(1)
+
+    console.print("[bold cyan]🔍 Envshield Secret Health & Drift Report[/bold cyan]")
+    console.print(f"[dim]Scanned {report.scanned_files_count} source files. Vault contains {len(report.vault_keys)} unique keys.[/dim]\n")
+
+    if not report.findings:
+        console.print(Panel("[bold green]✓ 100% Secret Health! No missing variables, dead secrets, or profile drift detected.[/bold green]"))
+        sys.exit(0)
+
+    missing = [f for f in report.findings if f.category == "MISSING_IN_VAULT"]
+    mismatch = [f for f in report.findings if f.category == "PROFILE_MISMATCH"]
+    dead = [f for f in report.findings if f.category == "DEAD_SECRET"]
+
+    if missing:
+        console.print(f"[bold red]🚨 Missing in Vault ({len(missing)} variables referenced in code but absent from vault):[/bold red]")
+        for f in missing:
+            locs = f" (e.g. {', '.join(f.occurrences)})" if f.occurrences else ""
+            console.print(f"  [red]✗[/red] [bold]{f.key}[/bold]{locs}")
+        console.print("")
+
+    if mismatch:
+        console.print(f"[bold yellow]⚠️ Profile Discrepancies ({len(mismatch)}):[/bold yellow]")
+        for f in mismatch:
+            console.print(f"  [yellow]![/yellow] {f.description}")
+        console.print("")
+
+    if dead:
+        console.print(f"[dim cyan]🧹 Dead / Unused Secrets in Vault ({len(dead)}):[/dim cyan]")
+        for f in dead:
+            console.print(f"  [dim]- {f.key}[/dim]")
+        console.print("")
+
+    if parsed.ci and report.has_issues():
+        console.print("[red]CI check failed: Critical secret drift detected.[/red]")
+        sys.exit(1)
+
+    sys.exit(0)
+
+
 def handle_scan(args: list[str]) -> None:
     parser = argparse.ArgumentParser(
         prog="envshield",
@@ -1209,6 +1297,9 @@ def main(argv: list[str] | None = None) -> None:
             return
         if cmd == "ci":
             handle_ci(argv[1:], console)
+            return
+        if cmd == "drift":
+            handle_drift(argv[1:], console)
             return
         if cmd == "scan":
             handle_scan(argv[1:])
