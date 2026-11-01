@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -54,14 +55,22 @@ def save_team_config(config: dict[str, Any], root_dir: Path | str | None = None)
 
 def fetch_github_keys(username: str, timeout: float = 5.0) -> list[str]:
     """
-    Fetches public OpenSSH keys for a GitHub user.
-    Validates each key to ensure cryptographic compatibility.
+    Fetches public OpenSSH keys for a GitHub user over strictly validated HTTPS.
+    Validates username format against path traversal / SSRF and verifies each key's
+    cryptographic compatibility.
     """
     clean_user = username.strip().lstrip("@")
     if not clean_user:
         raise ValueError("GitHub username cannot be empty.")
 
+    # Strict GitHub username validation (1-39 alphanumeric or single hyphens) to prevent URL path injection / SSRF
+    if not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?", clean_user):
+        raise ValueError(f"Invalid GitHub username format: '{clean_user}'.")
+
     url = f"https://github.com/{clean_user}.keys"
+    if not url.startswith("https://github.com/"):
+        raise ValueError("Untrusted key fetch scheme or host.")
+
     req = urllib.request.Request(
         url,
         headers={

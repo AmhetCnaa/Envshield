@@ -15,6 +15,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 from envshield.core.audit import record_audit_event
+from envshield.core.memory import SecureBuffer
 
 
 class KmsProviderError(Exception):
@@ -58,10 +59,10 @@ class MockKmsProvider(KmsProvider):
         ).derive(seed)
 
     def encrypt(self, dek: bytes, key_id: str) -> tuple[str, dict[str, Any]]:
-        kek = self._derive_mock_kek(key_id)
-        nonce = os.urandom(12)
-        aesgcm = AESGCM(kek)
-        enc = aesgcm.encrypt(nonce, dek, None)
+        with SecureBuffer(self._derive_mock_kek(key_id)) as sec_kek:
+            nonce = os.urandom(12)
+            aesgcm = AESGCM(sec_kek.to_bytes())
+            enc = aesgcm.encrypt(nonce, dek, None)
         envelope = {
             "nonce": base64.b64encode(nonce).decode("utf-8"),
             "enc": base64.b64encode(enc).decode("utf-8"),
@@ -69,12 +70,13 @@ class MockKmsProvider(KmsProvider):
         return base64.b64encode(json.dumps(envelope).encode("utf-8")).decode("utf-8"), {}
 
     def decrypt(self, ciphertext_b64: str, key_id: str, metadata: dict[str, Any]) -> bytes:
-        kek = self._derive_mock_kek(key_id)
         raw_env = json.loads(base64.b64decode(ciphertext_b64).decode("utf-8"))
         nonce = base64.b64decode(raw_env["nonce"])
         enc = base64.b64decode(raw_env["enc"])
-        aesgcm = AESGCM(kek)
-        return aesgcm.decrypt(nonce, enc, None)
+        with SecureBuffer(self._derive_mock_kek(key_id)) as sec_kek:
+            aesgcm = AESGCM(sec_kek.to_bytes())
+            return aesgcm.decrypt(nonce, enc, None)
+
 
     def is_available(self) -> tuple[bool, str]:
         return True, "Mock KMS is always available"
@@ -239,11 +241,17 @@ class HashiCorpVaultProvider(KmsProvider):
     name = "vault"
 
     def _get_config(self) -> tuple[str, str]:
+        import urllib.parse
+
         addr = os.environ.get("VAULT_ADDR", "http://127.0.0.1:8200").rstrip("/")
+        parsed = urllib.parse.urlparse(addr)
+        if parsed.scheme not in ("https", "http") or not parsed.netloc:
+            raise KmsProviderError(f"Invalid VAULT_ADDR scheme or host: '{addr}'. Must be https:// or http://.")
         token = os.environ.get("VAULT_TOKEN", "")
         if not token:
             raise KmsProviderError("VAULT_TOKEN environment variable is required for HashiCorp Vault.")
         return addr, token
+
 
     def _clean_key(self, key_id: str) -> str:
         k = key_id

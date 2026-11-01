@@ -7,6 +7,7 @@ from envshield.core.decoy import (
     generate_default_canary_secrets,
     load_decoy_secrets,
     trigger_canary_alert,
+    validate_webhook_url,
 )
 
 
@@ -38,3 +39,13 @@ def test_trigger_canary_alert(tmp_path: Path, monkeypatch) -> None:
     assert len(entries) == 1
     assert entries[0]["action"] == "DECOY_TRIGGERED"
     assert entries[0]["details"]["reason"] == "bad_password"
+
+
+def test_validate_webhook_url_ssrf_protection() -> None:
+    assert validate_webhook_url("https://hooks.slack.com/services/T00/B00/X00") is True
+    assert validate_webhook_url("http://127.0.0.1:8080/alert") is True
+    assert validate_webhook_url("file:///etc/passwd") is False
+    assert validate_webhook_url("ftp://internal.corp/secret") is False
+    assert validate_webhook_url("gopher://127.0.0.1:25/") is False
+    assert validate_webhook_url("https://") is False
+

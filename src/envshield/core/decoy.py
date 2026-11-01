@@ -4,6 +4,7 @@ import json
 import os
 import platform
 import threading
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -37,8 +38,22 @@ def load_decoy_secrets(decoy_file: Path | str | None = None) -> dict[str, str]:
     return generate_default_canary_secrets()
 
 
+def validate_webhook_url(url: str) -> bool:
+    """
+    Validates that a webhook URL uses strictly https:// or http:// schemes and has a valid netloc.
+    Prevents SSRF / local file inclusion via file://, ftp://, gopher://, or custom schemes.
+    """
+    try:
+        parsed = urllib.parse.urlparse(url.strip())
+        return parsed.scheme in ("https", "http") and bool(parsed.netloc)
+    except Exception:
+        return False
+
+
 def _send_webhook_worker(webhook_url: str, payload: dict[str, Any]) -> None:
     """Delivers canary alert webhook in background without blocking CLI execution."""
+    if not validate_webhook_url(webhook_url):
+        return
     try:
         data = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(
@@ -54,6 +69,7 @@ def _send_webhook_worker(webhook_url: str, payload: dict[str, Any]) -> None:
     except Exception:
         # Silent failure for stealthiness
         pass
+
 
 
 def trigger_canary_alert(

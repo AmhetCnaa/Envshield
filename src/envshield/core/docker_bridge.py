@@ -10,7 +10,25 @@ from envshield.core.editor import get_ephemeral_ram_base, shred_directory_conten
 from envshield.core.runner import execute_with_env
 
 
+def _write_restricted_file(target: Path, content: str) -> None:
+    """
+    Atomically creates and writes a file with strict 0o400 (read-only owner) permissions
+    at creation time via os.open() to eliminate any TOCTOU permission window.
+    """
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC
+    fd = os.open(target, flags, 0o400)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        f.write(content)
+    if sys.platform != "win32":
+        try:
+            os.chmod(target, 0o400)
+        except OSError:
+            pass
+
+
 def is_docker_available() -> bool:
+
+
     """Checks whether the docker CLI executable is installed and available in PATH."""
     return shutil.which("docker") is not None
 
@@ -132,21 +150,17 @@ def execute_docker_with_secrets(
                 pass
         try:
             # Materialize individual secret files (/run/secrets/<KEY>) and combined .env inside RAM dir
+            # using direct os.open(..., 0o400) to avoid any TOCTOU permission gap.
             env_lines: list[str] = []
             for k, v in secrets.items():
                 safe_name = Path(k).name
                 if safe_name and safe_name not in (".", ".."):
                     sec_file = stealth_dir / safe_name
-                    sec_file.write_text(v, encoding="utf-8")
-                    if sys.platform != "win32":
-                        try:
-                            os.chmod(sec_file, 0o400)
-                        except OSError:
-                            pass
+                    _write_restricted_file(sec_file, v)
                 env_lines.append(f"{k}={v}")
 
             combined_env = stealth_dir / ".env"
-            combined_env.write_text("\n".join(env_lines) + "\n", encoding="utf-8")
+            _write_restricted_file(combined_env, "\n".join(env_lines) + "\n")
 
             full_command = build_docker_run_command(
                 docker_args, secrets, stealth=True, stealth_dir=stealth_dir
@@ -154,6 +168,7 @@ def execute_docker_with_secrets(
             return execute_with_env(full_command, secrets, redact=redact)
         finally:
             shred_directory_contents(stealth_dir)
+
 
     full_command = build_docker_run_command(docker_args, secrets, stealth=False)
     return execute_with_env(full_command, secrets, redact=redact)

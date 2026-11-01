@@ -109,6 +109,20 @@ def test_unseal_corrupted_payload(tmp_path: Path):
     with pytest.raises(InvalidKey, match="AAD"):
         unseal_to_memory(enc_file, "password")
 
+    # Tamper with PBKDF2 iterations in JSON header to a DoS value (999999999) or downgrade (1)
+    seal_file(valid_env, enc_file, "password")
+    dos_bytes = enc_file.read_bytes().replace(b'"iterations":100000', b'"iterations":100000000')
+    # Adjust 4-byte header length for the 3 extra digits
+    import struct
+
+    from envshield.core.vault import V2_MAGIC
+    old_hlen = struct.unpack(">I", dos_bytes[len(V2_MAGIC):len(V2_MAGIC)+4])[0]
+    dos_payload = V2_MAGIC + struct.pack(">I", old_hlen + 3) + dos_bytes[len(V2_MAGIC)+4:]
+    enc_file.write_bytes(dos_payload)
+    with pytest.raises(InvalidKey, match="unsafe KDF iteration count"):
+        unseal_to_memory(enc_file, "password")
+
+
 
 
 def test_vault_file_not_found(tmp_path: Path):

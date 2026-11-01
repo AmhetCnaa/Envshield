@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import getpass
 import hashlib
+import hmac
 import json
 import os
 import platform
+import sys
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -110,22 +113,42 @@ def record_audit_event(
     entry_data["entry_hash"] = entry_hash
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(entry_data) + "\n")
+    line_bytes = (json.dumps(entry_data) + "\n").encode("utf-8")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_APPEND
+    fd = os.open(path, flags, 0o600)
+    try:
+        if sys.platform != "win32":
+            try:
+                os.fchmod(fd, 0o600)
+            except (AttributeError, OSError):
+                os.chmod(path, 0o600)
+        with os.fdopen(fd, "ab") as f:
+            f.write(line_bytes)
+            f.flush()
+            os.fsync(f.fileno())
+    except Exception:
+        try:
+            os.close(fd)
+        except OSError:
+            pass
+        raise
 
-    # Stream real-time audit event to enterprise SIEM / Webhook if configured
+    # Stream real-time audit event to enterprise SIEM / Webhook if configured (strictly https/http)
     webhook_url = os.environ.get("ENVSHIELD_AUDIT_WEBHOOK") or os.environ.get(
         "ENVSHIELD_SIEM_ENDPOINT"
     )
     if webhook_url:
         try:
-            import requests
+            parsed = urllib.parse.urlparse(webhook_url.strip())
+            if parsed.scheme in ("https", "http") and parsed.netloc:
+                import requests
 
-            requests.post(webhook_url, json=entry_data, timeout=3)
+                requests.post(webhook_url.strip(), json=entry_data, timeout=3.0)
         except Exception:
             pass
 
     return entry_data
+
 
 
 def verify_audit_chain(audit_path: Path | str | None = None) -> tuple[bool, str]:
@@ -150,24 +173,25 @@ def verify_audit_chain(audit_path: Path | str | None = None) -> tuple[bool, str]
                 f"Audit index discrepancy at entry #{i}: expected {i}, got {actual_index}.",
             )
 
-        actual_prev = entry.get("prev_hash")
-        if actual_prev != expected_prev:
+        actual_prev = str(entry.get("prev_hash", ""))
+        if not hmac.compare_digest(actual_prev, expected_prev):
             return (
                 False,
                 f"Tampering detected at entry #{i}: prev_hash mismatch. Chain has been altered.",
             )
 
-        recorded_hash = entry.get("entry_hash")
+        recorded_hash = str(entry.get("entry_hash", ""))
         calc_dict = {k: v for k, v in entry.items() if k != "entry_hash"}
         calc_hash = hashlib.sha256(_canonical_json(calc_dict).encode("utf-8")).hexdigest()
 
-        if calc_hash != recorded_hash:
+        if not hmac.compare_digest(calc_hash, recorded_hash):
             return (
                 False,
                 f"Tampering detected at entry #{i}: entry_hash mismatch. Payload has been modified.",
             )
 
         expected_prev = recorded_hash
+
 
     return True, f"Audit chain verified successfully ({len(entries)} entries). Integrity signature intact."
 

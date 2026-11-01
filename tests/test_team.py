@@ -56,7 +56,15 @@ def test_fetch_github_keys_not_found() -> None:
     http_err = urllib.error.HTTPError("http://example.com", 404, "Not Found", None, None)
     with mock.patch("urllib.request.urlopen", side_effect=http_err):
         with pytest.raises(ValueError, match="not found"):
-            fetch_github_keys("nonexistent_user_999")
+            fetch_github_keys("nonexistent-user-999")
+
+
+def test_fetch_github_keys_rejects_ssrf_and_traversal() -> None:
+    with pytest.raises(ValueError, match="Invalid GitHub username"):
+        fetch_github_keys("../../etc/passwd")
+    with pytest.raises(ValueError, match="Invalid GitHub username"):
+        fetch_github_keys("user?redirect=http://evil.com")
+
 
 
 def test_team_lifecycle_and_re_seal_sync(tmp_path: Path) -> None:

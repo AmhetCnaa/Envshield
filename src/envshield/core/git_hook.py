@@ -181,12 +181,13 @@ def run_pre_commit_scan(
             seal_file(source_path, target_path, password=password)
             shred_file(source_path)
 
-            # Unstage unencrypted file
+            # Unstage unencrypted file (using `--` separator to prevent option injection on filenames starting with `-`)
             subprocess.run(
-                ["git", "rm", "--cached", str(source_path)], check=False, capture_output=True
+                ["git", "rm", "--cached", "--", str(source_path)], check=False, capture_output=True
             )
             # Stage encrypted vault
-            subprocess.run(["git", "add", str(target_path)], check=False, capture_output=True)
+            subprocess.run(["git", "add", "--", str(target_path)], check=False, capture_output=True)
+
             c.print(f"[green]✓ Sealed, shredded, and staged {target_path}.[/green]")
         except Exception as exc:
             c.print(f"[red]Failed to seal {source_path}: {exc}[/red]")

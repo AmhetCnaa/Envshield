@@ -5,6 +5,7 @@ import binascii
 import json
 import os
 import struct
+import sys
 import tempfile
 from collections.abc import Sequence
 from pathlib import Path
@@ -18,7 +19,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from envshield.core.audit import compute_key_fingerprint, record_audit_event
 from envshield.core.formats import detect_format
 from envshield.core.interpolator import interpolate_secrets
-from envshield.core.memory import SecureBuffer, secure_wipe
+from envshield.core.memory import SecureBuffer
 from envshield.core.profiles import parse_secrets_with_profile
 from envshield.core.recipients import (
     Recipient,
@@ -32,6 +33,8 @@ SALT_SIZE: int = 16
 NONCE_SIZE: int = 12
 KEY_SIZE: int = 32
 PBKDF2_ITERATIONS: int = 100_000
+MIN_PBKDF2_ITERATIONS: int = 100_000
+MAX_PBKDF2_ITERATIONS: int = 5_000_000
 
 
 class AuthError(Exception):
@@ -42,18 +45,21 @@ class InvalidKey(AuthError):
     """Raised when an invalid key, private key, or password is provided."""
 
 
-def derive_key(password: str, salt: bytes) -> bytes:
+def derive_key(password: str, salt: bytes, iterations: int = PBKDF2_ITERATIONS) -> bytes:
     """
     Derives a 256-bit AES key from a password and salt using PBKDF2HMAC.
-    Algorithm: SHA-256, 100,000 iterations.
+    Algorithm: SHA-256, bounded between MIN_PBKDF2_ITERATIONS and MAX_PBKDF2_ITERATIONS.
     """
+    if not (MIN_PBKDF2_ITERATIONS <= iterations <= MAX_PBKDF2_ITERATIONS):
+        raise InvalidKey("Invalid or unsafe KDF iteration count in vault header.")
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=KEY_SIZE,
         salt=salt,
-        iterations=PBKDF2_ITERATIONS,
+        iterations=iterations,
     )
     return kdf.derive(password.encode("utf-8"))
+
 
 
 def shred_file(path: Path | str, passes: int = 3) -> None:
@@ -99,6 +105,18 @@ def shred_file(path: Path | str, passes: int = 3) -> None:
     except OSError:
         target.unlink(missing_ok=True)
 
+    # Flush parent directory journal on POSIX so dentry rename/unlink is committed to disk
+    if sys.platform != "win32":
+        try:
+            dir_fd = os.open(target.parent, os.O_RDONLY)
+            try:
+                os.fsync(dir_fd)
+            finally:
+                os.close(dir_fd)
+        except OSError:
+            pass
+
+
 
 
 def seal_payload(
@@ -119,62 +137,67 @@ def seal_payload(
     plaintext = (
         payload_content.encode("utf-8") if isinstance(payload_content, str) else payload_content
     )
-    dek = bytearray(os.urandom(KEY_SIZE))
     payload_nonce = os.urandom(NONCE_SIZE)
 
     slots: list[dict[str, Any]] = []
     salt: bytes | None = None
 
-    # 1. Password slot (if password provided)
-    if password:
-        salt = os.urandom(SALT_SIZE)
-        slot_nonce = os.urandom(NONCE_SIZE)
-        kek = derive_key(password, salt)
-        slot_aesgcm = AESGCM(kek)
-        encrypted_dek = slot_aesgcm.encrypt(slot_nonce, bytes(dek), None)
+    with SecureBuffer(bytearray(os.urandom(KEY_SIZE))) as sec_dek:
+        dek_bytes = sec_dek.to_bytes()
 
-        slots.append(
-            {
-                "type": "password",
-                "salt": base64.b64encode(salt).decode("utf-8"),
-                "nonce": base64.b64encode(slot_nonce).decode("utf-8"),
-                "encrypted_dek": base64.b64encode(encrypted_dek).decode("utf-8"),
-                "iterations": PBKDF2_ITERATIONS,
-            }
-        )
+        # 1. Password slot (if password provided)
+        if password:
+            salt = os.urandom(SALT_SIZE)
+            slot_nonce = os.urandom(NONCE_SIZE)
+            slot_aad = salt + struct.pack(">I", PBKDF2_ITERATIONS)
+            with SecureBuffer(derive_key(password, salt, PBKDF2_ITERATIONS)) as sec_kek:
+                slot_aesgcm = AESGCM(sec_kek.to_bytes())
+                encrypted_dek = slot_aesgcm.encrypt(slot_nonce, dek_bytes, slot_aad)
 
-    # 2. Recipient slots (if recipients provided)
-    if recipients:
-        for r_spec in recipients:
-            recipient = (
-                r_spec if isinstance(r_spec, Recipient) else Recipient.from_string(str(r_spec))
+            slots.append(
+                {
+                    "type": "password",
+                    "salt": base64.b64encode(salt).decode("utf-8"),
+                    "nonce": base64.b64encode(slot_nonce).decode("utf-8"),
+                    "encrypted_dek": base64.b64encode(encrypted_dek).decode("utf-8"),
+                    "iterations": PBKDF2_ITERATIONS,
+                }
             )
-            slot_info = encrypt_dek_for_recipient(bytes(dek), recipient)
-            slots.append(slot_info)
 
-    header_data = {
-        "version": 2,
-        "format": format_type,
-        "slots": slots,
-        "payload_nonce": base64.b64encode(payload_nonce).decode("utf-8"),
-    }
-    header_bytes = json.dumps(header_data, separators=(",", ":")).encode("utf-8")
+        # 2. Recipient slots (if recipients provided)
+        if recipients:
+            for r_spec in recipients:
+                recipient = (
+                    r_spec if isinstance(r_spec, Recipient) else Recipient.from_string(str(r_spec))
+                )
+                slot_info = encrypt_dek_for_recipient(dek_bytes, recipient)
+                slots.append(slot_info)
 
-    # Layout: [V2_MAGIC (6B)] + [header_len (4B)] + [header_bytes] + [ciphertext + tag]
-    # Note: Header is passed as AAD (Associated Authenticated Data) into AES-256-GCM so any
-    # tampering with `format` or `slots` in the JSON header invalidates the payload GCM tag.
-    aad = V2_MAGIC + struct.pack(">I", len(header_bytes)) + header_bytes
-    aesgcm = AESGCM(bytes(dek))
-    ciphertext = aesgcm.encrypt(payload_nonce, plaintext, aad)
-    # Wipe DEK from memory immediately after encrypting payload and slots
-    secure_wipe(dek)
-    payload = aad + ciphertext
+        header_data = {
+            "version": 2,
+            "format": format_type,
+            "slots": slots,
+            "payload_nonce": base64.b64encode(payload_nonce).decode("utf-8"),
+        }
+        header_bytes = json.dumps(header_data, separators=(",", ":")).encode("utf-8")
 
+        # Layout: [V2_MAGIC (6B)] + [header_len (4B)] + [header_bytes] + [ciphertext + tag]
+        # Note: Header is passed as AAD (Associated Authenticated Data) into AES-256-GCM so any
+        # tampering with `format` or `slots` in the JSON header invalidates the payload GCM tag.
+        aad = V2_MAGIC + struct.pack(">I", len(header_bytes)) + header_bytes
+        aesgcm = AESGCM(dek_bytes)
+        ciphertext = aesgcm.encrypt(payload_nonce, plaintext, aad)
+        payload = aad + ciphertext
 
     target.parent.mkdir(parents=True, exist_ok=True)
-    # Atomic write via temporary file in target directory + os.replace to prevent half-written vault corruption
+    # Atomic write via temporary file in target directory (0o600) + os.replace to prevent half-written vault corruption
     fd, tmp_name = tempfile.mkstemp(prefix=f".{target.name}.tmp_", dir=str(target.parent))
     try:
+        if sys.platform != "win32":
+            try:
+                os.fchmod(fd, 0o600)
+            except (AttributeError, OSError):
+                os.chmod(tmp_name, 0o600)
         with os.fdopen(fd, "wb") as tf:
             tf.write(payload)
             tf.flush()
@@ -186,6 +209,7 @@ def seal_payload(
         except OSError:
             pass
         raise
+
 
 
     record_audit_event(
@@ -232,13 +256,13 @@ def _decrypt_v1_payload(payload: bytes, password: str) -> bytes:
     nonce = payload[SALT_SIZE : SALT_SIZE + NONCE_SIZE]
     ciphertext = payload[SALT_SIZE + NONCE_SIZE :]
 
-    key = derive_key(password, salt)
-    aesgcm = AESGCM(key)
+    with SecureBuffer(derive_key(password, salt)) as sec_key:
+        aesgcm = AESGCM(sec_key.to_bytes())
+        try:
+            return aesgcm.decrypt(nonce, ciphertext, None)
+        except InvalidTag as exc:
+            raise InvalidKey("Authentication failed: invalid password or corrupted data.") from exc
 
-    try:
-        return aesgcm.decrypt(nonce, ciphertext, None)
-    except InvalidTag as exc:
-        raise InvalidKey("Authentication failed: invalid password or corrupted data.") from exc
 
 
 def unseal_raw_payload(
@@ -317,17 +341,28 @@ def unseal_raw_payload(
         if dek is None and password:
             for slot in slots:
                 if slot.get("type") == "password":
+                    try:
+                        iters = int(slot.get("iterations", PBKDF2_ITERATIONS))
+                    except (TypeError, ValueError) as exc:
+                        raise InvalidKey("Invalid KDF iteration count in vault header.") from exc
+                    if not (MIN_PBKDF2_ITERATIONS <= iters <= MAX_PBKDF2_ITERATIONS):
+                        raise InvalidKey(
+                            f"Invalid or unsafe KDF iteration count ({iters}) in vault header."
+                        )
+
                     salt = base64.b64decode(slot["salt"])
                     slot_nonce = base64.b64decode(slot["nonce"])
                     enc_dek = base64.b64decode(slot["encrypted_dek"])
-                    kek = derive_key(password, salt)
-                    slot_aesgcm = AESGCM(kek)
-                    try:
-                        decrypted_dek = slot_aesgcm.decrypt(slot_nonce, enc_dek, None)
-                        dek = bytearray(decrypted_dek)
-                        break
-                    except InvalidTag:
-                        continue
+                    slot_aad = salt + struct.pack(">I", iters)
+                    with SecureBuffer(derive_key(password, salt, iters)) as sec_kek:
+                        slot_aesgcm = AESGCM(sec_kek.to_bytes())
+                        try:
+                            decrypted_dek = slot_aesgcm.decrypt(slot_nonce, enc_dek, slot_aad)
+                            dek = bytearray(decrypted_dek)
+                            break
+                        except InvalidTag:
+                            continue
+
 
         # 4. Try Cloud / Mock KMS slots if DEK is still unresolved
         if dek is None:
