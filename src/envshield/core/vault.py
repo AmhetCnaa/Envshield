@@ -75,7 +75,14 @@ def shred_file(path: Path | str, passes: int = 3) -> None:
             target.unlink(missing_ok=True)
         return
 
+    # Ensure writable permissions before overwriting and unlinking (e.g. for 0o400 stealth files)
+    try:
+        os.chmod(target, 0o600)
+    except OSError:
+        pass
+
     size = target.stat().st_size
+
     chunk_size = 65536
     if size > 0:
         with open(target, "r+b", buffering=0) as f:
