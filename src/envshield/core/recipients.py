@@ -44,6 +44,14 @@ class Recipient:
     def from_string(cls, text: str) -> Recipient:
         cleaned = text.strip()
 
+        # Handle Cloud / Mock KMS recipient format
+        if (
+            cleaned.startswith(("kms:", "arn:aws:kms:", "projects/", "mock:", "vault:transit/", "aws:", "gcp:", "azure:"))
+            or (".vault.azure.net" in cleaned and cleaned.startswith("https://"))
+        ):
+            fp = hashlib.sha256(cleaned.encode("utf-8")).hexdigest()[:16]
+            return cls("kms", None, fp, cleaned)
+
         # Check if text is a file path
         possible_path = Path(cleaned).expanduser()
         if possible_path.is_file():
@@ -129,6 +137,11 @@ def encrypt_dek_for_recipient(dek: bytes, recipient: Recipient) -> dict[str, str
             "nonce": base64.b64encode(nonce).decode("utf-8"),
             "encrypted_dek": base64.b64encode(enc_dek).decode("utf-8"),
         }
+
+    if recipient.key_type == "kms":
+        from envshield.core.kms import encrypt_dek_with_kms
+
+        return encrypt_dek_with_kms(dek, recipient.raw_str)
 
     raise ValueError(f"Unknown recipient key type: {recipient.key_type}")
 

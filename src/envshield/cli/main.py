@@ -100,6 +100,14 @@ def handle_seal(args: list[str], console: Console) -> None:
         help="Recipient SSH public key (e.g. ~/.ssh/id_ed25519.pub or 'ssh-ed25519 ...'). Can be repeated.",
     )
     parser.add_argument(
+        "--kms",
+        "-k",
+        action="append",
+        dest="kms_keys",
+        default=[],
+        help="Cloud KMS Key ARN/URI (AWS, GCP, Azure, Vault, or Mock) to add as envelope recipient. Can be repeated.",
+    )
+    parser.add_argument(
         "--no-password",
         action="store_true",
         help="Skip password encryption slot when recipients are specified.",
@@ -124,13 +132,15 @@ def handle_seal(args: list[str], console: Console) -> None:
 
     target_path = Path(parsed.output) if parsed.output else Path(f"{source_path}.enc")
 
+    all_recipients: list[str] = list(parsed.recipients or []) + list(parsed.kms_keys or [])
+
     password: str | None = None
-    if not parsed.no_password or not parsed.recipients:
+    if not parsed.no_password or not all_recipients:
         password = resolve_password(
             keyring_name=parsed.keyring_name,
             prompt_message="Enter encryption password: ",
         )
-        if not password and not parsed.recipients:
+        if not password and not all_recipients:
             console.print(
                 "[red]Error: Password cannot be empty when no recipients are specified.[/red]"
             )
@@ -144,7 +154,7 @@ def handle_seal(args: list[str], console: Console) -> None:
             source_path,
             target_path,
             password=password,
-            recipients=parsed.recipients if parsed.recipients else None,
+            recipients=all_recipients if all_recipients else None,
             format_type=parsed.format,
         )
         console.print(f"[green]Successfully sealed '{source_path}' -> '{target_path}'.[/green]")
@@ -883,6 +893,161 @@ def handle_docker(args: list[str], console: Console) -> None:
     sys.exit(exit_code)
 
 
+def handle_kms(args: list[str], console: Console) -> None:
+    parser = argparse.ArgumentParser(
+        prog="envshield kms",
+        description="Manage Cloud KMS envelope encryption recipients (AWS KMS, GCP KMS, Azure Key Vault, HashiCorp Vault, Mock).",
+    )
+    subparsers = parser.add_subparsers(dest="subcommand", required=True)
+
+    # list
+    p_list = subparsers.add_parser("list", help="List KMS recipients attached to an encrypted vault.")
+    p_list.add_argument("vault", nargs="?", default=".env.enc", help="Vault file path (default: .env.enc)")
+
+    # add
+    p_add = subparsers.add_parser("add", help="Add a Cloud KMS recipient to a vault and re-seal.")
+    p_add.add_argument("key_id", help="KMS Key ARN/URI (e.g. arn:aws:kms:..., projects/.../cryptoKeys/..., or mock:test)")
+    p_add.add_argument("vault", nargs="?", default=".env.enc", help="Vault file path (default: .env.enc)")
+    p_add.add_argument("-i", "--identity", help="SSH identity path to unlock vault if required")
+    p_add.add_argument("-p", "--password", help="Master password to unlock vault if required")
+    p_add.add_argument("--keyring-name", help="Keyring name containing master password")
+
+    # remove
+    p_rem = subparsers.add_parser("remove", help="Remove a KMS recipient from a vault and re-seal.")
+    p_rem.add_argument("key_id", help="KMS Key ARN/URI or fingerprint to remove")
+    p_rem.add_argument("vault", nargs="?", default=".env.enc", help="Vault file path (default: .env.enc)")
+    p_rem.add_argument("-i", "--identity", help="SSH identity path to unlock vault if required")
+    p_rem.add_argument("-p", "--password", help="Master password to unlock vault if required")
+    p_rem.add_argument("--keyring-name", help="Keyring name containing master password")
+
+    # test
+    p_test = subparsers.add_parser("test", help="Test KMS connectivity, permissions and encrypt/decrypt roundtrip.")
+    p_test.add_argument("key_id", help="KMS Key ARN/URI or 'mock:test' to verify")
+
+    parsed = parser.parse_args(args)
+
+    from envshield.core.kms import (
+        add_kms_to_vault,
+        list_kms_slots,
+        probe_kms_key,
+        remove_kms_from_vault,
+    )
+
+    if parsed.subcommand == "list":
+        vault_path = Path(parsed.vault)
+        if not vault_path.is_file():
+            console.print(f"[red]Error: Vault '{vault_path}' not found.[/red]")
+            sys.exit(1)
+        slots = list_kms_slots(vault_path)
+        if not slots:
+            console.print(f"[yellow]No Cloud KMS recipients found in '{vault_path}'.[/yellow]")
+            sys.exit(0)
+
+        table = Table(title=f"Cloud KMS Recipients ({vault_path})", header_style="bold cyan")
+        table.add_column("Provider", style="green")
+        table.add_column("Key ID / Resource", style="bold")
+        table.add_column("Fingerprint", style="dim")
+        table.add_column("Status / SDK", style="cyan")
+
+        for s in slots:
+            status = f"[green]Available[/green] ({s['status']})" if s["available"] else f"[yellow]Not Ready[/yellow] ({s['status']})"
+            table.add_row(s["provider"].upper(), s["key_id"], s["fingerprint"], status)
+        console.print(table)
+        sys.exit(0)
+
+    if parsed.subcommand == "test":
+        console.print(f"[dim]Testing KMS roundtrip for '{parsed.key_id}'...[/dim]")
+        ok, msg = probe_kms_key(parsed.key_id)
+        if ok:
+            console.print(f"[green]✓ SUCCESS: {msg}[/green]")
+            sys.exit(0)
+        else:
+            console.print(f"[red]✗ FAILED: {msg}[/red]")
+            sys.exit(1)
+
+    if parsed.subcommand == "add":
+        vault_path = Path(parsed.vault)
+        if not vault_path.is_file():
+            console.print(f"[red]Error: Vault '{vault_path}' not found.[/red]")
+            sys.exit(1)
+        password = parsed.password
+        if not password and parsed.keyring_name:
+            password = resolve_password(keyring_name=parsed.keyring_name, prompt_message="Enter password: ")
+        elif not password and not parsed.identity and sys.stdin.isatty():
+            password = resolve_password(prompt_message="Enter password to unlock vault (or press enter if using SSH/KMS): ")
+        try:
+            add_kms_to_vault(vault_path, parsed.key_id, password=password, identity=parsed.identity)
+            console.print(f"[green]Successfully attached KMS recipient '{parsed.key_id}' and re-sealed '{vault_path}'.[/green]")
+            sys.exit(0)
+        except Exception as exc:
+            console.print(f"[red]Failed to add KMS recipient: {exc}[/red]")
+            sys.exit(1)
+
+    if parsed.subcommand == "remove":
+        vault_path = Path(parsed.vault)
+        if not vault_path.is_file():
+            console.print(f"[red]Error: Vault '{vault_path}' not found.[/red]")
+            sys.exit(1)
+        password = parsed.password
+        if not password and parsed.keyring_name:
+            password = resolve_password(keyring_name=parsed.keyring_name, prompt_message="Enter password: ")
+        elif not password and not parsed.identity and sys.stdin.isatty():
+            password = resolve_password(prompt_message="Enter password to unlock vault (or press enter if using SSH/KMS): ")
+        try:
+            removed = remove_kms_from_vault(vault_path, parsed.key_id, password=password, identity=parsed.identity)
+            if removed:
+                console.print(f"[green]Successfully removed KMS recipient '{parsed.key_id}' from '{vault_path}'.[/green]")
+                sys.exit(0)
+            else:
+                console.print(f"[yellow]No matching KMS recipient found for '{parsed.key_id}'.[/yellow]")
+                sys.exit(1)
+        except Exception as exc:
+            console.print(f"[red]Failed to remove KMS recipient: {exc}[/red]")
+            sys.exit(1)
+
+
+def handle_ci(args: list[str], console: Console) -> None:
+    parser = argparse.ArgumentParser(
+        prog="envshield ci",
+        description="CI/CD integration assistant and workflow generator.",
+    )
+    subparsers = parser.add_subparsers(dest="subcommand", required=True)
+
+    p_init = subparsers.add_parser("init", help="Generate CI/CD pipeline workflow configuration.")
+    p_init.add_argument(
+        "--provider",
+        choices=["github", "gitlab"],
+        default="github",
+        help="Target CI/CD provider (default: github)",
+    )
+    p_init.add_argument("--kms", help="Attached KMS key ID to document in the generated workflow")
+    p_init.add_argument(
+        "-o",
+        "--output",
+        help="File path to write workflow configuration to (prints to stdout if omitted)",
+    )
+
+    parsed = parser.parse_args(args)
+    if parsed.subcommand == "init":
+        from envshield.core.kms import generate_ci_workflow
+
+        content = generate_ci_workflow(parsed.provider, parsed.kms)
+        if parsed.output:
+            out_path = Path(parsed.output)
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(content, encoding="utf-8")
+            console.print(f"[green]Wrote CI workflow configuration to '{out_path}'.[/green]")
+        else:
+            console.print(
+                Panel(
+                    content,
+                    title=f"Envshield CI Configuration ({parsed.provider})",
+                    border_style="cyan",
+                )
+            )
+        sys.exit(0)
+
+
 def handle_scan(args: list[str]) -> None:
     parser = argparse.ArgumentParser(
         prog="envshield",
@@ -1038,6 +1203,12 @@ def main(argv: list[str] | None = None) -> None:
             return
         if cmd == "hook":
             handle_hook(argv[1:], console)
+            return
+        if cmd == "kms":
+            handle_kms(argv[1:], console)
+            return
+        if cmd == "ci":
+            handle_ci(argv[1:], console)
             return
         if cmd == "scan":
             handle_scan(argv[1:])

@@ -132,6 +132,31 @@ envshield docker --stealth -- run -d my-secure-app
 envshield docker compose up -d
 ```
 
+### 8. ☁️ Cloud KMS & CI/CD Hybrid Envelope (`kms` & `ci`)
+Eliminate hardcoded master passwords and secrets from GitHub Actions repository settings. Envshield supports multi-recipient envelopes combining developer SSH keys with AWS KMS, GCP Cloud KMS, Azure Key Vault, or HashiCorp Vault:
+
+```bash
+# Seal a vault for local developer SSH keys AND cloud AWS KMS in CI/CD:
+envshield seal .env -r ~/.ssh/id_ed25519.pub --kms arn:aws:kms:eu-central-1:123456789:key/xxx
+
+# Inspect attached cloud KMS recipients:
+envshield kms list
+
+# Test KMS permissions and connectivity before deploying:
+envshield kms test arn:aws:kms:eu-central-1:123456789:key/xxx
+
+# Bootstrap a production-ready GitHub Actions OIDC workflow:
+envshield ci init --provider github -o .github/workflows/envshield.yml
+```
+* **On Developer Laptop:** Unlocks in 1ms using local `~/.ssh/id_ed25519` key with zero cloud network requests.
+* **In GitHub Actions / AWS:** Automatically unlocks via AWS IAM OIDC role with zero master passwords stored in repo settings!
+
+### 9. 📟 Interactive PTY Runner (`run -t / --pty`)
+Run full-screen, interactive terminal sessions (e.g., `bash`, `zsh`, `psql`, `mysql`, `vim`, or `htop`) with complete ANSI escape codes, cursor navigation, window resize (SIGWINCH), and ConPTY support on Windows:
+```bash
+envshield run -t -- psql "postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}/db"
+```
+
 ---
 
 ## 👥 Team SSH Workflow & GitHub Integration
@@ -249,7 +274,7 @@ envshield team remove ahmet
 </tr>
 <tr>
 <td width="50%" valign="top">
-
+ 
 ### 🐳 `envshield docker`
 Run Docker and Compose services with zero-disk injection & inspect immunity.
 ```bash
@@ -275,6 +300,37 @@ envshield diff staging.env.enc prod.env.enc
 
 </td>
 </tr>
+<tr>
+<td width="50%" valign="top">
+
+### ☁️ `envshield kms`
+Manage Cloud KMS envelope recipients for passwordless CI/CD & production unlocks.
+```bash
+# List attached KMS keys
+envshield kms list
+
+# Attach AWS KMS key ARN to existing vault
+envshield kms add arn:aws:kms:us-east-1:...
+
+# Test KMS connectivity and permissions
+envshield kms test arn:aws:kms:us-east-1:...
+```
+
+</td>
+<td width="50%" valign="top">
+
+### ⚙️ `envshield ci`
+Generate production-ready CI/CD workflows with OIDC & KMS integration.
+```bash
+# Generate GitHub Actions workflow with AWS OIDC
+envshield ci init --provider github -o .github/workflows/envshield.yml
+
+# Generate GitLab CI snippet
+envshield ci init --provider gitlab
+```
+
+</td>
+</tr>
 </table>
 
 ---
@@ -285,6 +341,7 @@ envshield diff staging.env.enc prod.env.enc
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **100% RAM-Only Injection** | ✅ | ❌ | ⚠️ Partial | ✅ | ✅ | ✅ |
 | **Live Stream Redaction (Stdout/Stderr)**| ✅ | ❌ | ❌ | ⚠️ Cloud Only | ❌ | ❌ |
+| **Cloud KMS & CI/CD Envelope** | ✅ (AWS/GCP/Azure/Vault) | ❌ | ✅ (Config Heavy) | ⚠️ Cloud Only | ⚠️ Heavy Server | ❌ |
 | **Self-Healing Git Pre-Commit Hook** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Docker `inspect` Stealth Bridge** | ✅ | ❌ | ❌ | ❌ (Extra Binary)| ⚠️ Agent Required | ❌ |
 | **GitHub Team Key Sync (`team add`)** | ✅ | ❌ | ❌ | ⚠️ Cloud Only | ❌ | ❌ |
@@ -292,6 +349,7 @@ envshield diff staging.env.enc prod.env.enc
 | **Multi-Profile Single Envelope** | ✅ | ❌ | ❌ | ⚠️ Cloud Only | ⚠️ Heavy Server | ❌ |
 | **Dynamic In-Memory Interpolation** | ✅ | ❌ | ❌ | ✅ | ❌ | ⚠️ Basic |
 | **Honeypot Decoy Mode & Webhook** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Interactive PTY / ConPTY Runner** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **SSH Public Key Recipients** | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
 | **Zero Infrastructure / Offline** | ✅ | ✅ | ✅ | ❌ Cloud | ❌ Server | ❌ Cloud |
 | **Cold-Start Overhead** | **< 20 ms** | ~ 5 ms | ~ 60 ms | ~ 150 ms | ~ 200 ms | ~ 120 ms |

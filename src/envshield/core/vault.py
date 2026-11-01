@@ -277,6 +277,7 @@ def unseal_raw_payload(
                     break
 
         # 3. Try password slot if available and password provided
+        unseal_key_id = password or (str(identity_path) if identity_path else "ssh_identity")
         if dek is None and password:
             for slot in slots:
                 if slot.get("type") == "password":
@@ -292,9 +293,21 @@ def unseal_raw_payload(
                     except InvalidTag:
                         continue
 
+        # 4. Try Cloud / Mock KMS slots if DEK is still unresolved
+        if dek is None:
+            from envshield.core.kms import decrypt_dek_with_kms
+
+            for slot in slots:
+                if slot.get("type") == "kms":
+                    decrypted_dek = decrypt_dek_with_kms(slot)
+                    if decrypted_dek:
+                        dek = bytearray(decrypted_dek)
+                        unseal_key_id = f"kms:{slot.get('provider')}:{slot.get('fingerprint', 'key')}"
+                        break
+
         if dek is None:
             raise InvalidKey(
-                "Authentication failed: no matching private key or valid password for this vault."
+                "Authentication failed: no matching private key, valid password, or authorized KMS identity for this vault."
             )
 
         with SecureBuffer(bytes(dek)) as sec_dek:
@@ -309,9 +322,7 @@ def unseal_raw_payload(
             record_audit_event(
                 action="UNSEAL",
                 target_path=source,
-                key_id=compute_key_fingerprint(
-                    password or (str(identity_path) if identity_path else "ssh_identity")
-                ),
+                key_id=compute_key_fingerprint(unseal_key_id),
                 details={"format": fmt, "version": 2},
             )
             return plaintext, fmt
