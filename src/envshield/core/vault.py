@@ -80,27 +80,24 @@ def shred_file(path: Path | str, passes: int = 3) -> None:
     target.unlink()
 
 
-def seal_file(
-    source_path: Path | str,
+def seal_payload(
+    payload_content: bytes | str,
     target_path: Path | str,
     password: str | None = None,
     recipients: Sequence[str | Recipient] | None = None,
-    format_type: str = "auto",
+    format_type: str = "env",
 ) -> None:
     """
-    Encrypts source_path into target_path using AES-256-GCM envelope encryption.
-    Supports single password, team SSH recipients, or hybrid (both).
+    Encrypts in-memory content directly into target_path using AES-256-GCM envelope encryption.
+    Zero-disk writes: plaintext is provided in memory and never touches disk.
     """
-    source = Path(source_path)
     target = Path(target_path)
-
-    if not source.is_file():
-        raise FileNotFoundError(f"Source file not found: {source}")
-
     if not password and not recipients:
         raise ValueError("At least one password or recipient public key must be provided.")
 
-    plaintext = source.read_bytes()
+    plaintext = (
+        payload_content.encode("utf-8") if isinstance(payload_content, str) else payload_content
+    )
     dek = bytearray(os.urandom(KEY_SIZE))
     payload_nonce = os.urandom(NONCE_SIZE)
 
@@ -141,10 +138,9 @@ def seal_file(
     # Wipe DEK from memory after sealing
     secure_wipe(dek)
 
-    detected_fmt = detect_format(source) if format_type == "auto" else format_type
     header_data = {
         "version": 2,
-        "format": detected_fmt,
+        "format": format_type,
         "slots": slots,
         "payload_nonce": base64.b64encode(payload_nonce).decode("utf-8"),
     }
@@ -160,7 +156,33 @@ def seal_file(
         action="SEAL",
         target_path=target,
         key_id=compute_key_fingerprint(salt or (str(recipients[0]) if recipients else "vault")),
-        details={"format": detected_fmt, "slots": len(slots)},
+        details={"format": format_type, "slots": len(slots)},
+    )
+
+
+def seal_file(
+    source_path: Path | str,
+    target_path: Path | str,
+    password: str | None = None,
+    recipients: Sequence[str | Recipient] | None = None,
+    format_type: str = "auto",
+) -> None:
+    """
+    Encrypts source_path into target_path using AES-256-GCM envelope encryption.
+    Supports single password, team SSH recipients, or hybrid (both).
+    """
+    source = Path(source_path)
+    if not source.is_file():
+        raise FileNotFoundError(f"Source file not found: {source}")
+
+    detected_fmt = detect_format(source) if format_type == "auto" else format_type
+    plaintext = source.read_bytes()
+    seal_payload(
+        plaintext,
+        target_path,
+        password=password,
+        recipients=recipients,
+        format_type=detected_fmt,
     )
 
 

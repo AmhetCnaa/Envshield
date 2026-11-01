@@ -19,6 +19,13 @@ from envshield.core.keyring_manager import delete_key, get_key, save_key
 from envshield.core.models import ScanResult
 from envshield.core.profiles import detect_git_branch_profile
 from envshield.core.runner import execute_with_env
+from envshield.core.team import (
+    add_team_member,
+    fetch_github_keys,
+    list_team_members,
+    remove_team_member,
+    sync_team_vaults,
+)
 from envshield.core.vault import AuthError, InvalidKey, seal_file, shred_file, unseal_to_memory
 from envshield.scanners.entropy import EntropyScanner
 from envshield.scanners.env_validator import EnvValidator
@@ -528,6 +535,217 @@ def handle_hook(args: list[str], console: Console) -> None:
     sys.exit(0)
 
 
+def handle_team(args: list[str], console: Console) -> None:
+    parser = argparse.ArgumentParser(
+        prog="envshield team",
+        description="Manage team recipient public keys and automatically re-seal vaults.",
+    )
+    subparsers = parser.add_subparsers(dest="team_cmd")
+
+    subparsers.add_parser("list", help="List all registered team members and keys.")
+
+    add_p = subparsers.add_parser(
+        "add", help="Add a team member using their GitHub username or SSH public key."
+    )
+    add_p.add_argument("name", help="Identifier or name for the team member (e.g. ahmet).")
+    add_p.add_argument(
+        "--github",
+        nargs="?",
+        const=True,
+        default=None,
+        help="Fetch public SSH keys from GitHub. If no username specified, uses <name>.",
+    )
+    add_p.add_argument(
+        "--key",
+        "-k",
+        action="append",
+        dest="keys",
+        default=[],
+        help="Public key string or path to .pub file. Can be specified multiple times.",
+    )
+    add_p.add_argument(
+        "--no-sync",
+        action="store_true",
+        help="Do not automatically re-seal repository vaults after adding.",
+    )
+    add_p.add_argument(
+        "-i", "--identity", default=None, help="SSH private key to authorize re-sealing."
+    )
+    add_p.add_argument(
+        "--keyring-name", default=None, help="Keyring password lookup for re-sealing."
+    )
+
+    remove_p = subparsers.add_parser("remove", help="Remove a team member and revoke access.")
+    remove_p.add_argument("name", help="Name of the team member to remove.")
+    remove_p.add_argument(
+        "--no-sync",
+        action="store_true",
+        help="Do not automatically re-seal repository vaults after removing.",
+    )
+    remove_p.add_argument(
+        "-i", "--identity", default=None, help="SSH private key to authorize re-sealing."
+    )
+    remove_p.add_argument(
+        "--keyring-name", default=None, help="Keyring password lookup for re-sealing."
+    )
+
+    sync_p = subparsers.add_parser(
+        "sync", help="Re-seal all repository vaults for the current team recipients."
+    )
+    sync_p.add_argument(
+        "-i", "--identity", default=None, help="SSH private key to authorize unsealing."
+    )
+    sync_p.add_argument(
+        "--keyring-name", default=None, help="Keyring password lookup for re-sealing."
+    )
+
+    parsed = parser.parse_args(args)
+
+    if parsed.team_cmd == "list":
+        members = list_team_members()
+        if not members:
+            console.print(
+                "[dim]No team members configured yet. Add members with: envshield team add <name> --github[/dim]"
+            )
+            sys.exit(0)
+
+        table = Table(title="[bold cyan]EnvShield Team Recipients[/bold cyan]", show_header=True)
+        table.add_column("Member", style="bold green")
+        table.add_column("Source", style="cyan")
+        table.add_column("Key Types", style="yellow")
+        table.add_column("Key Fingerprints", style="magenta")
+        table.add_column("Added (UTC)", style="dim")
+
+        for m in members:
+            fps = ", ".join(m.get("fingerprints", []))
+            types = ", ".join(m.get("key_types", []))
+            added = str(m.get("added_at", ""))[:10]
+            table.add_row(m.get("name", ""), m.get("source", "manual"), types, fps, added)
+
+        console.print(table)
+        sys.exit(0)
+
+    if parsed.team_cmd == "add":
+        keys = list(parsed.keys)
+        source = "manual"
+
+        if parsed.github is not None:
+            gh_user = parsed.name if parsed.github is True else str(parsed.github)
+            source = f"github:{gh_user}"
+            console.print(f"[cyan]Fetching public SSH keys from GitHub for '{gh_user}'...[/cyan]")
+            try:
+                gh_keys = fetch_github_keys(gh_user)
+                keys.extend(gh_keys)
+                console.print(f"[green]✓ Found {len(gh_keys)} compatible key(s) on GitHub.[/green]")
+            except Exception as exc:
+                console.print(f"[red]Error fetching GitHub keys: {exc}[/red]")
+                sys.exit(1)
+
+        if not keys:
+            console.print(
+                "[red]Error: No keys provided. Specify --github or --key <path_to_pub_key>.[/red]"
+            )
+            sys.exit(1)
+
+        try:
+            add_team_member(parsed.name, keys, source=source)
+            console.print(
+                f"[bold green]✓ Added team member '{parsed.name}' with {len(keys)} key(s).[/bold green]"
+            )
+        except Exception as exc:
+            console.print(f"[red]Error adding member: {exc}[/red]")
+            sys.exit(1)
+
+        if not parsed.no_sync:
+            console.print(
+                "\n[bold cyan]Automatically syncing repository vaults with updated team recipients...[/bold cyan]"
+            )
+            password = resolve_password(
+                keyring_name=parsed.keyring_name,
+                prompt_message="Enter password to authorize re-sealing (or press Enter if using SSH key): ",
+            )
+            try:
+                results = sync_team_vaults(password=password, identity_path=parsed.identity)
+                if not results:
+                    console.print(
+                        "[yellow]Notice: No .enc vaults found in project to re-seal.[/yellow]"
+                    )
+                for r in results:
+                    if r["success"]:
+                        console.print(
+                            f"  [green]✓ Re-sealed {r['vault']} for {r['recipients_count']} team recipient(s).[/green]"
+                        )
+                    else:
+                        console.print(
+                            f"  [red]✗ Failed to re-seal {r['vault']}: {r.get('error')}[/red]"
+                        )
+            except Exception as exc:
+                console.print(f"[red]Sync failed: {exc}[/red]")
+                sys.exit(1)
+
+        sys.exit(0)
+
+    if parsed.team_cmd == "remove":
+        if remove_team_member(parsed.name):
+            console.print(f"[bold green]✓ Removed team member '{parsed.name}'.[/bold green]")
+        else:
+            console.print(f"[yellow]Member '{parsed.name}' not found in team config.[/yellow]")
+            sys.exit(1)
+
+        if not parsed.no_sync:
+            console.print("\n[bold cyan]Re-sealing vaults to revoke access...[/bold cyan]")
+            password = resolve_password(
+                keyring_name=parsed.keyring_name,
+                prompt_message="Enter password to authorize re-sealing (or press Enter if using SSH key): ",
+            )
+            try:
+                results = sync_team_vaults(password=password, identity_path=parsed.identity)
+                for r in results:
+                    if r["success"]:
+                        console.print(
+                            f"  [green]✓ Re-sealed {r['vault']} (access revoked for '{parsed.name}').[/green]"
+                        )
+                    else:
+                        console.print(
+                            f"  [red]✗ Failed to re-seal {r['vault']}: {r.get('error')}[/red]"
+                        )
+            except Exception as exc:
+                console.print(f"[red]Sync failed: {exc}[/red]")
+                sys.exit(1)
+
+        sys.exit(0)
+
+    if parsed.team_cmd == "sync":
+        console.print(
+            "[bold cyan]Syncing repository vaults with all team recipients...[/bold cyan]"
+        )
+        password = resolve_password(
+            keyring_name=parsed.keyring_name,
+            prompt_message="Enter password to authorize re-sealing (or press Enter if using SSH key): ",
+        )
+        try:
+            results = sync_team_vaults(password=password, identity_path=parsed.identity)
+            if not results:
+                console.print("[yellow]No .enc vaults found in repository.[/yellow]")
+            for r in results:
+                if r["success"]:
+                    console.print(
+                        f"  [green]✓ Re-sealed {r['vault']} for {r['recipients_count']} recipient(s).[/green]"
+                    )
+                else:
+                    console.print(
+                        f"  [red]✗ Failed to re-seal {r['vault']}: {r.get('error')}[/red]"
+                    )
+        except Exception as exc:
+            console.print(f"[red]Sync failed: {exc}[/red]")
+            sys.exit(1)
+
+        sys.exit(0)
+
+    parser.print_help()
+    sys.exit(0)
+
+
 def handle_scan(args: list[str]) -> None:
     parser = argparse.ArgumentParser(
         prog="envshield",
@@ -674,6 +892,9 @@ def main(argv: list[str] | None = None) -> None:
             return
         if cmd == "audit":
             handle_audit(argv[1:], console)
+            return
+        if cmd == "team":
+            handle_team(argv[1:], console)
             return
         if cmd == "hook":
             handle_hook(argv[1:], console)

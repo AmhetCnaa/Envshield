@@ -121,20 +121,25 @@ envshield run --enable-decoy --alert-webhook https://alerts.internal/webhook -- 
 
 ---
 
-## 👥 Team SSH Workflow
+## 👥 Team SSH Workflow & GitHub Integration
 
-Stop sharing passwords across Slack. Envshield's **Envelope v2** cryptography lets you seal a vault for multiple teammates using their existing OpenSSH public keys:
+Stop sharing master passwords across Slack or 1Password vaults. Envshield's **Envelope v2** cryptography and `team` engine allows instant developer onboarding using their public keys from GitHub or disk:
 
 ```bash
-# Encrypt .env for multiple team members (no shared password needed)
-envshield seal .env \
-  -r ~/.ssh/id_ed25519.pub \
-  -r ~/.ssh/teammate_ed25519.pub \
-  -r ~/.ssh/devops_rsa.pub \
-  --no-password
+# 1. Onboard a teammate using their GitHub username (auto-fetches public SSH keys & re-seals repo vaults)
+envshield team add ahmet --github
+
+# 2. Add an operations key from a local public key file
+envshield team add devops-ci -k ~/.ssh/deploy_rsa.pub
+
+# 3. View the current team recipient roster
+envshield team list
+
+# 4. Offboard a member and immediately revoke access across all repository vaults
+envshield team remove ahmet
 ```
 
-Each authorized developer unlocks and runs the project using their own local SSH private key:
+Each authorized developer unlocks and runs the project using their own local SSH private key with zero configuration:
 
 ```bash
 envshield run -i ~/.ssh/id_ed25519 -- npm start
@@ -214,11 +219,17 @@ envshield edit .env.enc
 </td>
 <td width="50%" valign="top">
 
-### 🔍 `envshield diff`
-Compare two encrypted vaults or inspect changes in RAM with colored unified diffs.
+### 👥 `envshield team`
+Onboard teammates via GitHub and automatically re-seal all project vaults.
 ```bash
-# Compare staging vs production vaults in RAM
-envshield diff staging.env.enc prod.env.enc
+# Add teammate from GitHub & sync vaults
+envshield team add ahmet --github
+
+# List team members and keys
+envshield team list
+
+# Revoke member access & re-seal
+envshield team remove ahmet
 ```
 
 </td>
