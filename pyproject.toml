@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "envshield-cli"
-version = "0.4.0"
+version = "0.5.0"
 description = "Zero-disk secret engine, live stream redaction & runtime injection for developers"
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }

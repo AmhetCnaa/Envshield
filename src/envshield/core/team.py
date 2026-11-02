@@ -74,7 +74,7 @@ def fetch_github_keys(username: str, timeout: float = 5.0) -> list[str]:
     req = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "EnvShield-CLI/0.4.0",
+            "User-Agent": "EnvShield-CLI/0.5.0",
             "Accept": "text/plain",
         },
     )

@@ -8,6 +8,7 @@ import struct
 import sys
 import tempfile
 from collections.abc import Sequence
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,7 @@ from envshield.core.interpolator import interpolate_secrets
 from envshield.core.memory import SecureBuffer
 from envshield.core.profiles import parse_secrets_with_profile
 from envshield.core.recipients import (
+    KeyExpiredError,
     Recipient,
     decrypt_dek_with_identity,
     encrypt_dek_for_recipient,
@@ -132,14 +134,18 @@ def seal_payload(
     password: str | None = None,
     recipients: Sequence[str | Recipient] | None = None,
     format_type: str = "env",
-) -> None:
+    expires_at: str | None = None,
+    quorum: tuple[int, int] | None = None,
+) -> list[str] | None:
     """
     Encrypts in-memory content directly into target_path using AES-256-GCM envelope encryption.
     Zero-disk writes: plaintext is provided in memory and never touches disk.
+    Supports password, team SSH recipients, cryptographic TTL (expires_at), or Shamir quorum (M/N).
+    Returns list of generated Shamir shares if quorum is configured, otherwise None.
     """
     target = Path(target_path)
-    if not password and not recipients:
-        raise ValueError("At least one password or recipient public key must be provided.")
+    if not password and not recipients and not quorum:
+        raise ValueError("At least one password, recipient public key, or Shamir quorum must be provided.")
 
     plaintext = (
         payload_content.encode("utf-8") if isinstance(payload_content, str) else payload_content
@@ -148,36 +154,56 @@ def seal_payload(
 
     slots: list[dict[str, Any]] = []
     salt: bytes | None = None
+    generated_shares: list[str] | None = None
 
     with SecureBuffer(bytearray(os.urandom(KEY_SIZE))) as sec_dek:
         dek_bytes = sec_dek.to_bytes()
 
-        # 1. Password slot (if password provided)
+        # 1. Shamir M-of-N Quorum slot (if quorum requested)
+        if quorum:
+            from envshield.core.shamir import split_secret
+
+            threshold, total_shares = quorum
+            generated_shares = split_secret(dek_bytes, threshold=threshold, shares=total_shares)
+            slots.append(
+                {
+                    "type": "shamir",
+                    "threshold": threshold,
+                    "total_shares": total_shares,
+                }
+            )
+
+        # 2. Password slot (if password provided)
         if password:
             salt = os.urandom(SALT_SIZE)
             slot_nonce = os.urandom(NONCE_SIZE)
-            slot_aad = salt + struct.pack(">I", PBKDF2_ITERATIONS)
+            slot_aad = (
+                salt
+                + struct.pack(">I", PBKDF2_ITERATIONS)
+                + (expires_at.encode("utf-8") if expires_at else b"")
+            )
             with SecureBuffer(derive_key(password, salt, PBKDF2_ITERATIONS)) as sec_kek:
                 slot_aesgcm = AESGCM(sec_kek.to_bytes())
                 encrypted_dek = slot_aesgcm.encrypt(slot_nonce, dek_bytes, slot_aad)
 
-            slots.append(
-                {
-                    "type": "password",
-                    "salt": base64.b64encode(salt).decode("utf-8"),
-                    "nonce": base64.b64encode(slot_nonce).decode("utf-8"),
-                    "encrypted_dek": base64.b64encode(encrypted_dek).decode("utf-8"),
-                    "iterations": PBKDF2_ITERATIONS,
-                }
-            )
+            pwd_slot = {
+                "type": "password",
+                "salt": base64.b64encode(salt).decode("utf-8"),
+                "nonce": base64.b64encode(slot_nonce).decode("utf-8"),
+                "encrypted_dek": base64.b64encode(encrypted_dek).decode("utf-8"),
+                "iterations": PBKDF2_ITERATIONS,
+            }
+            if expires_at:
+                pwd_slot["expires_at"] = expires_at
+            slots.append(pwd_slot)
 
-        # 2. Recipient slots (if recipients provided)
+        # 3. Recipient slots (if recipients provided)
         if recipients:
             for r_spec in recipients:
                 recipient = (
                     r_spec if isinstance(r_spec, Recipient) else Recipient.from_string(str(r_spec))
                 )
-                slot_info = encrypt_dek_for_recipient(dek_bytes, recipient)
+                slot_info = encrypt_dek_for_recipient(dek_bytes, recipient, expires_at=expires_at)
                 slots.append(slot_info)
 
         header_data = {
@@ -186,6 +212,8 @@ def seal_payload(
             "slots": slots,
             "payload_nonce": base64.b64encode(payload_nonce).decode("utf-8"),
         }
+        if expires_at:
+            header_data["expires_at"] = expires_at
         header_bytes = json.dumps(header_data, separators=(",", ":")).encode("utf-8")
 
         # Layout: [V2_MAGIC (6B)] + [header_len (4B)] + [header_bytes] + [ciphertext + tag]
@@ -225,6 +253,7 @@ def seal_payload(
         key_id=compute_key_fingerprint(salt or (str(recipients[0]) if recipients else "vault")),
         details={"format": format_type, "slots": len(slots)},
     )
+    return generated_shares
 
 
 def seal_file(
@@ -233,10 +262,13 @@ def seal_file(
     password: str | None = None,
     recipients: Sequence[str | Recipient] | None = None,
     format_type: str = "auto",
-) -> None:
+    expires_at: str | None = None,
+    quorum: tuple[int, int] | None = None,
+) -> list[str] | None:
     """
     Encrypts source_path into target_path using AES-256-GCM envelope encryption.
-    Supports single password, team SSH recipients, or hybrid (both).
+    Supports single password, team SSH recipients, cryptographic TTL (expires_at), or Shamir quorum (M/N).
+    Returns list of generated Shamir shares if quorum is configured, otherwise None.
     """
     source = Path(source_path)
     if not source.is_file():
@@ -244,12 +276,14 @@ def seal_file(
 
     detected_fmt = detect_format(source) if format_type == "auto" else format_type
     plaintext = source.read_bytes()
-    seal_payload(
+    return seal_payload(
         plaintext,
         target_path,
         password=password,
         recipients=recipients,
         format_type=detected_fmt,
+        expires_at=expires_at,
+        quorum=quorum,
     )
 
 
@@ -276,11 +310,15 @@ def unseal_raw_payload(
     source_path: Path | str,
     password: str | None = None,
     identity_path: str | Path | None = None,
+    shares: Sequence[str] | None = None,
+    cache_ttl: int | None = None,
+    use_cache: bool = True,
 ) -> tuple[str, str]:
     """
     Decrypts the encrypted vault in RAM.
     Returns a tuple of (plaintext_content, detected_format).
     Plaintext is kept in memory and never written to disk.
+    Supports session caching, Shamir secret recovery, and cryptographic expiration (TTL).
     """
     source = Path(source_path)
     if not source.is_file():
@@ -319,10 +357,55 @@ def unseal_raw_payload(
         slots: list[dict[str, Any]] = header_json.get("slots", [])
         fmt = header_json.get("format", "env")
 
-        dek: bytearray | None = None
+        # 1. Check vault-level cryptographic expiration
+        vault_expires_at = header_json.get("expires_at")
+        if vault_expires_at:
+            try:
+                exp_dt = datetime.fromisoformat(vault_expires_at.replace("Z", "+00:00"))
+                if datetime.now(timezone.utc) > exp_dt:
+                    raise KeyExpiredError(f"Vault has expired on {vault_expires_at}.")
+            except KeyExpiredError:
+                raise
+            except Exception:
+                pass
 
-        # 1. Try specified identity private key
-        if identity_path:
+        # 2. Check session keychain cache (if enabled)
+        if use_cache:
+            from envshield.core.keychain import clear_cached_vault_key, get_cached_vault_key
+
+            cached_dek = get_cached_vault_key(source)
+            if cached_dek is not None:
+                with SecureBuffer(cached_dek) as sec_cached:
+                    aesgcm = AESGCM(sec_cached.to_bytes())
+                    aad = raw_bytes[:header_end]
+                    try:
+                        decrypted_bytes = aesgcm.decrypt(payload_nonce, ciphertext, aad)
+                        plaintext = decrypted_bytes.decode("utf-8")
+                        record_audit_event(
+                            action="UNSEAL",
+                            target_path=source,
+                            key_id=compute_key_fingerprint("session_cache"),
+                            details={"format": fmt, "version": 2, "source": "keychain_cache"},
+                        )
+                        return plaintext, fmt
+                    except Exception:
+                        clear_cached_vault_key(source)
+
+        dek: bytearray | None = None
+        unseal_key_id = password or (str(identity_path) if identity_path else "ssh_identity")
+
+        # 3. Try Shamir M-of-N Quorum shares
+        if shares:
+            from envshield.core.shamir import recover_secret
+
+            try:
+                dek = recover_secret(shares)
+                unseal_key_id = "shamir_quorum"
+            except Exception as exc:
+                raise InvalidKey(f"Failed to recover secret from Shamir shares: {exc}") from exc
+
+        # 4. Try specified identity private key
+        if identity_path and dek is None:
             for slot in slots:
                 if slot.get("type") in ("ssh-rsa", "ssh-ed25519", "x25519"):
                     decrypted_dek = decrypt_dek_with_identity(slot, identity_path)
@@ -330,8 +413,8 @@ def unseal_raw_payload(
                         dek = bytearray(decrypted_dek)
                         break
 
-        # 2. Try default SSH identities in ~/.ssh/
-        if dek is None and not identity_path:
+        # 5. Try default SSH identities in ~/.ssh/
+        if dek is None and not identity_path and not shares:
             default_ids = find_default_identities()
             for ident in default_ids:
                 for slot in slots:
@@ -343,11 +426,21 @@ def unseal_raw_payload(
                 if dek is not None:
                     break
 
-        # 3. Try password slot if available and password provided
-        unseal_key_id = password or (str(identity_path) if identity_path else "ssh_identity")
-        if dek is None and password:
+        # 6. Try password slot if available and password provided
+        if dek is None and password and not shares:
             for slot in slots:
                 if slot.get("type") == "password":
+                    slot_expires_at = slot.get("expires_at")
+                    if slot_expires_at:
+                        try:
+                            exp_dt = datetime.fromisoformat(slot_expires_at.replace("Z", "+00:00"))
+                            if datetime.now(timezone.utc) > exp_dt:
+                                raise KeyExpiredError(f"Password slot has expired on {slot_expires_at}.")
+                        except KeyExpiredError:
+                            raise
+                        except Exception:
+                            pass
+
                     try:
                         iters = int(slot.get("iterations", PBKDF2_ITERATIONS))
                     except (TypeError, ValueError) as exc:
@@ -360,7 +453,11 @@ def unseal_raw_payload(
                     salt = base64.b64decode(slot["salt"])
                     slot_nonce = base64.b64decode(slot["nonce"])
                     enc_dek = base64.b64decode(slot["encrypted_dek"])
-                    slot_aad = salt + struct.pack(">I", iters)
+                    slot_aad = (
+                        salt
+                        + struct.pack(">I", iters)
+                        + (slot_expires_at.encode("utf-8") if slot_expires_at else b"")
+                    )
                     with SecureBuffer(derive_key(password, salt, iters)) as sec_kek:
                         slot_aesgcm = AESGCM(sec_kek.to_bytes())
                         try:
@@ -370,9 +467,8 @@ def unseal_raw_payload(
                         except InvalidTag:
                             continue
 
-
-        # 4. Try Cloud / Mock KMS slots if DEK is still unresolved
-        if dek is None:
+        # 7. Try Cloud / Mock KMS slots if DEK is still unresolved
+        if dek is None and not shares:
             from envshield.core.kms import decrypt_dek_with_kms
 
             for slot in slots:
@@ -388,6 +484,12 @@ def unseal_raw_payload(
                 "Authentication failed: no matching private key, valid password, or authorized KMS identity for this vault."
             )
 
+        # Cache resolved DEK in session keychain if TTL requested
+        if cache_ttl and cache_ttl > 0:
+            from envshield.core.keychain import cache_vault_key
+
+            cache_vault_key(source, dek, ttl_seconds=cache_ttl)
+
         with SecureBuffer(dek) as sec_dek:
             aesgcm = AESGCM(sec_dek.to_bytes())
             aad = raw_bytes[:header_end]
@@ -397,7 +499,6 @@ def unseal_raw_payload(
                 raise InvalidKey(
                     "Authentication failed: payload GCM tag or authenticated header (AAD) mismatch."
                 ) from exc
-
 
 
         try:
@@ -440,13 +541,24 @@ def unseal_to_memory(
     identity_path: str | Path | None = None,
     profile: str | None = None,
     interpolate: bool = True,
+    shares: Sequence[str] | None = None,
+    cache_ttl: int | None = None,
+    use_cache: bool = True,
 ) -> dict[str, str]:
     """
     Reads an encrypted environment file (.env.enc), decrypts it in RAM,
     resolves requested profile (if any), and recursively interpolates variables (${VAR}).
     Zero-disk writes: plaintext is never written to disk.
+    Supports session caching, Shamir recovery, and cryptographic expiration (TTL).
     """
-    content, fmt = unseal_raw_payload(source_path, password, identity_path)
+    content, fmt = unseal_raw_payload(
+        source_path,
+        password=password,
+        identity_path=identity_path,
+        shares=shares,
+        cache_ttl=cache_ttl,
+        use_cache=use_cache,
+    )
     secrets = parse_secrets_with_profile(
         content,
         profile=profile,

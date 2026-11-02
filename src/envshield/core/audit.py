@@ -319,7 +319,7 @@ def generate_compliance_report(
 
         <div style="margin-top: 36px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: #64748b; display: flex; justify-content: space-between;">
             <span>Generated: {generated_at}</span>
-            <span>Cryptographic Verification Engine: Envshield Security Enterprise v0.4.0</span>
+            <span>Cryptographic Verification Engine: Envshield Security Enterprise v0.5.0</span>
         </div>
     </div>
 </body>

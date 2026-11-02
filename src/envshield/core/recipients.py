@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,10 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from envshield.core.memory import SecureBuffer, secure_wipe
 
 P_25519: int = 2**255 - 19
+
+
+class KeyExpiredError(Exception):
+    """Raised when a cryptographic recipient or vault slot has passed its expiration timestamp."""
 
 
 def ed25519_pub_to_x25519_pub(ed_pub_bytes: bytes) -> bytes:
@@ -117,9 +122,12 @@ class Recipient:
         raise ValueError(f"Unsupported or invalid recipient public key format: '{text[:30]}...'")
 
 
-def encrypt_dek_for_recipient(dek: bytes, recipient: Recipient) -> dict[str, str]:
+def encrypt_dek_for_recipient(
+    dek: bytes, recipient: Recipient, expires_at: str | None = None
+) -> dict[str, str]:
     """
     Encrypts the 256-bit DEK for a given recipient and returns a slot dictionary.
+    Optionally binds an ISO-8601 UTC expiration timestamp (expires_at) into the slot AAD.
     """
     if recipient.key_type == "ssh-rsa":
         # Use RSA-OAEP with SHA-256
@@ -132,11 +140,14 @@ def encrypt_dek_for_recipient(dek: bytes, recipient: Recipient) -> dict[str, str
                 label=None,
             ),
         )
-        return {
+        res = {
             "type": "ssh-rsa",
             "fingerprint": recipient.fingerprint,
             "encrypted_dek": base64.b64encode(enc_dek).decode("utf-8"),
         }
+        if expires_at:
+            res["expires_at"] = expires_at
+        return res
 
     if recipient.key_type in ("ssh-ed25519", "x25519"):
         # ECDH with ephemeral X25519 key pair + HKDF (with HPKE-style transcript binding) + AES-GCM
@@ -151,6 +162,8 @@ def encrypt_dek_for_recipient(dek: bytes, recipient: Recipient) -> dict[str, str
 
         # Bind both ephemeral and recipient public keys into the HKDF context info (RFC 9180 / HPKE style)
         hkdf_info = b"envshield-v2-slot|" + ephem_pub_bytes + b"|" + recipient_pub_bytes
+        if expires_at:
+            hkdf_info += b"|" + expires_at.encode("utf-8")
 
         with (
             SecureBuffer(ephem_priv.exchange(recipient_x_pub)) as sec_shared,
@@ -164,17 +177,24 @@ def encrypt_dek_for_recipient(dek: bytes, recipient: Recipient) -> dict[str, str
             ) as sec_derived,
         ):
             nonce = os.urandom(12)
-            slot_aad = ephem_pub_bytes + recipient_pub_bytes
+            slot_aad = (
+                ephem_pub_bytes
+                + recipient_pub_bytes
+                + (expires_at.encode("utf-8") if expires_at else b"")
+            )
             aesgcm = AESGCM(sec_derived.to_bytes())
             enc_dek = aesgcm.encrypt(nonce, dek, slot_aad)
 
-        return {
+        res = {
             "type": recipient.key_type,
             "fingerprint": recipient.fingerprint,
             "ephemeral_pub": base64.b64encode(ephem_pub_bytes).decode("utf-8"),
             "nonce": base64.b64encode(nonce).decode("utf-8"),
             "encrypted_dek": base64.b64encode(enc_dek).decode("utf-8"),
         }
+        if expires_at:
+            res["expires_at"] = expires_at
+        return res
 
 
     if recipient.key_type == "kms":
@@ -202,17 +222,22 @@ def find_default_identities() -> list[Path]:
 
 
 def decrypt_dek_with_identity(
-    slot: dict[str, str], identity_path_or_str: str | Path, passphrase: str | None = None
+    slot: dict[str, str], identity_path_or_str: str | Path | bytes, passphrase: str | None = None
 ) -> bytes | None:
     """
     Attempts to decrypt the DEK in slot using an SSH private key.
     Returns decrypted DEK bytes on success, None if key does not match or fails.
     """
-    ident_path = Path(identity_path_or_str).expanduser()
-    if ident_path.is_file():
-        key_data = ident_path.read_bytes()
+    if isinstance(identity_path_or_str, bytes):
+        key_data = identity_path_or_str
+    elif isinstance(identity_path_or_str, Path):
+        key_data = identity_path_or_str.read_bytes()
     else:
-        key_data = str(identity_path_or_str).encode("utf-8")
+        ident_path = Path(identity_path_or_str).expanduser()
+        if ident_path.is_file():
+            key_data = ident_path.read_bytes()
+        else:
+            key_data = str(identity_path_or_str).encode("utf-8")
 
     pass_bytes = passphrase.encode("utf-8") if passphrase else None
 
@@ -225,6 +250,18 @@ def decrypt_dek_with_identity(
             priv_key = serialization.load_pem_private_key(key_data, password=pass_bytes)
         except Exception:
             return None
+
+    # Check if slot has expired
+    expires_at = slot.get("expires_at")
+    if expires_at:
+        try:
+            exp_dt = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+            if datetime.now(timezone.utc) > exp_dt:
+                raise KeyExpiredError(f"Recipient slot has expired on {expires_at}.")
+        except KeyExpiredError:
+            raise
+        except Exception:
+            pass
 
     slot_type = slot.get("type")
 
@@ -268,7 +305,13 @@ def decrypt_dek_with_identity(
 
             ephem_pub = x25519.X25519PublicKey.from_public_bytes(ephem_pub_bytes)
             hkdf_info = b"envshield-v2-slot|" + ephem_pub_bytes + b"|" + recipient_pub_bytes
-            slot_aad = ephem_pub_bytes + recipient_pub_bytes
+            if expires_at:
+                hkdf_info += b"|" + expires_at.encode("utf-8")
+            slot_aad = (
+                ephem_pub_bytes
+                + recipient_pub_bytes
+                + (expires_at.encode("utf-8") if expires_at else b"")
+            )
 
             with (
                 SecureBuffer(x_priv.exchange(ephem_pub)) as sec_shared,

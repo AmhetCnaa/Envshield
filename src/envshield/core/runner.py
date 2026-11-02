@@ -4,6 +4,7 @@ import gc
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 from envshield.core.memory import ObfuscatedSecretStore, disable_core_dumps
 from envshield.core.redactor import SecretRedactor, sanitize_stream
@@ -14,6 +15,8 @@ def execute_with_env(
     secrets: dict[str, str],
     redact: bool = True,
     pty: bool = False,
+    strict_schema: bool = False,
+    schema_path: Path | str | None = None,
 ) -> int:
     """
     Executes a command with secrets injected into the process environment.
@@ -22,6 +25,8 @@ def execute_with_env(
       - Disables crash core dumps (RLIMIT_CORE / PR_SET_DUMPABLE / SetErrorMode).
       - Holds secrets in an XOR-masked ObfuscatedSecretStore inside locked RAM pages
         and wipes the transient environment dictionary immediately after child spawn.
+      - Pre-flight schema validation (strict_schema): halts execution before child spawn
+        if required variables are missing, malformed, or have dangerously low entropy.
 
     When `pty=True`, executes inside a Pseudo-Terminal (PTY) session, enabling
     interactive subshells (bash, zsh), TUI programs, and REPLs to receive native TTY controls.
@@ -36,6 +41,23 @@ def execute_with_env(
         return 0
 
     disable_core_dumps()
+
+    # Pre-flight in-memory schema & entropy gatekeeper
+    if strict_schema or schema_path or Path(".env.schema").is_file():
+        from envshield.core.schema import validate_secrets_schema
+
+        report = validate_secrets_schema(secrets, schema_path=schema_path)
+        if not report.is_valid:
+            if strict_schema:
+                sys.stderr.write("[!] Envshield Pre-Flight Schema Violation (Execution Aborted):\n")
+                for err in report.errors:
+                    sys.stderr.write(f"    - [{err.key}]: {err.message}\n")
+                return 1
+            for w in report.warnings + report.errors:
+                sys.stderr.write(f"[*] Schema warning for [{w.key}]: {w.message}\n")
+        elif report.warnings:
+            for w in report.warnings:
+                sys.stderr.write(f"[*] Schema warning for [{w.key}]: {w.message}\n")
 
     if pty:
         from envshield.core.terminal import execute_interactive

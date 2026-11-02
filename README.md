@@ -4,7 +4,7 @@
 
 <br>
 
-[![PyPI Version](https://img.shields.io/badge/Release-v0.4.0-10B981?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/envshield-cli/)
+[![PyPI Version](https://img.shields.io/badge/Release-v0.5.0-10B981?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/envshield-cli/)
 [![Python Versions](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-3B82F6?style=flat-square&logo=python&logoColor=white)](https://pypi.org/project/envshield-cli/)
 [![Cryptography](https://img.shields.io/badge/Cipher-AES--256--GCM-6366F1?style=flat-square&logo=letsencrypt&logoColor=white)](https://github.com/AmhetCnaa/Envshield)
 [![Memory Protection](https://img.shields.io/badge/Memory-VirtualLock%20%2F%20mlock-059669?style=flat-square)](https://github.com/AmhetCnaa/Envshield)
@@ -156,6 +156,66 @@ envshield ci init --provider github -o .github/workflows/envshield.yml
 Run full-screen, interactive terminal sessions (e.g., `bash`, `zsh`, `psql`, `mysql`, `vim`, or `htop`) with complete ANSI escape codes, cursor navigation, window resize (SIGWINCH), and ConPTY support on Windows:
 ```bash
 envshield run -t -- psql "postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}/db"
+```
+
+### 10. 🔑 Hardware Keychain & Ephemeral Session Caching (`--cache-ttl`)
+Stop entering master passwords on every single command. Envshield caches decrypted session tokens directly inside your operating system's native hardware-backed cryptographic credential store with automatic TTL expiration:
+* **Windows:** Win32 DPAPI (`ctypes.windll.crypt32.CryptProtectData` with user credential tie-in).
+* **Linux:** Kernel `keyutils` / `secret-tool` / `/dev/shm` ephemeral RAM vault + AES-256-GCM session key.
+* **macOS:** Apple Keychain CLI (`security`) with user approval prompt.
+
+```bash
+# Cache session DEK for 15 minutes (900s) - subsequent runs unseal instantly without prompts:
+envshield run --cache-ttl 900 -- python app.py
+
+# Force prompt and bypass cache:
+envshield run --no-cache -- python app.py
+```
+
+### 11. 🧩 Shamir's Secret Sharing M-of-N Quorum Vault Engine (`shamir`)
+Eliminate insider threat by requiring $M$-of-$N$ threshold keyholders to unseal critical production vaults. Envshield implements a pure-Python, zero-dependency Galois Field $GF(2^8)$ (polynomial $0x11B$) mathematical secret sharing engine:
+
+```bash
+# Split high-entropy master keys or secrets into 5 shares with a 3-of-5 quorum:
+envshield shamir split --threshold 3 --shares 5
+
+# Recombine shares into memory to recover the master secret:
+envshield shamir combine "ENVSHIELD-SHARE-1-..." "ENVSHIELD-SHARE-2-..." "ENVSHIELD-SHARE-3-..."
+
+# Seal production vault requiring 3 out of 5 quorum holders to unlock:
+envshield seal .env.production --quorum 3/5
+
+# Unseal quorum vault during production deploy:
+envshield run --share "ENVSHIELD-SHARE-1-..." --share "ENVSHIELD-SHARE-2-..." --share "ENVSHIELD-SHARE-3-..." -- ./deploy.sh
+```
+
+### 12. 🚦 In-Memory Pre-Flight Schema & Shannon Entropy Gatekeeper
+Stop runtime crashes and security breaches caused by broken, missing, or weak environment secrets. Envshield inspects variables strictly in RAM before spawning the child process:
+* **Shannon Entropy Engine:** Computes Shannon entropy ($H \ge 3.0\text{ bits/char}$) on secret fields (`*_SECRET`, `*_KEY`, `*_TOKEN`, `*_PASSWORD`) to block placeholder or dictionary passwords (`admin`, `123456`, `password`).
+* **Type & Format Validator:** Validates `url`, `int`, `port` (1-65535), `bool`, `ipv4`, `json`, `email`, and `uuid` types from `.env.schema` or inline `# @schema:` comments.
+* **Strict Gatekeeper:** If validation fails, Envshield aborts immediately with a clear error table without ever launching the vulnerable sub-process.
+
+```ini
+# .env with inline schema directives:
+PORT=8080 # @schema: required, type=port
+DATABASE_URL=postgres://user:pass@localhost:5432/app # @schema: required, type=url
+API_KEY=sk_live_9f82b1c4 # @schema: required, entropy>=3.5
+```
+```bash
+# Enforce strict pre-flight validation before launching:
+envshield run --strict-schema -- python worker.py
+```
+
+### 13. ☸️ Cryptographic TTL Slots & Kubernetes Zero-Disk Bridge (`k8s`)
+* **Cryptographic TTL Recipient Slots:** Attach time-bound expiration to any recipient slot or vault (`--ttl 24h` or `--expires 2026-12-31T23:59:59Z`). The expiration timestamp is bound directly into the AES-256-GCM Additional Authenticated Data (AAD) to prevent tampering. Expired slots are rejected by the cryptographic engine.
+* **Zero-Disk Kubernetes Bridge:** Stream unsealed secrets directly into Kubernetes without writing plaintext secret manifests to disk or exposing values in process lists (`ps aux`):
+
+```bash
+# Pipe secrets directly from page-locked RAM into Kubernetes via stdin:
+envshield k8s apply --name production-api --namespace backend
+
+# Dry-run inspection without disk persistence:
+envshield k8s dry-run --name test-secrets
 ```
 
 ---
@@ -389,6 +449,10 @@ Envshield is dual-licensed to support both the open-source community and commerc
 | **Honeypot Decoy Mode & Webhook** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **Interactive PTY / ConPTY Runner** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | **SSH Public Key Recipients** | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **Shamir M-of-N Quorum (GF(256))** | ✅ | ❌ | ❌ | ❌ | ⚠️ Server Unseal | ❌ |
+| **In-Memory Schema & Shannon Entropy** | ✅ | ❌ | ❌ | ⚠️ Cloud Regex | ❌ | ❌ |
+| **Cryptographic AAD-Bound TTL Slots** | ✅ | ❌ | ❌ | ⚠️ Cloud Token | ⚠️ Dynamic Lease | ❌ |
+| **Zero-Disk Kubernetes Pipe Bridge** | ✅ | ❌ | ❌ | ⚠️ Operator CRD | ⚠️ Vault Sidecar | ⚠️ Operator |
 | **Zero Infrastructure / Offline** | ✅ | ✅ | ✅ | ❌ Cloud | ❌ Server | ❌ Cloud |
 | **Cold-Start Overhead** | **~ 35 ms (Lazy CLI)** | ~ 5 ms | ~ 60 ms | ~ 180 ms | ~ 220 ms | ~ 120 ms |
 

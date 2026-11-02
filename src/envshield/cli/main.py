@@ -123,6 +123,21 @@ def handle_seal(args: list[str], console: Console) -> None:
         default=None,
         help="Save the encryption password to OS keyring under this name.",
     )
+    parser.add_argument(
+        "--ttl",
+        default=None,
+        help="Cryptographic time-to-live for sealed vault/slots (e.g. 24h, 7d, 30m).",
+    )
+    parser.add_argument(
+        "--expires",
+        default=None,
+        help="Cryptographic expiration timestamp in ISO-8601 UTC format (e.g. 2026-12-31T23:59:59Z).",
+    )
+    parser.add_argument(
+        "--quorum",
+        default=None,
+        help="Shamir M-of-N quorum threshold (e.g. 3/5) to split vault DEK into required shares.",
+    )
 
     parsed = parser.parse_args(args)
     source_path = Path(parsed.path)
@@ -134,15 +149,44 @@ def handle_seal(args: list[str], console: Console) -> None:
 
     all_recipients: list[str] = list(parsed.recipients or []) + list(parsed.kms_keys or [])
 
+    expires_at = parsed.expires
+    if parsed.ttl and not expires_at:
+        from datetime import datetime, timedelta, timezone
+
+        ttl_str = parsed.ttl.strip().lower()
+        now = datetime.now(timezone.utc)
+        if ttl_str.endswith("m"):
+            delta = timedelta(minutes=int(ttl_str[:-1]))
+        elif ttl_str.endswith("h"):
+            delta = timedelta(hours=int(ttl_str[:-1]))
+        elif ttl_str.endswith("d"):
+            delta = timedelta(days=int(ttl_str[:-1]))
+        elif ttl_str.endswith("s"):
+            delta = timedelta(seconds=int(ttl_str[:-1]))
+        else:
+            delta = timedelta(seconds=int(ttl_str))
+        expires_at = (now + delta).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    quorum_spec: tuple[int, int] | None = None
+    if parsed.quorum:
+        try:
+            m_s, n_s = parsed.quorum.split("/")
+            quorum_spec = (int(m_s.strip()), int(n_s.strip()))
+        except Exception:
+            console.print(
+                f"[red]Error: Invalid quorum format '{parsed.quorum}'. Expected M/N, e.g. 3/5.[/red]"
+            )
+            sys.exit(1)
+
     password: str | None = None
-    if not parsed.no_password or not all_recipients:
+    if not parsed.no_password or (not all_recipients and not quorum_spec):
         password = resolve_password(
             keyring_name=parsed.keyring_name,
             prompt_message="Enter encryption password: ",
         )
-        if not password and not all_recipients:
+        if not password and not all_recipients and not quorum_spec:
             console.print(
-                "[red]Error: Password cannot be empty when no recipients are specified.[/red]"
+                "[red]Error: Password cannot be empty when no recipients or quorum are specified.[/red]"
             )
             sys.exit(1)
 
@@ -150,14 +194,26 @@ def handle_seal(args: list[str], console: Console) -> None:
         console.print(f"[green]Key saved to OS keyring under '{parsed.keyring_name}'.[/green]")
 
     try:
-        seal_file(
+        shares = seal_file(
             source_path,
             target_path,
             password=password,
             recipients=all_recipients if all_recipients else None,
             format_type=parsed.format,
+            expires_at=expires_at,
+            quorum=quorum_spec,
         )
         console.print(f"[green]Successfully sealed '{source_path}' -> '{target_path}'.[/green]")
+        if expires_at:
+            console.print(f"[cyan]Cryptographic expiration active until: {expires_at}[/cyan]")
+        if shares and quorum_spec:
+            console.print(
+                Panel(
+                    "\n".join(shares),
+                    title=f"[cyan]Shamir {quorum_spec[0]}-of-{quorum_spec[1]} Quorum Shares Generated[/cyan]",
+                    subtitle="Distribute each share to a separate custodian. Any M shares can unlock the vault.",
+                )
+            )
         if parsed.shred:
             shred_file(source_path)
             console.print(f"[yellow]Securely shredded original file '{source_path}'.[/yellow]")
@@ -234,6 +290,35 @@ def _build_run_parser(add_help: bool = True) -> argparse.ArgumentParser:
         default=None,
         help="Webhook URL to notify upon unauthorized intrusion / decoy activation.",
     )
+    parser.add_argument(
+        "-s",
+        "--share",
+        action="append",
+        dest="shares",
+        default=[],
+        help="Shamir M-of-N quorum share key. Can be repeated to provide M shares.",
+    )
+    parser.add_argument(
+        "--cache-ttl",
+        type=int,
+        default=None,
+        help="Cache unlocked vault key in OS session keychain for N seconds (e.g. 900).",
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Disable checking or storing in OS session keychain cache.",
+    )
+    parser.add_argument(
+        "--strict-schema",
+        action="store_true",
+        help="Strictly enforce in-memory schema and entropy gatekeeper; abort on violation.",
+    )
+    parser.add_argument(
+        "--schema",
+        default=None,
+        help="Path to .env.schema file for pre-flight validation.",
+    )
     return parser
 
 
@@ -270,11 +355,17 @@ def handle_run(args: list[str], console: Console) -> None:
         console.print(f"[dim]Git branch profile detected: '[cyan]{selected_profile}[/cyan]'[/dim]")
 
     password: str | None = None
-    if not parsed.identity:
-        password = resolve_password(
-            keyring_name=parsed.keyring_name,
-            prompt_message="Enter decryption password (press Enter to use default SSH key): ",
-        )
+    shares_list = parsed.shares if parsed.shares else None
+    use_cache = not getattr(parsed, "no_cache", False)
+
+    if not parsed.identity and not shares_list:
+        from envshield.core.keychain import get_cached_vault_key
+
+        if not use_cache or get_cached_vault_key(env_path) is None:
+            password = resolve_password(
+                keyring_name=parsed.keyring_name,
+                prompt_message="Enter decryption password (press Enter to use default SSH key): ",
+            )
 
     try:
         secrets = unseal_to_memory(
@@ -283,6 +374,9 @@ def handle_run(args: list[str], console: Console) -> None:
             identity_path=parsed.identity,
             profile=selected_profile,
             interpolate=not parsed.no_interpolate,
+            shares=shares_list,
+            cache_ttl=parsed.cache_ttl,
+            use_cache=use_cache,
         )
     except (InvalidKey, AuthError) as exc:
         if parsed.enable_decoy or os.environ.get("ENVSHIELD_DECOY_ENABLED"):
@@ -314,6 +408,8 @@ def handle_run(args: list[str], console: Console) -> None:
         secrets,
         redact=not parsed.no_redact,
         pty=parsed.pty,
+        strict_schema=getattr(parsed, "strict_schema", False),
+        schema_path=getattr(parsed, "schema", None),
     )
     sys.exit(exit_code)
 
@@ -1136,6 +1232,136 @@ def handle_drift(args: list[str], console: Console) -> None:
     sys.exit(0)
 
 
+def handle_shamir(args: list[str], console: Console) -> None:
+    parser = argparse.ArgumentParser(
+        prog="envshield shamir",
+        description="M-of-N Shamir Secret Sharing tools for quorum vault management.",
+    )
+    sub = parser.add_subparsers(dest="subcommand", required=True)
+
+    # split
+    p_split = sub.add_parser("split", help="Split a secret into N shares requiring M to recover.")
+    p_split.add_argument("target", nargs="?", default=None, help="Secret string or path to file to split.")
+    p_split.add_argument("-t", "--threshold", "-m", type=int, required=True, help="Threshold M.")
+    p_split.add_argument("-n", "--shares", type=int, required=True, help="Total shares N.")
+
+    # combine
+    p_combine = sub.add_parser("combine", help="Reconstruct secret from M provided shares.")
+    p_combine.add_argument(
+        "-s", "--share", action="append", dest="shares", required=True, help="Shamir share string."
+    )
+
+    parsed = parser.parse_args(args)
+    from envshield.core.shamir import recover_secret, split_secret
+
+    if parsed.subcommand == "split":
+        secret_bytes: bytes
+        if parsed.target:
+            p = Path(parsed.target)
+            if p.is_file():
+                secret_bytes = p.read_bytes()
+            else:
+                secret_bytes = parsed.target.encode("utf-8")
+        else:
+            entered = getpass.getpass("Enter secret to split: ")
+            secret_bytes = entered.encode("utf-8")
+
+        try:
+            shares = split_secret(secret_bytes, threshold=parsed.threshold, shares=parsed.shares)
+            console.print(
+                Panel(
+                    "\n".join(shares),
+                    title=f"[cyan]Shamir {parsed.threshold}-of-{parsed.shares} Quorum Shares[/cyan]",
+                    subtitle="Distribute each share to a separate custodian. Any M shares can reconstruct the secret.",
+                )
+            )
+            sys.exit(0)
+        except Exception as exc:
+            console.print(f"[red]Error splitting secret: {exc}[/red]")
+            sys.exit(1)
+
+    if parsed.subcommand == "combine":
+        try:
+            recovered = recover_secret(parsed.shares)
+            try:
+                text = recovered.decode("utf-8")
+                console.print(f"[green]Successfully recovered secret:[/green]\n{text}")
+            except UnicodeDecodeError:
+                console.print(
+                    f"[green]Successfully recovered raw secret ({len(recovered)} bytes). Hex:[/green]\n{recovered.hex()}"
+                )
+            sys.exit(0)
+        except Exception as exc:
+            console.print(f"[red]Error reconstructing secret: {exc}[/red]")
+            sys.exit(1)
+
+
+def handle_k8s(args: list[str], console: Console) -> None:
+    parser = argparse.ArgumentParser(
+        prog="envshield k8s",
+        description="Inject decrypted secrets directly into a Kubernetes cluster via stdin (zero disk footprint).",
+    )
+    parser.add_argument("--name", required=True, help="Kubernetes Secret object name.")
+    parser.add_argument(
+        "--namespace", "-n", default="default", help="Kubernetes namespace (default: default)."
+    )
+    parser.add_argument(
+        "--env-file", default=".env.enc", help="Encrypted vault file (default: .env.enc)."
+    )
+    parser.add_argument("-i", "--identity", default=None, help="SSH private key for decryption.")
+    parser.add_argument("-p", "--profile", default=None, help="Environment profile section to select.")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Perform client-side dry run without creating resource."
+    )
+    parser.add_argument("--context", default=None, help="Kubernetes kubectl context to target.")
+    parser.add_argument("--keyring-name", default=None, help="Lookup password from OS keyring.")
+
+    parsed = parser.parse_args(args)
+    env_path = Path(parsed.env_file)
+    if not env_path.is_file():
+        console.print(f"[red]Error: Encrypted environment file '{env_path}' not found.[/red]")
+        sys.exit(1)
+
+    password: str | None = None
+    if not parsed.identity:
+        password = resolve_password(
+            keyring_name=parsed.keyring_name,
+            prompt_message="Enter decryption password: ",
+        )
+
+    try:
+        secrets = unseal_to_memory(
+            env_path,
+            password=password,
+            identity_path=parsed.identity,
+            profile=parsed.profile,
+        )
+    except Exception as exc:
+        console.print(f"[red]Decryption failed: {exc}[/red]")
+        sys.exit(1)
+
+    from envshield.core.k8s_bridge import apply_k8s_secret
+
+    exit_code, msg = apply_k8s_secret(
+        secret_name=parsed.name,
+        secrets=secrets,
+        namespace=parsed.namespace,
+        context=parsed.context,
+        dry_run=parsed.dry_run,
+    )
+    if exit_code == 0:
+        mode = "Dry-run verified" if parsed.dry_run else "Successfully injected"
+        console.print(
+            f"[green]{mode} secret '{parsed.name}' in namespace '{parsed.namespace}'.[/green]"
+        )
+        if msg:
+            console.print(f"[dim]{msg}[/dim]")
+        sys.exit(0)
+    else:
+        console.print(f"[red]Failed to inject Kubernetes secret (exit code {exit_code}): {msg}[/red]")
+        sys.exit(exit_code)
+
+
 def handle_scan(args: list[str]) -> None:
     parser = argparse.ArgumentParser(
         prog="envshield",
@@ -1300,6 +1526,12 @@ def main(argv: list[str] | None = None) -> None:
             return
         if cmd == "drift":
             handle_drift(argv[1:], console)
+            return
+        if cmd == "shamir":
+            handle_shamir(argv[1:], console)
+            return
+        if cmd == "k8s":
+            handle_k8s(argv[1:], console)
             return
         if cmd == "scan":
             handle_scan(argv[1:])

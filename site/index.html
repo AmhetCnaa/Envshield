@@ -134,7 +134,7 @@
                     <div class="lg:col-span-6 space-y-6">
                         <div class="reveal inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 text-xs text-slate-300 font-mono" style="--delay: 0ms;">
                             <span data-i18n="hero_audit_badge" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold text-[10px]">AUDIT PASSED</span>
-                            <span data-i18n="hero_audit_text">145/145 invariant tests · RFC 9180 HPKE · mlock()</span>
+                            <span data-i18n="hero_audit_text">171/171 invariant tests · Shamir Quorum · RFC 9180 HPKE · mlock()</span>
                         </div>
 
                         <h1 data-kinetic data-kinetic-id="hero_title" class="kinetic-heading text-4xl sm:text-5xl font-extrabold tracking-[-0.035em] text-white leading-[1.08]">
@@ -498,6 +498,8 @@
                         <button onclick="switchTerminalDemo('team')" id="tab-team" data-i18n="tab_team" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">03 · GitHub SSH</button>
                         <button onclick="switchTerminalDemo('audit')" id="tab-audit" data-i18n="tab_audit" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">04 · SOC 2 Audit</button>
                         <button onclick="switchTerminalDemo('sentinel')" id="tab-sentinel" data-i18n="tab_sentinel" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">05 · AST Sentinel</button>
+                        <button onclick="switchTerminalDemo('shamir')" id="tab-shamir" data-i18n="tab_shamir" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">06 · Shamir M-of-N</button>
+                        <button onclick="switchTerminalDemo('k8s')" id="tab-k8s" data-i18n="tab_k8s" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">07 · K8s Zero-Disk</button>
                     </div>
                 </div>
 
@@ -657,6 +659,75 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- Enterprise v0.5.0 Divider / Header -->
+                <div class="lg:col-span-12 mt-6 pt-5 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono text-[10px] font-bold tracking-wider">v0.5.0 ENTERPRISE</span>
+                        <span class="text-xs font-mono text-slate-200 font-semibold" data-i18n="ent_features_subheading">Enterprise Defense-in-Depth & Quorum Invariants</span>
+                    </div>
+                    <span class="text-[11px] font-mono text-slate-500" data-i18n="ent_features_meta">Zero C/Rust Dependencies · Pure Python 3.9+ · Zero TOCTOU</span>
+                </div>
+
+                <!-- Card 7: OS Keychain & Session Caching (Cyber Emerald) -->
+                <div class="reveal spotlight-card card-emerald lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span data-i18n="prim7_label" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-semibold text-[10px]">07 / HARDWARE KEYCHAIN</span>
+                            <i data-lucide="key-round" class="w-4 h-4 text-emerald-400"></i>
+                        </div>
+                        <h3 data-i18n="prim7_title" class="text-sm sm:text-base font-bold text-white tracking-tight">OS Keychain & Session Caching</h3>
+                        <p data-i18n-html="prim7_desc" class="text-xs text-slate-400 leading-relaxed">
+                            Caches ephemeral session tokens inside Windows DPAPI (<code class="text-slate-200 font-mono">CryptProtectData</code>), macOS Keychain, or Linux <code class="text-slate-200 font-mono">/dev/shm</code> AES-GCM with <code class="text-slate-200 font-mono">--cache-ttl</code> so developers enter master passwords only once per session.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 8: Shamir M-of-N Quorum (Laser Amber) -->
+                <div class="reveal spotlight-card card-amber lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 160ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span data-i18n="prim8_label" class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/25 font-semibold text-[10px]">08 / SHAMIR QUORUM</span>
+                            <i data-lucide="shield" class="w-4 h-4 text-amber-400"></i>
+                        </div>
+                        <h3 data-i18n="prim8_title" class="text-sm sm:text-base font-bold text-white tracking-tight">Galois GF(256) M-of-N Quorum</h3>
+                        <p data-i18n-html="prim8_desc" class="text-xs text-slate-400 leading-relaxed">
+                            Pure Python Galois Field arithmetic (<code class="text-slate-200 font-mono">0x11B</code>). Split production envelopes across team leads (<code class="text-slate-200 font-mono">--quorum 3/5</code>). Eliminates insider threat by mathematically requiring M threshold shares to unseal.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 9: Pre-Flight Schema & Shannon Entropy (Electric Cyan) -->
+                <div class="reveal spotlight-card card-cyan lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span data-i18n="prim9_label" class="px-2 py-0.5 rounded bg-sky-500/15 text-sky-400 border border-sky-500/25 font-semibold text-[10px]">09 / PRE-FLIGHT GATE</span>
+                            <i data-lucide="binary" class="w-4 h-4 text-sky-400"></i>
+                        </div>
+                        <h3 data-i18n="prim9_title" class="text-sm sm:text-base font-bold text-white tracking-tight">Shannon Entropy & Schema Gatekeeper</h3>
+                        <p data-i18n-html="prim9_desc" class="text-xs text-slate-400 leading-relaxed">
+                            Pre-flight RAM analysis checks Shannon entropy (<code class="text-slate-200 font-mono">H &ge; 3.0 bits/char</code>), blocks dictionary passwords, and validates strict types (<code class="text-slate-200 font-mono">port, url, ipv4, json</code>) before spawning child processes.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 10: Cryptographic TTL & K8s Zero-Disk (Neon Purple) -->
+                <div class="reveal spotlight-card card-purple lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 280ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
+                    <div class="scanline-sweep"></div>
+                    <div class="relative z-10 space-y-2">
+                        <div class="flex items-center justify-between text-xs font-mono">
+                            <span data-i18n="prim10_label" class="px-2 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/25 font-semibold text-[10px]">10 / K8S ZERO-DISK</span>
+                            <i data-lucide="container" class="w-4 h-4 text-purple-400"></i>
+                        </div>
+                        <h3 data-i18n="prim10_title" class="text-sm sm:text-base font-bold text-white tracking-tight">Cryptographic TTL & K8s Pipe Bridge</h3>
+                        <p data-i18n-html="prim10_desc" class="text-xs text-slate-400 leading-relaxed">
+                            AAD-authenticated recipient expiry timestamps (<code class="text-slate-200 font-mono">--ttl 24h</code>) paired with zero-disk streaming to <code class="text-slate-200 font-mono">kubectl apply -f -</code> via RAM pipe with zero plaintext parameters in <code class="text-slate-200 font-mono">ps aux</code>.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -681,7 +752,7 @@
                     <thead>
                         <tr class="border-b border-white/10 bg-white/[0.02] font-mono text-[11px] uppercase tracking-wider text-slate-400">
                             <th data-i18n="comp_th_invariant" class="py-4 px-5">Security Invariant</th>
-                            <th class="py-4 px-5 text-white font-bold bg-emerald-500/[0.06] border-x border-emerald-500/20">envshield v0.4</th>
+                            <th class="py-4 px-5 text-white font-bold bg-emerald-500/[0.06] border-x border-emerald-500/20">envshield v0.5</th>
                             <th class="py-4 px-5">Doppler CLI</th>
                             <th class="py-4 px-5">HashiCorp Vault</th>
                             <th class="py-4 px-5">1Password CLI</th>
@@ -748,6 +819,46 @@
                             <td data-i18n="comp_row6_dep" class="py-3.5 px-5 font-mono text-xs text-amber-400">Cluster dependent</td>
                             <td data-i18n="comp_row6_req" class="py-3.5 px-5 font-mono text-xs text-rose-400">Cloud account req.</td>
                             <td data-i18n="comp_row6_env" class="py-3.5 px-5 font-mono text-xs text-emerald-400">100% Autonomous</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.015] transition">
+                            <td data-i18n-html="comp_row7_name" class="py-3.5 px-5 font-semibold text-white">Shamir M-of-N Quorum (<code class="font-mono text-xs text-slate-400">GF(256)</code>)</td>
+                            <td data-i18n="comp_row7_env" class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
+                                Native GF(256) M-of-N
+                            </td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                            <td data-i18n="comp_row7_vault" class="py-3.5 px-5 font-mono text-xs text-amber-400">Server Unseal Only</td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.015] transition">
+                            <td data-i18n-html="comp_row8_name" class="py-3.5 px-5 font-semibold text-white">In-Memory Shannon Entropy Gatekeeper</td>
+                            <td data-i18n="comp_row8_env" class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
+                                Pre-flight &ge; 3.0b + Schema
+                            </td>
+                            <td data-i18n="comp_row8_dop" class="py-3.5 px-5 font-mono text-xs text-slate-400">Cloud dashboard regex</td>
+                            <td data-i18n="comp_row8_vault" class="py-3.5 px-5 font-mono text-xs text-slate-400">Sentinel policy</td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.015] transition">
+                            <td data-i18n-html="comp_row9_name" class="py-3.5 px-5 font-semibold text-white">Cryptographic AAD-Bound TTL Slots</td>
+                            <td data-i18n="comp_row9_env" class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
+                                AAD-Bound ISO-8601
+                            </td>
+                            <td data-i18n="comp_row9_dop" class="py-3.5 px-5 font-mono text-xs text-slate-400">Cloud token expiry</td>
+                            <td data-i18n="comp_row9_vault" class="py-3.5 px-5 font-mono text-xs text-emerald-400">Dynamic Lease Engine</td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                            <td data-i18n="comp_row5_unsupported" class="py-3.5 px-5 font-mono text-xs text-slate-500">Unsupported</td>
+                        </tr>
+                        <tr class="hover:bg-white/[0.015] transition">
+                            <td data-i18n-html="comp_row10_name" class="py-3.5 px-5 font-semibold text-white">Zero-Disk Kubernetes Pipe Bridge</td>
+                            <td data-i18n="comp_row10_env" class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
+                                RAM-to-stdin kubectl
+                            </td>
+                            <td data-i18n="comp_row10_dop" class="py-3.5 px-5 font-mono text-xs text-amber-400">Kubernetes Operator CRD</td>
+                            <td data-i18n="comp_row10_vault" class="py-3.5 px-5 font-mono text-xs text-amber-400">Vault Agent Sidecar</td>
+                            <td data-i18n="comp_row10_onep" class="py-3.5 px-5 font-mono text-xs text-amber-400">1Password Operator</td>
+                            <td data-i18n="comp_row10_sops" class="py-3.5 px-5 font-mono text-xs text-slate-400">External Secrets Operator</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1022,8 +1133,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div>
+
+        </div>
+
     </section>
 
     <!-- 9. TECHNICAL FAQ ACCORDION -->
@@ -1095,7 +1208,7 @@
                         <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
                     <span class="font-bold text-xs text-slate-200 tracking-tight">Envshield Security</span>
-                    <span data-i18n="footer_copy" class="text-xs text-slate-500 font-mono">© 2026 Ahmet Can · v0.4.0 (AGPLv3 / Commercial)</span>
+                    <span data-i18n="footer_copy" class="text-xs text-slate-500 font-mono">© 2026 Ahmet Can · v0.5.0 (AGPLv3 / Commercial)</span>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-6 text-xs text-slate-400 font-mono">
@@ -1162,7 +1275,7 @@
                 nav_license_btn: "Get License",
 
                 hero_audit_badge: "AUDIT PASSED",
-                hero_audit_text: "145/145 invariant tests · RFC 9180 HPKE · mlock()",
+                hero_audit_text: "171/171 invariant tests · Shamir Quorum · RFC 9180 HPKE · mlock()",
                 hero_title: "Zero-disk secret execution for paranoid engineering teams.",
                 hero_desc: "Stop leaving plaintext <code class='text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded'>.env</code> files on developer NVMe drives or coupling production boots to third-party SaaS uptime. Envshield unseals AES-256-GCM envelopes directly into page-locked volatile RAM, sanitizes child PTY streams in flight, and mounts stealth <code class='text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded'>/dev/shm</code> descriptors into Docker.",
                 hero_copy_text: "Copy",
@@ -1242,6 +1355,22 @@
                 prim6_label: "06 / ATOMIC PERSISTENCE",
                 prim6_title: "Crash-Safe Atomic Vault Writes",
                 prim6_desc: "Vault updates write to an isolated sibling descriptor, flush hardware buffers via <code class='text-slate-200 font-mono'>os.fsync()</code>, execute atomic POSIX/NTFS <code class='text-slate-200 font-mono'>os.replace()</code>, and sync the parent directory descriptor.",
+                ent_features_subheading: "Enterprise Defense-in-Depth & Quorum Invariants",
+                ent_features_meta: "Zero C/Rust Dependencies · Pure Python 3.9+ · Zero TOCTOU",
+                prim7_label: "07 / HARDWARE KEYCHAIN",
+                prim7_title: "OS Keychain & Session Caching",
+                prim7_desc: "Caches ephemeral session tokens inside Windows DPAPI (<code class='text-slate-200 font-mono'>CryptProtectData</code>), macOS Keychain, or Linux <code class='text-slate-200 font-mono'>/dev/shm</code> AES-GCM with <code class='text-slate-200 font-mono'>--cache-ttl</code> so developers enter master passwords only once per session.",
+                prim8_label: "08 / SHAMIR QUORUM",
+                prim8_title: "Galois GF(256) M-of-N Quorum",
+                prim8_desc: "Pure Python Galois Field arithmetic (<code class='text-slate-200 font-mono'>0x11B</code>). Split production envelopes across team leads (<code class='text-slate-200 font-mono'>--quorum 3/5</code>). Eliminates insider threat by mathematically requiring M threshold shares to unseal.",
+                prim9_label: "09 / PRE-FLIGHT GATE",
+                prim9_title: "Shannon Entropy & Schema Gatekeeper",
+                prim9_desc: "Pre-flight RAM analysis checks Shannon entropy (<code class='text-slate-200 font-mono'>H &ge; 3.0 bits/char</code>), blocks dictionary passwords, and validates strict types (<code class='text-slate-200 font-mono'>port, url, ipv4, json</code>) before spawning child processes.",
+                prim10_label: "10 / K8S ZERO-DISK",
+                prim10_title: "Cryptographic TTL & K8s Pipe Bridge",
+                prim10_desc: "AAD-authenticated recipient expiry timestamps (<code class='text-slate-200 font-mono'>--ttl 24h</code>) paired with zero-disk streaming to <code class='text-slate-200 font-mono'>kubectl apply -f -</code> via RAM pipe with zero plaintext parameters in <code class='text-slate-200 font-mono'>ps aux</code>.",
+                tab_shamir: "06 · Shamir M-of-N",
+                tab_k8s: "07 · K8s Zero-Disk",
 
                 comp_scramble: "04 // Technical Benchmark",
                 comp_title: "Architectural comparison against industry tools.",
@@ -1275,6 +1404,23 @@
                 comp_row6_api: "API outage halts CI",
                 comp_row6_dep: "Cluster dependent",
                 comp_row6_req: "Cloud account req.",
+                comp_row7_name: "Shamir M-of-N Quorum (<code class='font-mono text-xs text-slate-400'>GF(256)</code>)",
+                comp_row7_env: "Native GF(256) M-of-N",
+                comp_row7_vault: "Server Unseal Only",
+                comp_row8_name: "In-Memory Shannon Entropy Gatekeeper",
+                comp_row8_env: "Pre-flight &ge; 3.0b + Schema",
+                comp_row8_dop: "Cloud dashboard regex",
+                comp_row8_vault: "Sentinel policy",
+                comp_row9_name: "Cryptographic AAD-Bound TTL Slots",
+                comp_row9_env: "AAD-Bound ISO-8601",
+                comp_row9_dop: "Cloud token expiry",
+                comp_row9_vault: "Dynamic Lease Engine",
+                comp_row10_name: "Zero-Disk Kubernetes Pipe Bridge",
+                comp_row10_env: "RAM-to-stdin kubectl",
+                comp_row10_dop: "Kubernetes Operator CRD",
+                comp_row10_vault: "Vault Agent Sidecar",
+                comp_row10_onep: "1Password Operator",
+                comp_row10_sops: "External Secrets Operator",
 
                 calc_scramble: "05 // Infrastructure Economics",
                 calc_title: "Eliminate per-seat SaaS tax & cluster ops.",
@@ -1334,7 +1480,7 @@
                 faq_q4: "When do we need a Commercial License instead of the free AGPLv3 Community Edition?",
                 faq_a4: "Open-source projects, academic teams, and solo indie developers can use the Community Edition free forever under GNU AGPLv3. If your company embeds Envshield inside proprietary closed-source distributions, commercial SaaS infrastructure, or requires legal copyleft immunity, SOC 2 audit reporting, and SLAs, choose the Team ($19/mo) or Enterprise license.",
 
-                footer_copy: "© 2026 Ahmet Can · v0.4.0 (AGPLv3 / Commercial)",
+                footer_copy: "© 2026 Ahmet Can · v0.5.0 (AGPLv3 / Commercial)",
                 footer_eula: "Commercial EULA",
 
                 cmd_title: "Envshield Quick Command Palette",
@@ -1467,6 +1613,22 @@
                 prim6_label: "06 / ATOMİK KALICILIK",
                 prim6_title: "Çökmeye Dayanıklı Atomik Kasa Yazımları",
                 prim6_desc: "Kasa güncellemeleri izole edilmiş bir kardeş tanımlayıcıya yazılır, donanım tamponları <code class='text-slate-200 font-mono'>os.fsync()</code> ile boşaltılır, atomik POSIX/NTFS <code class='text-slate-200 font-mono'>os.replace()</code> çalıştırılır ve üst dizin tanımlayıcısı eşitlenir.",
+                ent_features_subheading: "Kurumsal Derinlemesine Savunma ve Quorum Değişmezleri",
+                ent_features_meta: "Sıfır C/Rust Bağımlılığı · Saf Python 3.9+ · Sıfır TOCTOU",
+                prim7_label: "07 / DONANIM ANAHTARLIĞI",
+                prim7_title: "İşletim Sistemi Anahtarlığı & Oturum Önbellekleme",
+                prim7_desc: "Geliştiricilerin her komutta ana parola girmesini önlemek için geçici oturum jetonlarını <code class='text-slate-200 font-mono'>--cache-ttl</code> ile Windows DPAPI (<code class='text-slate-200 font-mono'>CryptProtectData</code>), macOS Anahtarlığı veya Linux <code class='text-slate-200 font-mono'>/dev/shm</code> AES-GCM içinde önbelleğe alır.",
+                prim8_label: "08 / SHAMIR QUORUM",
+                prim8_title: "Galois GF(256) M-of-N Quorum",
+                prim8_desc: "Dış bağımlılıksız saf Python Galois Cismi aritmetiği (<code class='text-slate-200 font-mono'>0x11B</code>). Üretim kasalarını ekip liderleri arasında dağıtın (<code class='text-slate-200 font-mono'>--quorum 3/5</code>). Açma işlemi için M adet eşik parçayı zorunlu kılarak iç tehditleri matematiksel olarak yok eder.",
+                prim9_label: "09 / BAŞLATMA ÖNCESİ KAPI",
+                prim9_title: "Shannon Entropisi & Şema Bekçisi",
+                prim9_desc: "Alt süreç başlatılmadan önce RAM üzerinde Shannon entropisini (<code class='text-slate-200 font-mono'>H &ge; 3.0 bit/karakter</code>) denetler, zayıf sözlük parolalarını engeller ve katı tipleri (<code class='text-slate-200 font-mono'>port, url, ipv4, json</code>) doğrular.",
+                prim10_label: "10 / K8S SIFIR-DİSK",
+                prim10_title: "Kriptografik TTL & K8s Boru Köprüsü",
+                prim10_desc: "AAD ile kimlik doğrulamalı alıcı son kullanma tarihleri (<code class='text-slate-200 font-mono'>--ttl 24h</code>) ve <code class='text-slate-200 font-mono'>ps aux</code> içinde sıfır düz metin parametreyle RAM borusundan doğrudan <code class='text-slate-200 font-mono'>kubectl apply -f -</code> komutuna sıfır disk akışı sağlar.",
+                tab_shamir: "06 · Shamir M-of-N",
+                tab_k8s: "07 · K8s Sıfır-Disk",
 
                 comp_scramble: "04 // Teknik Kıyaslama",
                 comp_title: "Sektör araçlarıyla mimari kıyaslama.",
@@ -1500,6 +1662,23 @@
                 comp_row6_api: "API kesintisi CI'ı durdurur",
                 comp_row6_dep: "Kümeye bağımlı",
                 comp_row6_req: "Bulut hesabı zorunlu",
+                comp_row7_name: "Shamir M-of-N Quorum (<code class='font-mono text-xs text-slate-400'>GF(256)</code>)",
+                comp_row7_env: "Yerel GF(256) M-of-N",
+                comp_row7_vault: "Yalnızca Sunucu Unseal",
+                comp_row8_name: "Bellek İçi Shannon Entropi Bekçisi",
+                comp_row8_env: "Başlatma öncesi &ge; 3.0b + Şema",
+                comp_row8_dop: "Bulut panel regex",
+                comp_row8_vault: "Sentinel politikası",
+                comp_row9_name: "Kriptografik AAD-Bağlı TTL Yuvaları",
+                comp_row9_env: "AAD-Bağlı ISO-8601",
+                comp_row9_dop: "Bulut jeton süresi",
+                comp_row9_vault: "Dinamik Kiralama Motoru",
+                comp_row10_name: "Sıfır-Disk Kubernetes Boru Köprüsü",
+                comp_row10_env: "RAM'den stdin kubectl",
+                comp_row10_dop: "Kubernetes Operator CRD",
+                comp_row10_vault: "Vault Agent Sidecar",
+                comp_row10_onep: "1Password Operatörü",
+                comp_row10_sops: "External Secrets Operatörü",
 
                 calc_scramble: "05 // Altyapı Ekonomisi",
                 calc_title: "Kullanıcı başına SaaS vergisini ve küme operasyonlarını ortadan kaldırın.",
@@ -1559,7 +1738,7 @@
                 faq_q4: "Ücretsiz AGPLv3 Topluluk Sürümü yerine ne zaman Ticari Lisansa ihtiyacımız olur?",
                 faq_a4: "Açık kaynak projeler, akademik ekipler ve bağımsız geliştiriciler GNU AGPLv3 kapsamında Topluluk Sürümünü sonsuza kadar ücretsiz kullanabilir. Şirketiniz Envshield'ı kapalı kaynaklı ticari dağıtımlara veya SaaS altyapısına gömüyorsa, yasal copyleft muafiyeti, SOC 2 denetim raporlaması ve SLA garantisi istiyorsa Ekip ($19/ay) veya Kurumsal lisansı tercih edin.",
 
-                footer_copy: "© 2026 Ahmet Can · v0.4.0 (AGPLv3 / Ticari)",
+                footer_copy: "© 2026 Ahmet Can · v0.5.0 (AGPLv3 / Ticari)",
                 footer_eula: "Ticari EULA",
 
                 cmd_title: "Envshield Hızlı Komut Paleti",
@@ -1944,7 +2123,7 @@
             pip: "pip install envshield-cli",
             uv: "uv tool install envshield-cli",
             pipx: "pipx install envshield-cli",
-            docker: "docker run --rm -it ghcr.io/amhetcnaa/envshield:0.4.0"
+            docker: "docker run --rm -it ghcr.io/amhetcnaa/envshield:0.5.0"
         };
         function setPkgManager(pkg) {
             document.getElementById('install-cmd').innerText = pkgCommands[pkg];
@@ -2071,6 +2250,31 @@
                         { ts: "+15.4ms", type: "err", text: "[dead]  ERROR: 'DEPRECATED_SENDGRID_KEY' present in vault but unreferenced in codebase" },
                         { ts: "+15.8ms", type: "sky", text: "[ci] Sentinel exited with code 1 (blocked deployment before runtime crash)." }
                     ]
+                },
+                shamir: {
+                    title: "envshield seal .env.production --quorum 3/5",
+                    lines: [
+                        { ts: "+0.03ms", type: "dim", text: "[crypto] Initializing Galois Field GF(2^8) (poly: 0x11B, generator: 0x03)..." },
+                        { ts: "+0.15ms", type: "ok", text: "[shamir] Generated 5 polynomial shares with threshold M=3 (Zero-leakage secret splitting)" },
+                        { ts: "+0.18ms", type: "plain", text: "  ├─ Share #1: ENVSHIELD-SHARE-1-4a8b... (SecOps Director)" },
+                        { ts: "+0.20ms", type: "plain", text: "  ├─ Share #2: ENVSHIELD-SHARE-2-9c12... (Lead SRE)" },
+                        { ts: "+0.22ms", type: "plain", text: "  ├─ Share #3: ENVSHIELD-SHARE-3-f50e... (Release Manager)" },
+                        { ts: "+0.25ms", type: "plain", text: "  ├─ Share #4: ENVSHIELD-SHARE-4-b23d... (CTO)" },
+                        { ts: "+0.28ms", type: "plain", text: "  └─ Share #5: ENVSHIELD-SHARE-5-7e89... (Cold Storage)" },
+                        { ts: "+0.35ms", type: "sky", text: "[envelope] Sealed production vault with Quorum Envelope v2 (Insider Threat: ELIMINATED)" },
+                        { ts: "+0.40ms", type: "ok", text: "[memory] Erased intermediate polynomial coefficients via ctypes.memset(0x00)." }
+                    ]
+                },
+                k8s: {
+                    title: "envshield k8s apply --name production-api --namespace backend",
+                    lines: [
+                        { ts: "+0.02ms", type: "dim", text: "[k8s] Unsealing encrypted envelope directly into page-locked volatile memory..." },
+                        { ts: "+0.12ms", type: "ok", text: "[gatekeeper] Shannon entropy verified (all secrets H >= 3.0 bits/char, 0 weak passwords)" },
+                        { ts: "+0.16ms", type: "dim", text: "[bridge] Constructing Kubernetes v1/Secret manifest in RAM (Zero disk writes)..." },
+                        { ts: "+0.21ms", type: "plain", text: "[stream] Spawning 'kubectl apply -f -' with shell=False and streaming via stdin pipe..." },
+                        { ts: "+1.85ms", type: "sky", text: "secret/production-api created (ps aux & command argv contain 0 plaintext secrets)" },
+                        { ts: "+1.90ms", type: "ok", text: "[teardown] stdin closed, memory zero-wiped, pipeline completed in 1.90ms." }
+                    ]
                 }
             },
             tr: {
@@ -2127,6 +2331,31 @@
                         { ts: "+15.4ms", type: "err", text: "[dead]  HATA: 'DEPRECATED_SENDGRID_KEY' kasada mevcut ama kodda kullanılmıyor" },
                         { ts: "+15.8ms", type: "sky", text: "[ci] Sentinel çıkış kodu 1 (çalışma zamanı çöküşü öncesi dağıtım engellendi)." }
                     ]
+                },
+                shamir: {
+                    title: "envshield seal .env.production --quorum 3/5",
+                    lines: [
+                        { ts: "+0.03ms", type: "dim", text: "[crypto] Galois Cismi GF(2^8) başlatılıyor (polinom: 0x11B, üreteç: 0x03)..." },
+                        { ts: "+0.15ms", type: "ok", text: "[shamir] M=3 eşikli 5 polinom parçası üretildi (Sıfır sızıntılı gizli paylaşım)" },
+                        { ts: "+0.18ms", type: "plain", text: "  ├─ Parça #1: ENVSHIELD-SHARE-1-4a8b... (SecOps Lideri)" },
+                        { ts: "+0.20ms", type: "plain", text: "  ├─ Parça #2: ENVSHIELD-SHARE-2-9c12... (Kıdemli SRE)" },
+                        { ts: "+0.22ms", type: "plain", text: "  ├─ Parça #3: ENVSHIELD-SHARE-3-f50e... (Sürüm Yöneticisi)" },
+                        { ts: "+0.25ms", type: "plain", text: "  ├─ Parça #4: ENVSHIELD-SHARE-4-b23d... (CTO)" },
+                        { ts: "+0.28ms", type: "plain", text: "  └─ Parça #5: ENVSHIELD-SHARE-5-7e89... (Soğuk Depo)" },
+                        { ts: "+0.35ms", type: "sky", text: "[envelope] Üretim kasası Quorum Zarfı v2 ile mühürlendi (İç Tehdit: ENGELLENDİ)" },
+                        { ts: "+0.40ms", type: "ok", text: "[memory] Tüm ara polinom katsayıları ctypes.memset(0x00) ile sıfırlandı." }
+                    ]
+                },
+                k8s: {
+                    title: "envshield k8s apply --name production-api --namespace backend",
+                    lines: [
+                        { ts: "+0.02ms", type: "dim", text: "[k8s] Şifreli zarf doğrudan sayfa kilitli uçucu belleğe açılıyor..." },
+                        { ts: "+0.12ms", type: "ok", text: "[gatekeeper] Shannon entropisi doğrulandı (tüm sırlar H >= 3.0 bit/karakter, 0 zayıf parola)" },
+                        { ts: "+0.16ms", type: "dim", text: "[bridge] Kubernetes v1/Secret manifesti RAM'de oluşturuluyor (Diske sıfır yazım)..." },
+                        { ts: "+0.21ms", type: "plain", text: "[stream] shell=False ile 'kubectl apply -f -' başlatıldı, veri stdin borusundan akıtılıyor..." },
+                        { ts: "+1.85ms", type: "sky", text: "secret/production-api created (ps aux ve komut argümanlarında sıfır düz metin sır)" },
+                        { ts: "+1.90ms", type: "ok", text: "[teardown] stdin kapatıldı, bellek sıfırlandı, boru hattı 1.90ms içinde tamamlandı." }
+                    ]
                 }
             }
         };
@@ -2159,7 +2388,7 @@
             const titleEl = document.getElementById('terminal-tab-title');
             if (titleEl) titleEl.innerText = s.title;
 
-            ['run', 'docker', 'team', 'audit', 'sentinel'].forEach(k => {
+            ['run', 'docker', 'team', 'audit', 'sentinel', 'shamir', 'k8s'].forEach(k => {
                 const btn = document.getElementById('tab-' + k);
                 if (btn) {
                     btn.className = (k === key)
@@ -2198,8 +2427,8 @@
                 appendTerminalLine("0.01ms", "ok", helpMsg);
             } else if (cmd === 'status' || cmd === 'durum') {
                 const statMsg = currentLang === 'tr'
-                    ? "Envshield v0.4.0 · mlock() Sayfa Alanı: AKTİF · Kasa: .env.enc (AES-256-GCM v2) · Bütünlük: TAMAM"
-                    : "Envshield v0.4.0 · mlock() Page Arena: ACTIVE · Vault: .env.enc (AES-256-GCM v2) · Integrity: OK";
+                    ? "Envshield v0.5.0 · mlock() Sayfa Alanı: AKTİF · Kasa: .env.enc (AES-256-GCM v2) · Bütünlük: TAMAM"
+                    : "Envshield v0.5.0 · mlock() Page Arena: ACTIVE · Vault: .env.enc (AES-256-GCM v2) · Integrity: OK";
                 appendTerminalLine("0.04ms", "ok", statMsg);
             } else if (cmd.startsWith('seal') || cmd.startsWith('muhur') || cmd.startsWith('mühür')) {
                 const sealMsg = currentLang === 'tr'
@@ -2212,6 +2441,20 @@
                 switchTerminalDemo('docker');
             } else if (cmd.startsWith('audit') || cmd.startsWith('denetim')) {
                 switchTerminalDemo('audit');
+            } else if (cmd.startsWith('shamir') || cmd.startsWith('quorum')) {
+                switchTerminalDemo('shamir');
+            } else if (cmd.startsWith('k8s') || cmd.startsWith('kube')) {
+                switchTerminalDemo('k8s');
+            } else if (cmd.startsWith('schema') || cmd.startsWith('sema') || cmd.startsWith('şema')) {
+                const schemaMsg = currentLang === 'tr'
+                    ? "✓ Shannon Entropi Denetleyicisi: 14 sır incelendi (Ort: 4.12 bit/karakter, 0 zayıf parola, katı şema kuralları karşılandı)."
+                    : "✓ Shannon Entropy Gatekeeper: 14 secrets verified (Avg: 4.12 bits/char, 0 weak passwords, strict schema validated).";
+                appendTerminalLine("0.08ms", "ok", schemaMsg);
+            } else if (cmd.startsWith('keychain') || cmd.startsWith('dpapi')) {
+                const kcMsg = currentLang === 'tr'
+                    ? "✓ İşletim Sistemi Anahtarlığı: Oturum DPAPI / /dev/shm üzerinde önbelleğe alındı (Kalan TTL: 894s)."
+                    : "✓ OS Hardware Keychain: Session token cached via DPAPI / /dev/shm (Remaining TTL: 894s).";
+                appendTerminalLine("0.04ms", "ok", kcMsg);
             } else {
                 const defMsg = currentLang === 'tr'
                     ? `Kalkan altında yürütüldü: '${escapeHtml(rawCmd)}'. 'help' veya 'status' yazmayı deneyin.`
