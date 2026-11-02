@@ -22,13 +22,15 @@
             theme: {
                 extend: {
                     colors: {
-                        canvas: '#050609',
-                        obsidian: '#090b10',
-                        surface: '#0d1017',
-                        panel: '#121620',
-                        card: '#161b26',
-                        cyan: { 400: '#38bdf8', 500: '#0ea5e9' },
-                        emerald: { 400: '#34d399', 500: '#10b981' }
+                        canvas: '#0A0B0E',
+                        obsidian: '#0D0F14',
+                        surface: '#12141A',
+                        panel: '#1A1D24',
+                        card: '#12141A',
+                        sage: { 400: '#5FB88D', 500: '#4D9E78' },
+                        amber: { 400: '#E5A54B', 500: '#D4943A' },
+                        terracotta: { 400: '#D96E5C', 500: '#C85A48' },
+                        stone: '#F2F4F8'
                     },
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
@@ -47,14 +49,9 @@
     <!-- Top Laser Scroll Progress Bar -->
     <div id="scroll-progress"></div>
 
-    <!-- Ambient Aurora Gradient Mesh, Radial Lighting & Grid Matrix -->
-    <div class="aurora-backdrop">
-        <div class="aurora-orb aurora-orb-emerald"></div>
-        <div class="aurora-orb aurora-orb-cyan"></div>
-        <div class="aurora-orb aurora-orb-indigo"></div>
-        <div class="aurora-orb aurora-orb-teal"></div>
+    <!-- Background Grid Matrix -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div class="absolute inset-0 bg-grid-matrix"></div>
-        <div id="cursor-ambient-glow" class="absolute w-[750px] h-[750px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-tr from-emerald-500/[0.11] via-sky-500/[0.09] to-indigo-500/[0.08] blur-[120px] transition-transform duration-300 ease-out" style="left: 50%; top: 25%;"></div>
     </div>
 
     <!-- Floating Island Glass Dock Navbar -->
@@ -74,7 +71,7 @@
                 </a>
                 <span class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    v0.4.0
+                    v0.5.0
                 </span>
             </div>
 
@@ -107,7 +104,7 @@
                 <a href="https://github.com/AmhetCnaa/Envshield" target="_blank" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-200 text-xs font-medium transition">
                     <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
                     <span class="hidden md:inline">GitHub</span>
-                    <span class="font-mono text-[11px] text-slate-400 border-l border-white/10 pl-1.5">640</span>
+                    <span class="font-mono text-[11px] text-slate-400 border-l border-white/10 pl-1.5">v0.5</span>
                 </a>
 
                 <a href="#pricing" class="btn-primary px-3.5 py-1.5 text-xs inline-flex items-center gap-1">
@@ -146,7 +143,7 @@
                         </p>
 
                         <!-- Interactive Package Manager Installer Widget -->
-                        <div class="reveal rounded-xl border border-white/10 bg-[#050608] overflow-hidden shadow-2xl" style="--delay: 260ms;">
+                        <div class="reveal rounded-xl border border-white/10 bg-[#0D0F14] overflow-hidden shadow-2xl" style="--delay: 260ms;">
                             <div class="flex items-center justify-between px-3 py-2 bg-white/[0.02] border-b border-white/[0.06] text-[11px] font-mono">
                                 <div class="flex items-center gap-1">
                                     <button onclick="setPkgManager('pip')" id="pkg-pip" class="px-2.5 py-1 rounded-md bg-white/10 text-white font-semibold transition">pip</button>
@@ -183,9 +180,8 @@
 
                     <!-- Right Column: VISUAL INTERACTIVE LASER CIRCUIT & MAGNETIC NODE MATRIX -->
                     <div class="lg:col-span-6 reveal" style="--delay: 200ms;">
-                        <div id="hero-visual-card" class="spotlight-card relative h-[430px] rounded-2xl bg-[#04060a] border border-white/10 overflow-hidden select-none cursor-crosshair shadow-2xl" onmousemove="handleHeroTilt(event, this)" onmouseleave="resetHeroTilt(this)">
+                        <div id="hero-visual-card" class="spotlight-card relative h-[430px] rounded-2xl bg-[#0D0F14] border border-white/10 overflow-hidden select-none cursor-crosshair shadow-2xl" onmousemove="handleHeroTilt(event, this)" onmouseleave="resetHeroTilt(this)">
                             <!-- Scanline sweep on hover -->
-                            <div class="scanline-sweep"></div>
 
                             <!-- Interactive Magnetic Particle & Circuit Canvas -->
                             <canvas id="circuit-canvas" class="absolute inset-0 w-full h-full z-0"></canvas>
@@ -198,7 +194,7 @@
                                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                                         <span data-i18n="hero_hud_topology" class="text-slate-200 font-semibold">ZERO-DISK SIGNAL TOPOLOGY</span>
                                     </div>
-                                    <span id="cursor-coords" class="px-2.5 py-1 rounded-md bg-black/70 border border-white/10 text-sky-400">
+                                    <span id="cursor-coords" class="px-2.5 py-1 rounded-md bg-black/70 border border-white/10 text-[#4D9E78]">
                                         X: 0480 · Y: 0210
                                     </span>
                                 </div>
@@ -213,8 +209,8 @@
 
                                         <!-- Animated Laser Signal Beams -->
                                         <path d="M 65 85 L 185 85" stroke="#10b981" stroke-width="2" class="laser-beam"/>
-                                        <path d="M 250 85 L 365 40" stroke="#38bdf8" stroke-width="2" class="laser-beam"/>
-                                        <path d="M 250 85 L 365 130" stroke="#818cf8" stroke-width="2" class="laser-beam"/>
+                                        <path d="M 250 85 L 365 40" stroke="#D4943A" stroke-width="2" class="laser-beam"/>
+                                        <path d="M 250 85 L 365 130" stroke="#4D9E78" stroke-width="2" class="laser-beam"/>
 
                                         <!-- Node 1: Sealed Envelope (.env.enc) -->
                                         <g transform="translate(15, 55)">
@@ -234,14 +230,14 @@
                                         <!-- Node 3: PTY Stream Sanitizer -->
                                         <g transform="translate(365, 12)">
                                             <rect width="118" height="54" rx="10" fill="#090d16" stroke="rgba(56,189,248,0.45)" stroke-width="1.2"/>
-                                            <text x="59" y="24" text-anchor="middle" fill="#38bdf8" font-family="JetBrains Mono" font-size="9" font-weight="600">PTY REDACTOR</text>
+                                            <text x="59" y="24" text-anchor="middle" fill="#D4943A" font-family="JetBrains Mono" font-size="9" font-weight="600">PTY REDACTOR</text>
                                             <text x="59" y="39" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="8">[REDACTED:KEY]</text>
                                         </g>
 
                                         <!-- Node 4: Docker Stealth /dev/shm -->
                                         <g transform="translate(365, 102)">
                                             <rect width="118" height="54" rx="10" fill="#090d16" stroke="rgba(129,140,248,0.45)" stroke-width="1.2"/>
-                                            <text x="59" y="24" text-anchor="middle" fill="#818cf8" font-family="JetBrains Mono" font-size="9" font-weight="600">/dev/shm MOUNT</text>
+                                            <text x="59" y="24" text-anchor="middle" fill="#4D9E78" font-family="JetBrains Mono" font-size="9" font-weight="600">/dev/shm MOUNT</text>
                                             <text x="59" y="39" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono" font-size="8">0o400 · 0 Inspect</text>
                                         </g>
                                     </svg>
@@ -266,12 +262,12 @@
                     </div>
                     <div class="reveal space-y-1" style="--delay: 200ms;">
                         <div class="text-[11px] text-slate-500" data-scramble="02 // UNSEAL LATENCY" data-i18n-scramble="telemetry_2_scramble">02 // UNSEAL LATENCY</div>
-                        <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">0.14 ms <span class="text-xs font-normal text-sky-400">p99</span></div>
+                        <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">0.14 ms <span class="text-xs font-normal text-slate-400">p99</span></div>
                         <div data-i18n="telemetry_2_desc" class="text-xs text-slate-400 font-sans">Local AES-256-GCM + X25519 HKDF</div>
                     </div>
                     <div class="reveal space-y-1" style="--delay: 300ms;">
                         <div class="text-[11px] text-slate-500" data-scramble="03 // PTY STREAM PROXY" data-i18n-scramble="telemetry_3_scramble">03 // PTY STREAM PROXY</div>
-                        <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">4096 B <span data-i18n="telemetry_3_badge" class="text-xs font-normal text-indigo-400">lookahead</span></div>
+                        <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">4096 B <span data-i18n="telemetry_3_badge" class="text-xs font-normal text-slate-400">lookahead</span></div>
                         <div data-i18n="telemetry_3_desc" class="text-xs text-slate-400 font-sans">UTF-8 boundary & Base64 leak masking</div>
                     </div>
                     <div class="reveal space-y-1" style="--delay: 400ms;">
@@ -305,7 +301,6 @@
 
                 <!-- Bento Card 1 (2 Cols): Interactive Volatile RAM Page Inspector -->
                 <div class="reveal spotlight-card card-emerald lg:col-span-2 p-5 sm:p-6 flex flex-col justify-between" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
                             <span class="inline-flex items-center gap-1.5 text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-md">
@@ -321,7 +316,7 @@
                     </div>
 
                     <!-- Interactive Live Hex Memory Dump Widget -->
-                    <div class="relative z-10 mt-6 rounded-xl bg-[#05070a] border border-white/10 p-4 font-mono text-xs">
+                    <div class="relative z-10 mt-6 rounded-xl bg-[#0D0F14] border border-white/10 p-4 font-mono text-xs">
                         <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-white/[0.06]">
                             <div class="flex items-center gap-2">
                                 <span id="mem-badge" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold text-[10px]">PAGE LOCKED IN RAM</span>
@@ -340,10 +335,9 @@
 
                 <!-- Bento Card 2 (1 Col): Sliding-Window PTY Stream Redactor -->
                 <div class="reveal spotlight-card card-amber p-5 sm:p-6 flex flex-col justify-between" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
-                            <span class="inline-flex items-center gap-1.5 text-xs font-mono text-sky-400 bg-sky-500/10 border border-sky-500/20 px-2.5 py-0.5 rounded-md">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-mono text-sky-400 bg-[#4D9E78]/10 border border-[#4D9E78]/20 px-2.5 py-0.5 rounded-md">
                                 <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
                                 redactor.py
                             </span>
@@ -356,16 +350,16 @@
                     </div>
 
                     <!-- Visual Stream Chunk Diagram -->
-                    <div class="relative z-10 mt-6 rounded-xl bg-[#05070a] border border-white/10 p-3.5 font-mono text-[11px] space-y-2.5">
+                    <div class="relative z-10 mt-6 rounded-xl bg-[#0D0F14] border border-white/10 p-3.5 font-mono text-[11px] space-y-2.5">
                         <div class="text-slate-500 flex justify-between">
                             <span data-i18n="bento2_raw_chunk">RAW PIPE CHUNK #14</span>
                             <span data-i18n="bento2_split" class="text-amber-400">SPLIT DETECTED</span>
                         </div>
                         <div class="p-2 rounded bg-white/[0.02] border border-white/5 text-slate-400 truncate">
-                            Auth: Bearer <span class="text-rose-400 line-through">sk_live_51N9xK2...</span>
+                            Auth: Bearer <span class="text-[#C85A48] line-through">sk_live_51N9xK2...</span>
                         </div>
                         <div class="flex items-center justify-center text-slate-500 text-[10px] gap-1">
-                            <i data-lucide="arrow-down" class="w-3 h-3 text-sky-400"></i>
+                            <i data-lucide="arrow-down" class="w-3 h-3 text-[#4D9E78]"></i>
                             <span data-i18n="bento2_flush">finditer() + lookahead flush</span>
                         </div>
                         <div class="p-2 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 truncate">
@@ -376,10 +370,9 @@
 
                 <!-- Bento Card 3 (1 Col): Docker Stealth /dev/shm Bridge -->
                 <div class="reveal spotlight-card card-cyan p-5 sm:p-6 flex flex-col justify-between" style="--delay: 300ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
-                            <span class="inline-flex items-center gap-1.5 text-xs font-mono text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-md">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-mono text-[#4D9E78] bg-[#4D9E78]/10 border border-[#4D9E78]/20 px-2.5 py-0.5 rounded-md">
                                 <i data-lucide="container" class="w-3.5 h-3.5"></i>
                                 docker_bridge.py
                             </span>
@@ -392,7 +385,7 @@
                     </div>
 
                     <!-- Inspect Comparison Box -->
-                    <div class="relative z-10 mt-6 rounded-xl bg-[#05070a] border border-white/10 p-3.5 font-mono text-[11px] space-y-2">
+                    <div class="relative z-10 mt-6 rounded-xl bg-[#0D0F14] border border-white/10 p-3.5 font-mono text-[11px] space-y-2">
                         <div class="flex items-center justify-between text-slate-400">
                             <span>$ docker inspect app | jq .Env</span>
                             <span data-i18n="bento3_leaks" class="text-emerald-400">0 LEAKS</span>
@@ -410,7 +403,6 @@
 
                 <!-- Bento Card 4 (2 Cols): Zero-Server GitHub SSH Envelope + Canary Honeypot -->
                 <div class="reveal spotlight-card card-purple lg:col-span-2 p-5 sm:p-6 flex flex-col justify-between" style="--delay: 400ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-3">
                         <div class="flex items-center justify-between">
                             <span class="inline-flex items-center gap-1.5 text-xs font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-md">
@@ -427,7 +419,7 @@
 
                     <!-- Interactive Canary Trigger & Recipient Matrix -->
                     <div class="relative z-10 mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
-                        <div class="rounded-xl bg-[#05070a] border border-white/10 p-3.5 space-y-2">
+                        <div class="rounded-xl bg-[#0D0F14] border border-white/10 p-3.5 space-y-2">
                             <div class="text-[11px] text-slate-500 flex justify-between">
                                 <span data-i18n="bento4_recipients">AUTHORIZED ENVELOPE RECIPIENTS</span>
                                 <span class="text-emerald-400">AAD BOUND</span>
@@ -439,16 +431,16 @@
                                 </div>
                                 <div class="flex items-center justify-between p-1.5 rounded bg-white/[0.02]">
                                     <span class="text-slate-200">@sarah (ssh-rsa-4096)</span>
-                                    <span class="text-sky-400">RSA_OAEP_256</span>
+                                    <span class="text-[#4D9E78]">RSA_OAEP_256</span>
                                 </div>
                                 <div class="flex items-center justify-between p-1.5 rounded bg-white/[0.02]">
                                     <span class="text-slate-200">arn:aws:kms:eu-central-1</span>
-                                    <span class="text-indigo-400">OIDC_KMS</span>
+                                    <span class="text-[#4D9E78]">OIDC_KMS</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="rounded-xl bg-[#05070a] border border-white/10 p-3.5 flex flex-col justify-between space-y-2">
+                        <div class="rounded-xl bg-[#0D0F14] border border-white/10 p-3.5 flex flex-col justify-between space-y-2">
                             <div class="flex items-center justify-between">
                                 <span data-i18n="bento4_honeypot" class="text-[11px] text-slate-500">HONEYPOT DECOY SIMULATOR</span>
                                 <button onclick="triggerCanaryDemo()" data-i18n="bento4_btn_test" class="px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-[10px] font-semibold transition">
@@ -471,7 +463,7 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="02 // Live Runtime Verification" data-i18n-scramble="demo_scramble">02 // Live Runtime Verification</div>
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-[#4D9E78] mb-2" data-scramble="02 // Live Runtime Verification" data-i18n-scramble="demo_scramble">02 // Live Runtime Verification</div>
                     <h2 data-kinetic data-kinetic-id="demo_title" class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                         Interactive CLI & execution trace.
                     </h2>
@@ -482,9 +474,9 @@
             </div>
 
             <!-- Terminal Window -->
-            <div class="reveal rounded-2xl bg-[#050608] border border-white/10 shadow-2xl overflow-hidden font-mono text-xs sm:text-sm" style="--delay: 200ms;">
+            <div class="reveal rounded-2xl bg-[#0D0F14] border border-white/10 shadow-2xl overflow-hidden font-mono text-xs sm:text-sm" style="--delay: 200ms;">
                 <!-- Window Top Bar & Segmented Tabs -->
-                <div class="bg-[#0b0e14] px-4 py-3 border-b border-white/[0.07] flex flex-wrap items-center justify-between gap-3">
+                <div class="bg-[#0D0F14] px-4 py-3 border-b border-white/[0.07] flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-white/15"></span>
                         <span class="w-2.5 h-2.5 rounded-full bg-white/15"></span>
@@ -509,7 +501,7 @@
                 </div>
 
                 <!-- Interactive Command Input Prompt -->
-                <form onsubmit="handleTerminalSubmit(event)" class="bg-[#07090e] px-6 py-3 border-t border-white/[0.06] flex items-center gap-2.5">
+                <form onsubmit="handleTerminalSubmit(event)" class="bg-[#0D0F14] px-6 py-3 border-t border-white/[0.06] flex items-center gap-2.5">
                     <span class="text-emerald-400 font-bold select-none">envshield@vault:~$</span>
                     <input type="text" id="terminal-input" data-i18n-placeholder="terminal_placeholder" class="flex-1 bg-transparent text-xs sm:text-sm text-white placeholder-slate-600 focus:outline-none font-mono" placeholder="Type a command (e.g. help, status, seal, audit, clear) and press Enter...">
                     <button type="submit" data-i18n="terminal_run_btn" class="px-2.5 py-1 rounded bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-[11px] text-slate-300 transition">
@@ -518,7 +510,7 @@
                 </form>
 
                 <!-- Terminal Status Footer -->
-                <div class="bg-[#080a0f] px-6 py-2.5 border-t border-white/[0.05] flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-500">
+                <div class="bg-[#0D0F14] px-6 py-2.5 border-t border-white/[0.05] flex flex-wrap items-center justify-between gap-4 text-[11px] text-slate-500">
                     <div class="flex items-center gap-4">
                         <span class="inline-flex items-center gap-1.5 text-emerald-400">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
@@ -554,7 +546,6 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 <!-- Top Primary 1: Cloud KMS Bridge (7 Cols - Cyber Emerald) -->
                 <div class="reveal spotlight-card card-emerald lg:col-span-7 p-5 sm:p-6 flex flex-col justify-between" style="--delay: 80ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-2.5">
                         <div class="flex items-center justify-between text-xs font-mono">
                             <span data-i18n="prim1_label" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-semibold text-[10px]">01 / CLOUD KMS BRIDGE</span>
@@ -571,7 +562,7 @@
                             Local: 0.14ms · Offline SSH
                         </span>
                         <span class="text-slate-500 hidden sm:inline">↔</span>
-                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/40 text-sky-300 border border-sky-500/20">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/40 text-[#4D9E78] border border-[#4D9E78]/20">
                             CI/CD: IAM OIDC Zero-Key
                         </span>
                     </div>
@@ -579,7 +570,6 @@
 
                 <!-- Top Primary 2: Self-Healing Hook (5 Cols - Laser Amber) -->
                 <div class="reveal spotlight-card card-amber lg:col-span-5 p-5 sm:p-6 flex flex-col justify-between" style="--delay: 160ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-2.5">
                         <div class="flex items-center justify-between text-xs font-mono">
                             <span data-i18n="prim2_label" class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/25 font-semibold text-[10px]">02 / SELF-HEALING HOOK</span>
@@ -591,7 +581,7 @@
                         </p>
                     </div>
                     <div class="relative z-10 mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between font-mono text-[11px] bg-black/40 px-2.5 py-1 rounded border border-amber-500/20">
-                        <span class="text-rose-400 line-through text-[10px]">staged .env</span>
+                        <span class="text-[#C85A48] line-through text-[10px]">staged .env</span>
                         <span class="text-amber-400">➜</span>
                         <span class="text-amber-300 font-bold">[SEAL]</span>
                         <span class="text-amber-400">➜</span>
@@ -602,11 +592,10 @@
                 <!-- Bottom 4 Compact Cards: 3 cols each (12 cols total) -->
                 <!-- Card 3: RAM-Disk Editor (Cobalt Indigo) -->
                 <div class="reveal spotlight-card card-indigo lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 240ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-2">
                         <div class="flex items-center justify-between text-xs font-mono">
-                            <span data-i18n="prim3_label" class="px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-400 border border-indigo-500/25 font-semibold text-[10px]">03 / ZERO-DISK EDIT</span>
-                            <i data-lucide="file-lock-2" class="w-4 h-4 text-indigo-400"></i>
+                            <span data-i18n="prim3_label" class="px-2 py-0.5 rounded bg-[#4D9E78]/15 text-[#4D9E78] border border-[#4D9E78]/25 font-semibold text-[10px]">03 / ZERO-DISK EDIT</span>
+                            <i data-lucide="file-lock-2" class="w-4 h-4 text-[#4D9E78]"></i>
                         </div>
                         <h3 data-i18n="prim3_title" class="text-sm sm:text-base font-bold text-white tracking-tight">RAM-Disk Sandboxed Editing</h3>
                         <p data-i18n-html="prim3_desc" class="text-xs text-slate-400 leading-relaxed">
@@ -617,11 +606,10 @@
 
                 <!-- Card 4: HMAC Audit Ledger (Electric Cyan) -->
                 <div class="reveal spotlight-card card-cyan lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 300ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-2">
                         <div class="flex items-center justify-between text-xs font-mono">
-                            <span data-i18n="prim4_label" class="px-2 py-0.5 rounded bg-sky-500/15 text-sky-400 border border-sky-500/25 font-semibold text-[10px]">04 / AUDIT LEDGER</span>
-                            <i data-lucide="file-check-2" class="w-4 h-4 text-sky-400"></i>
+                            <span data-i18n="prim4_label" class="px-2 py-0.5 rounded bg-[#4D9E78]/15 text-sky-400 border border-[#4D9E78]/25 font-semibold text-[10px]">04 / AUDIT LEDGER</span>
+                            <i data-lucide="file-check-2" class="w-4 h-4 text-[#4D9E78]"></i>
                         </div>
                         <h3 data-i18n="prim4_title" class="text-sm sm:text-base font-bold text-white tracking-tight">HMAC-SHA256 Chained Audit Log</h3>
                         <p data-i18n-html="prim4_desc" class="text-xs text-slate-400 leading-relaxed">
@@ -632,11 +620,10 @@
 
                 <!-- Card 5: Static AST Sentinel (Crimson Rose) -->
                 <div class="reveal spotlight-card card-rose lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 360ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-2">
                         <div class="flex items-center justify-between text-xs font-mono">
-                            <span data-i18n="prim5_label" class="px-2 py-0.5 rounded bg-rose-500/15 text-rose-400 border border-rose-500/25 font-semibold text-[10px]">05 / AST SENTINEL</span>
-                            <i data-lucide="radar" class="w-4 h-4 text-rose-400"></i>
+                            <span data-i18n="prim5_label" class="px-2 py-0.5 rounded bg-[#C85A48]/15 text-[#C85A48] border border-[#C85A48]/25 font-semibold text-[10px]">05 / AST SENTINEL</span>
+                            <i data-lucide="radar" class="w-4 h-4 text-[#C85A48]"></i>
                         </div>
                         <h3 data-i18n="prim5_title" class="text-sm sm:text-base font-bold text-white tracking-tight">Secret Drift & Dead Key Detection</h3>
                         <p data-i18n="prim5_desc" class="text-xs text-slate-400 leading-relaxed">
@@ -647,11 +634,10 @@
 
                 <!-- Card 6: Crash-Safe Writes (Neon Purple) -->
                 <div class="reveal spotlight-card card-purple lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 420ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-2">
                         <div class="flex items-center justify-between text-xs font-mono">
-                            <span data-i18n="prim6_label" class="px-2 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/25 font-semibold text-[10px]">06 / ATOMIC WRITES</span>
-                            <i data-lucide="hard-drive" class="w-4 h-4 text-purple-400"></i>
+                            <span data-i18n="prim6_label" class="px-2 py-0.5 rounded bg-[#4D9E78]/15 text-[#4D9E78] border border-[#4D9E78]/25 font-semibold text-[10px]">06 / ATOMIC WRITES</span>
+                            <i data-lucide="hard-drive" class="w-4 h-4 text-[#4D9E78]"></i>
                         </div>
                         <h3 data-i18n="prim6_title" class="text-sm sm:text-base font-bold text-white tracking-tight">Crash-Safe Atomic Vault Writes</h3>
                         <p data-i18n-html="prim6_desc" class="text-xs text-slate-400 leading-relaxed">
@@ -671,7 +657,6 @@
 
                 <!-- Card 7: OS Keychain & Session Caching (Cyber Emerald) -->
                 <div class="reveal spotlight-card card-emerald lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-2">
                         <div class="flex items-center justify-between text-xs font-mono">
                             <span data-i18n="prim7_label" class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-semibold text-[10px]">07 / HARDWARE KEYCHAIN</span>
@@ -686,7 +671,6 @@
 
                 <!-- Card 8: Shamir M-of-N Quorum (Laser Amber) -->
                 <div class="reveal spotlight-card card-amber lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 160ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-2">
                         <div class="flex items-center justify-between text-xs font-mono">
                             <span data-i18n="prim8_label" class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/25 font-semibold text-[10px]">08 / SHAMIR QUORUM</span>
@@ -701,11 +685,10 @@
 
                 <!-- Card 9: Pre-Flight Schema & Shannon Entropy (Electric Cyan) -->
                 <div class="reveal spotlight-card card-cyan lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-2">
                         <div class="flex items-center justify-between text-xs font-mono">
-                            <span data-i18n="prim9_label" class="px-2 py-0.5 rounded bg-sky-500/15 text-sky-400 border border-sky-500/25 font-semibold text-[10px]">09 / PRE-FLIGHT GATE</span>
-                            <i data-lucide="binary" class="w-4 h-4 text-sky-400"></i>
+                            <span data-i18n="prim9_label" class="px-2 py-0.5 rounded bg-[#4D9E78]/15 text-sky-400 border border-[#4D9E78]/25 font-semibold text-[10px]">09 / PRE-FLIGHT GATE</span>
+                            <i data-lucide="binary" class="w-4 h-4 text-[#4D9E78]"></i>
                         </div>
                         <h3 data-i18n="prim9_title" class="text-sm sm:text-base font-bold text-white tracking-tight">Shannon Entropy & Schema Gatekeeper</h3>
                         <p data-i18n-html="prim9_desc" class="text-xs text-slate-400 leading-relaxed">
@@ -716,11 +699,10 @@
 
                 <!-- Card 10: Cryptographic TTL & K8s Zero-Disk (Neon Purple) -->
                 <div class="reveal spotlight-card card-purple lg:col-span-3 p-5 flex flex-col justify-between space-y-2.5" style="--delay: 280ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-2">
                         <div class="flex items-center justify-between text-xs font-mono">
-                            <span data-i18n="prim10_label" class="px-2 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/25 font-semibold text-[10px]">10 / K8S ZERO-DISK</span>
-                            <i data-lucide="container" class="w-4 h-4 text-purple-400"></i>
+                            <span data-i18n="prim10_label" class="px-2 py-0.5 rounded bg-[#4D9E78]/15 text-[#4D9E78] border border-[#4D9E78]/25 font-semibold text-[10px]">10 / K8S ZERO-DISK</span>
+                            <i data-lucide="container" class="w-4 h-4 text-[#4D9E78]"></i>
                         </div>
                         <h3 data-i18n="prim10_title" class="text-sm sm:text-base font-bold text-white tracking-tight">Cryptographic TTL & K8s Pipe Bridge</h3>
                         <p data-i18n-html="prim10_desc" class="text-xs text-slate-400 leading-relaxed">
@@ -737,7 +719,7 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="04 // Technical Benchmark" data-i18n-scramble="comp_scramble">04 // Technical Benchmark</div>
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-[#4D9E78] mb-2" data-scramble="04 // Technical Benchmark" data-i18n-scramble="comp_scramble">04 // Technical Benchmark</div>
                     <h2 data-kinetic data-kinetic-id="comp_title" class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                         Architectural comparison against industry tools.
                     </h2>
@@ -747,7 +729,7 @@
                 </p>
             </div>
 
-            <div class="reveal overflow-x-auto rounded-2xl border border-white/10 bg-[#07090d] shadow-2xl" style="--delay: 200ms;">
+            <div class="reveal overflow-x-auto rounded-2xl border border-white/10 bg-[#0D0F14] shadow-2xl" style="--delay: 200ms;">
                 <table class="w-full text-left text-xs sm:text-sm border-collapse">
                     <thead>
                         <tr class="border-b border-white/10 bg-white/[0.02] font-mono text-[11px] uppercase tracking-wider text-slate-400">
@@ -768,7 +750,7 @@
                             <td data-i18n="comp_row1_heap" class="py-3.5 px-5 font-mono text-xs text-slate-400">Standard heap</td>
                             <td data-i18n="comp_row1_srv" class="py-3.5 px-5 font-mono text-xs text-emerald-400">Supported (Server)</td>
                             <td data-i18n="comp_row1_heap" class="py-3.5 px-5 font-mono text-xs text-slate-400">Standard heap</td>
-                            <td data-i18n="comp_row1_disk" class="py-3.5 px-5 font-mono text-xs text-rose-400">Often writes disk</td>
+                            <td data-i18n="comp_row1_disk" class="py-3.5 px-5 font-mono text-xs text-[#C85A48]">Often writes disk</td>
                         </tr>
                         <tr class="hover:bg-white/[0.015] transition">
                             <td data-i18n="comp_row2_name" class="py-3.5 px-5 font-semibold text-white">Live PTY / Pipe Stream Redaction</td>
@@ -785,10 +767,10 @@
                             <td class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
                                 /dev/shm 0o400 + -e KEY
                             </td>
-                            <td data-i18n="comp_row3_inspect" class="py-3.5 px-5 font-mono text-xs text-rose-400">Leaks in inspect</td>
+                            <td data-i18n="comp_row3_inspect" class="py-3.5 px-5 font-mono text-xs text-[#C85A48]">Leaks in inspect</td>
                             <td data-i18n="comp_row3_sidecar" class="py-3.5 px-5 font-mono text-xs text-amber-400">Requires sidecar</td>
-                            <td data-i18n="comp_row3_inspect" class="py-3.5 px-5 font-mono text-xs text-rose-400">Leaks in inspect</td>
-                            <td data-i18n="comp_row3_plaintext" class="py-3.5 px-5 font-mono text-xs text-rose-400">Plaintext env</td>
+                            <td data-i18n="comp_row3_inspect" class="py-3.5 px-5 font-mono text-xs text-[#C85A48]">Leaks in inspect</td>
+                            <td data-i18n="comp_row3_plaintext" class="py-3.5 px-5 font-mono text-xs text-[#C85A48]">Plaintext env</td>
                         </tr>
                         <tr class="hover:bg-white/[0.015] transition">
                             <td data-i18n="comp_row4_name" class="py-3.5 px-5 font-semibold text-white">Zero-Server GitHub SSH Distribution</td>
@@ -815,9 +797,9 @@
                             <td data-i18n="comp_row6_env" class="py-3.5 px-5 bg-emerald-500/[0.04] border-x border-emerald-500/20 font-mono text-xs text-emerald-400 font-semibold">
                                 100% Autonomous
                             </td>
-                            <td data-i18n="comp_row6_api" class="py-3.5 px-5 font-mono text-xs text-rose-400">API outage halts CI</td>
+                            <td data-i18n="comp_row6_api" class="py-3.5 px-5 font-mono text-xs text-[#C85A48]">API outage halts CI</td>
                             <td data-i18n="comp_row6_dep" class="py-3.5 px-5 font-mono text-xs text-amber-400">Cluster dependent</td>
-                            <td data-i18n="comp_row6_req" class="py-3.5 px-5 font-mono text-xs text-rose-400">Cloud account req.</td>
+                            <td data-i18n="comp_row6_req" class="py-3.5 px-5 font-mono text-xs text-[#C85A48]">Cloud account req.</td>
                             <td data-i18n="comp_row6_env" class="py-3.5 px-5 font-mono text-xs text-emerald-400">100% Autonomous</td>
                         </tr>
                         <tr class="hover:bg-white/[0.015] transition">
@@ -870,7 +852,6 @@
     <section id="calculator" class="section calculator">
         <div class="container">
             <div class="reveal spotlight-card p-6 sm:p-10" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                <div class="scanline-sweep"></div>
                 <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                     <div class="lg:col-span-7 space-y-6">
                         <div>
@@ -900,7 +881,7 @@
 
                             <div>
                                 <label data-i18n="calc_benchmark" class="block text-xs font-mono uppercase text-slate-400 mb-2">Benchmark Against</label>
-                                <select id="competitor-select" onchange="calculateSavings()" class="w-full bg-[#06080c] border border-white/15 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono focus:outline-none focus:border-emerald-400">
+                                <select id="competitor-select" onchange="calculateSavings()" class="w-full bg-[#0D0F14] border border-white/15 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white font-mono focus:outline-none focus:border-emerald-400">
                                     <option value="doppler">Doppler Team / Enterprise ($29 / seat / month)</option>
                                     <option value="vault">HashiCorp Vault Enterprise ($14,500/yr base + ops)</option>
                                     <option value="onepassword">1Password Business ($19.99 / seat / month)</option>
@@ -909,7 +890,7 @@
                         </div>
                     </div>
 
-                    <div class="lg:col-span-5 bg-[#05070a] rounded-xl border border-white/10 p-6 space-y-5 font-mono">
+                    <div class="lg:col-span-5 bg-[#0D0F14] rounded-xl border border-white/10 p-6 space-y-5 font-mono">
                         <div class="flex items-center justify-between border-b border-white/[0.07] pb-4">
                             <div>
                                 <div data-i18n="calc_recovered_label" class="text-[11px] text-slate-500">ANNUAL SAAS / OPS RECOVERED</div>
@@ -921,7 +902,7 @@
                         <div class="space-y-2.5 text-xs">
                             <div class="flex justify-between text-slate-400">
                                 <span data-i18n="calc_incumbent">Incumbent Annual Spend:</span>
-                                <span id="comp-cost" class="text-rose-400 font-semibold">$8,700 / yr</span>
+                                <span id="comp-cost" class="text-[#C85A48] font-semibold">$8,700 / yr</span>
                             </div>
                             <div class="flex justify-between text-slate-400">
                                 <span data-i18n="calc_community">Envshield Community (AGPLv3):</span>
@@ -958,7 +939,7 @@
                 </div>
 
                 <!-- Billing Cycle Toggle -->
-                <div class="reveal inline-flex items-center p-1 rounded-xl bg-[#06080c] border border-white/10 font-mono text-xs self-start" style="--delay: 200ms;">
+                <div class="reveal inline-flex items-center p-1 rounded-xl bg-[#0D0F14] border border-white/10 font-mono text-xs self-start" style="--delay: 200ms;">
                     <button onclick="setBilling('monthly')" id="bill-monthly" data-i18n="bill_monthly" class="px-3 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition">Monthly</button>
                     <button onclick="setBilling('annual')" id="bill-annual" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5">
                         <span data-i18n="bill_annual">Annual</span>
@@ -970,7 +951,6 @@
             <div class="pricing-grid grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch pt-4">
                 <!-- Tier 1: Community Edition -->
                 <div class="reveal spotlight-card card-indigo p-6 flex flex-col justify-between space-y-5" style="--delay: 100ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
                             <span data-i18n="tier1_sub" class="text-slate-400">01 // OPEN SOURCE</span>
@@ -997,8 +977,7 @@
                 </div>
 
                 <!-- Tier 2: Team Commercial Edition -->
-                <div class="reveal spotlight-card card-emerald p-6 flex flex-col justify-between space-y-5 border-2 border-emerald-400/50 bg-[#0c141d] shadow-2xl shadow-emerald-500/10 ring-1 ring-emerald-400/20" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
+                <div class="reveal spotlight-card card-emerald p-6 flex flex-col justify-between space-y-5 border-2 border-emerald-400/50 bg-[#0D0F14] shadow-2xl shadow-emerald-500/10 ring-1 ring-emerald-400/20" style="--delay: 220ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
                             <span data-i18n="tier2_sub" class="text-emerald-400 font-semibold">02 // COMMERCIAL LICENSE</span>
@@ -1026,11 +1005,10 @@
 
                 <!-- Tier 3: Enterprise Tier -->
                 <div class="reveal spotlight-card card-purple p-6 flex flex-col justify-between space-y-5" style="--delay: 340ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                    <div class="scanline-sweep"></div>
                     <div class="relative z-10 space-y-4">
                         <div class="flex items-center justify-between font-mono text-xs">
-                            <span data-i18n="tier3_sub" class="text-sky-400">03 // ORGANIZATION</span>
-                            <span data-i18n="tier3_sla" class="px-2 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20">CUSTOM SLA</span>
+                            <span data-i18n="tier3_sub" class="text-[#4D9E78]">03 // ORGANIZATION</span>
+                            <span data-i18n="tier3_sla" class="px-2 py-0.5 rounded bg-[#4D9E78]/10 text-[#4D9E78] border border-[#4D9E78]/20">CUSTOM SLA</span>
                         </div>
                         <div>
                             <h3 data-i18n="tier3_title" class="text-xl font-bold text-white">Enterprise</h3>
@@ -1060,7 +1038,7 @@
         <div class="container">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
                 <div>
-                    <div class="reveal text-xs font-mono uppercase tracking-widest text-sky-400 mb-2" data-scramble="07 // Zero-Friction Onboarding" data-i18n-scramble="qs_scramble">07 // Zero-Friction Onboarding</div>
+                    <div class="reveal text-xs font-mono uppercase tracking-widest text-[#4D9E78] mb-2" data-scramble="07 // Zero-Friction Onboarding" data-i18n-scramble="qs_scramble">07 // Zero-Friction Onboarding</div>
                     <h2 data-kinetic data-kinetic-id="qs_title" class="kinetic-heading text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                         Up and running in 3 commands.
                     </h2>
@@ -1071,7 +1049,6 @@
             </div>
 
             <div class="reveal spotlight-card card-cyan p-5 sm:p-7" style="--delay: 150ms;" onmousemove="handleSpotlight(event, this)" onmouseleave="resetCardTilt(this)">
-                <div class="scanline-sweep"></div>
                 <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08]">
                     <!-- Step 1 (Cyber Emerald) -->
                     <div class="flex flex-col justify-between space-y-3.5 lg:pr-6">
@@ -1085,7 +1062,7 @@
                                 Install globally via <code class="text-slate-200 font-mono">pip</code>, <code class="text-slate-200 font-mono">uv</code>, or <code class="text-slate-200 font-mono">pipx</code>. Zero external C daemon dependencies required.
                             </p>
                         </div>
-                        <div class="bg-[#05070a] rounded-xl p-3 border border-emerald-500/25 font-mono text-xs flex items-center justify-between group">
+                        <div class="bg-[#0D0F14] rounded-xl p-3 border border-emerald-500/25 font-mono text-xs flex items-center justify-between group">
                             <code class="text-emerald-400 truncate">$ pip install envshield-cli</code>
                             <button onclick="navigator.clipboard.writeText('pip install envshield-cli');" class="text-slate-500 hover:text-white transition flex-shrink-0 ml-2" title="Copy">
                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
@@ -1105,7 +1082,7 @@
                                 Encrypts <code class="text-slate-200 font-mono">.env</code> into an authenticated AAD-bound <code class="text-slate-200 font-mono">.env.enc</code> envelope and multi-pass shreds the plaintext original.
                             </p>
                         </div>
-                        <div class="bg-[#05070a] rounded-xl p-3 border border-amber-500/25 font-mono text-xs flex items-center justify-between group">
+                        <div class="bg-[#0D0F14] rounded-xl p-3 border border-amber-500/25 font-mono text-xs flex items-center justify-between group">
                             <code class="text-amber-300 truncate">$ envshield seal --shred</code>
                             <button onclick="navigator.clipboard.writeText('envshield seal --shred');" class="text-slate-500 hover:text-white transition flex-shrink-0 ml-2" title="Copy">
                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
@@ -1117,7 +1094,7 @@
                     <div class="flex flex-col justify-between space-y-3.5 pt-6 lg:pt-0 lg:pl-6">
                         <div class="space-y-2">
                             <div class="flex items-center justify-between font-mono text-xs">
-                                <span data-i18n="qs_step3_badge" class="px-2 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/30 font-semibold text-[10px]">STEP 03 // EXECUTE</span>
+                                <span data-i18n="qs_step3_badge" class="px-2 py-0.5 rounded bg-[#4D9E78]/15 text-[#4D9E78] border border-[#4D9E78]/30 font-semibold text-[10px]">STEP 03 // EXECUTE</span>
                                 <span class="text-slate-500 text-[11px]">0 B on Disk</span>
                             </div>
                             <h3 data-i18n="qs_step3_title" class="text-base font-bold text-white">Run Process Under Shield</h3>
@@ -1125,8 +1102,8 @@
                                 Unseals into locked volatile RAM, injects into child process environment, and actively masks accidental secret prints.
                             </p>
                         </div>
-                        <div class="bg-[#05070a] rounded-xl p-3 border border-purple-500/25 font-mono text-xs flex items-center justify-between group">
-                            <code class="text-purple-300 truncate">$ envshield run -- python app.py</code>
+                        <div class="bg-[#0D0F14] rounded-xl p-3 border border-[#4D9E78]/25 font-mono text-xs flex items-center justify-between group">
+                            <code class="text-[#4D9E78] truncate">$ envshield run -- python app.py</code>
                             <button onclick="navigator.clipboard.writeText('envshield run -- python app.py');" class="text-slate-500 hover:text-white transition flex-shrink-0 ml-2" title="Copy">
                                 <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                             </button>
@@ -1223,7 +1200,7 @@
 
     <!-- COMMAND PALETTE MODAL (⌘K) -->
     <div id="cmd-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-start justify-center pt-24 px-4" onclick="if(event.target===this) toggleCmdModal()">
-        <div class="w-full max-w-lg rounded-2xl bg-[#0b0e15] border border-white/15 shadow-2xl overflow-hidden font-mono text-xs">
+        <div class="w-full max-w-lg rounded-2xl bg-[#0D0F14] border border-white/15 shadow-2xl overflow-hidden font-mono text-xs">
             <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between">
                 <div class="flex items-center gap-2 text-slate-300">
                     <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i>
@@ -1237,7 +1214,7 @@
                     <span data-i18n="cmd_item1_sub" class="text-slate-500">Action</span>
                 </button>
                 <button onclick="toggleMemoryWipe(); toggleCmdModal(); location.href='#architecture';" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition">
-                    <span data-i18n-html="cmd_item2_text" class="text-slate-200">Simulate Volatile Memory Wipe (<code class="text-sky-400">ctypes.memset</code>)</span>
+                    <span data-i18n-html="cmd_item2_text" class="text-slate-200">Simulate Volatile Memory Wipe (<code class="text-[#4D9E78]">ctypes.memset</code>)</span>
                     <span data-i18n="cmd_item2_sub" class="text-slate-500">Simulation</span>
                 </button>
                 <button onclick="triggerCanaryDemo(); toggleCmdModal(); location.href='#architecture';" class="w-full px-3 py-2.5 rounded-lg hover:bg-white/[0.06] flex items-center justify-between text-left transition">
@@ -1533,7 +1510,7 @@
                 nav_license_btn: "Lisans Al",
 
                 hero_audit_badge: "DENETİM GEÇTİ",
-                hero_audit_text: "145/145 değişmezlik testi · RFC 9180 HPKE · mlock()",
+                hero_audit_text: "171/171 değişmezlik testi · Shamir Quorum · RFC 9180 HPKE · mlock()",
                 hero_title: "Paranoyak mühendislik ekipleri için sıfır-disk gizli anahtar yürütme.",
                 hero_desc: "Geliştirici NVMe disklerinde düz metin <code class='text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded'>.env</code> dosyaları bırakmayı veya canlı sistem açılışlarını üçüncü taraf SaaS kesintilerine bağlamayı bırakın. Envshield, AES-256-GCM zarflarını doğrudan sayfa-kilitli uçucu RAM'e açar, alt süreç PTY akışlarını havada temizler ve Docker içine gizli <code class='text-slate-200 font-mono text-xs bg-white/[0.06] px-1.5 py-0.5 rounded'>/dev/shm</code> tanımlayıcıları bağlar.",
                 hero_copy_text: "Kopyala",
@@ -1952,33 +1929,18 @@
             });
         }, { passive: true });
 
-        // Ambient Cursor Follower Glow
-        const ambientGlow = document.getElementById('cursor-ambient-glow');
-        window.addEventListener('mousemove', (e) => {
-            if (ambientGlow) {
-                ambientGlow.style.left = `${e.clientX}px`;
-                ambientGlow.style.top = `${e.clientY}px`;
-            }
-        }, { passive: true });
 
-        // 5. 3D PERSPECTIVE TILT & SPOTLIGHT ON BENTO CARDS
+        // 5. SPOTLIGHT ON BENTO CARDS (Zero 3D Tilt - Dieter Rams Minimalism)
         function handleSpotlight(e, card) {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             card.style.setProperty('--mouse-x', `${x}px`);
             card.style.setProperty('--mouse-y', `${y}px`);
-
-            // Subtle 3D tilt (max 2.2 deg)
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = ((y - centerY) / centerY) * -2.2;
-            const rotateY = ((x - centerX) / centerX) * 2.2;
-            card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-2px)`;
         }
 
         function resetCardTilt(card) {
-            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
+            card.style.transform = '';
         }
 
         function handleHeroTilt(e, card) {
@@ -2018,7 +1980,7 @@
                 vx: (Math.random() - 0.5) * 0.45,
                 vy: (Math.random() - 0.5) * 0.45,
                 r: 1.4 + Math.random() * 1.4,
-                color: i % 3 === 0 ? '#34d399' : (i % 3 === 1 ? '#38bdf8' : '#818cf8')
+                color: i % 3 === 0 ? '#4D9E78' : (i % 3 === 1 ? '#D4943A' : '#C85A48')
             });
         }
 
@@ -2159,11 +2121,11 @@
                 btnText.innerText = currentLang === 'tr' ? "Süreç Çıkışını Simüle Et (memset 0x00)" : "Simulate Process Exit (memset 0x00)";
                 grid.innerHTML = `
                     <div class="flex justify-between text-slate-400"><span>0x7ffe8400</span><span class="text-emerald-400">73 6b 5f 6c 69 76 65 5f  39 38 61 46 32 6b 4c 39</span><span class="text-slate-500">|sk_live_98aF2kL9|</span></div>
-                    <div class="flex justify-between text-slate-400"><span>0x7ffe8410</span><span class="text-sky-400">70 6f 73 74 67 72 65 73  3a 2f 2f 70 72 6f 64 5f</span><span class="text-slate-500">|postgres://prod_|</span></div>
-                    <div class="flex justify-between text-slate-400"><span>0x7ffe8420</span><span class="text-indigo-400">41 45 53 32 35 36 5f 47  43 4d 5f 44 45 4b 5f 30</span><span class="text-slate-500">|AES256_GCM_DEK_0|</span></div>
+                    <div class="flex justify-between text-slate-400"><span>0x7ffe8410</span><span class="text-[#4D9E78]">70 6f 73 74 67 72 65 73  3a 2f 2f 70 72 6f 64 5f</span><span class="text-slate-500">|postgres://prod_|</span></div>
+                    <div class="flex justify-between text-slate-400"><span>0x7ffe8420</span><span class="text-[#4D9E78]">41 45 53 32 35 36 5f 47  43 4d 5f 44 45 4b 5f 30</span><span class="text-slate-500">|AES256_GCM_DEK_0|</span></div>
                 `;
             } else {
-                badge.className = "px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-semibold text-[10px]";
+                badge.className = "px-2 py-0.5 rounded bg-[#4D9E78]/20 text-[#4D9E78] font-semibold text-[10px]";
                 badge.innerText = currentLang === 'tr' ? "SIFIRLANDI VE KİLİT AÇILDI (munlock)" : "ZEROED & UNLOCKED (munlock)";
                 btnText.innerText = currentLang === 'tr' ? "Uçucu Açma Tamponunu Geri Yükle" : "Restore Volatile Unseal Buffer";
                 grid.innerHTML = `
@@ -2368,10 +2330,10 @@
             row.className = "flex items-baseline gap-3";
             let colorClass = "text-slate-300";
             if (type === 'dim') colorClass = "text-slate-500";
-            else if (type === 'ok') colorClass = "text-emerald-400";
-            else if (type === 'sky') colorClass = "text-sky-400";
-            else if (type === 'warn') colorClass = "text-amber-400";
-            else if (type === 'err') colorClass = "text-rose-400";
+            else if (type === 'ok') colorClass = "text-[#4D9E78]";
+            else if (type === 'sky') colorClass = "text-[#4D9E78]";
+            else if (type === 'warn') colorClass = "text-[#D4943A]";
+            else if (type === 'err') colorClass = "text-[#C85A48]";
 
             row.innerHTML = `
                 <span class="text-[11px] text-slate-600 select-none w-14 flex-shrink-0 text-right">${ts}</span>
@@ -2485,9 +2447,10 @@
 
             const envTeam = seats * 19 * 12;
             const yrLabel = currentLang === 'tr' ? '/ yıl' : '/ yr';
+            const netSavings = Math.max(0, compAnnual - envTeam);
             document.getElementById('comp-cost').innerText = `$${compAnnual.toLocaleString()} ${yrLabel}`;
             document.getElementById('env-team-cost').innerText = `$${envTeam.toLocaleString()} ${yrLabel}`;
-            document.getElementById('savings-display').innerText = `$${compAnnual.toLocaleString()} ${yrLabel}`;
+            document.getElementById('savings-display').innerText = `$${netSavings.toLocaleString()} ${yrLabel}`;
         }
 
         // 12. BILLING TOGGLE

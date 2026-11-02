@@ -1,29 +1,29 @@
 /**
  * Envshield — Visual Motion & Interactive Design System
- * Scroll-Triggered Choreography, Kinetic Typography, 3D Tilt & Laser Circuitry
+ * Dieter Rams Minimalism & Swiss Typographic Grid Standard
  */
 
 :root {
-    --section-py: clamp(52px, 5.5vw, 84px);
+    --section-py: clamp(96px, 9vw, 140px);
     --container-max-w: 1200px;
     --container-px: 24px;
 
-    /* OKLCH & Hex Surface Hierarchy */
-    --bg-canvas: #050609;
-    --bg-obsidian: oklch(0.11 0.012 255);
-    --bg-surface: oklch(0.14 0.016 255);
-    --bg-panel: oklch(0.17 0.02 255);
-    --bg-card: rgba(12, 15, 22, 0.72);
+    /* 60-30-10 OKLCH & Hex Surface Hierarchy */
+    --bg-canvas: #0A0B0E;   /* 60% Dominant Base - oklch(0.14 0.012 250) */
+    --bg-surface: #12141A;  /* 30% Structural Surface - oklch(0.19 0.015 250) */
+    --bg-inner: #0D0F14;    /* Recessed Wells & Boxes - oklch(0.16 0.014 250) */
+    --bg-terminal: #1A1D24; /* Elevated Code Terminals - oklch(0.23 0.018 250) */
 
-    /* Structural Hairlines & Specular Borders */
-    --border-grid: rgba(255, 255, 255, 0.06);
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --inner-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    /* Structural Hairlines (Zero Muddy Shadows) */
+    --border-grid: rgba(255, 255, 255, 0.07);
+    --border-subtle: rgba(255, 255, 255, 0.07);
+    --border-hover: rgba(255, 255, 255, 0.16);
 
-    /* Surgical Accents */
-    --accent-emerald: #10b981;
-    --accent-cyan: #38bdf8;
-    --accent-indigo: #818cf8;
+    /* 10% Refined Semantic Accents */
+    --accent-sage: #4D9E78;       /* Adaçayı Yeşili (Verified / Secure) */
+    --accent-amber: #D4943A;      /* Mat Kehribar (Interception / Warning) */
+    --accent-terracotta: #C85A48; /* Pişmiş Toprak (Critical / Drift) */
+    --text-stone: #F2F4F8;        /* Kırık Soğuk Taş Beyazı */
 
     /* Physics Easing Curves */
     --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
@@ -34,7 +34,7 @@ html {
     scroll-behavior: smooth;
     box-sizing: border-box;
     background-color: var(--bg-canvas);
-    color: #f8fafc;
+    color: var(--text-stone);
 }
 
 *, *::before, *::after {
@@ -45,111 +45,44 @@ body {
     margin: 0;
     padding: 0;
     background-color: var(--bg-canvas);
-    background-image:
-        radial-gradient(ellipse 90% 55% at 50% -10%, rgba(16, 185, 129, 0.14), transparent 70%),
-        radial-gradient(ellipse 70% 50% at 85% 28%, rgba(56, 189, 248, 0.11), transparent 72%),
-        radial-gradient(ellipse 75% 55% at 15% 62%, rgba(99, 102, 241, 0.11), transparent 75%),
-        radial-gradient(ellipse 80% 50% at 50% 95%, rgba(16, 185, 129, 0.10), transparent 70%);
-    background-attachment: fixed;
-    color: #f8fafc;
+    color: var(--text-stone);
     overflow-x: hidden;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
 }
 
-/* ============================================================================
-   ATMOSPHERIC AURORA & SOFT GRADIENT MESH BACKDROP
-   ============================================================================ */
-.aurora-backdrop {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
+/* Typography & Readability (Max 65ch & 1.6 Line Height) */
+p, .section p, .text-slate-400 {
+    line-height: 1.6;
 }
 
-.aurora-orb {
-    position: absolute;
-    border-radius: 9999px;
-    filter: blur(125px);
-    opacity: 0.55;
-    will-change: transform;
-    mix-blend-mode: screen;
+p {
+    max-width: 65ch;
 }
 
-.aurora-orb-emerald {
-    width: 680px;
-    height: 680px;
-    top: -12%;
-    left: 8%;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.28) 0%, rgba(16, 185, 129, 0.06) 55%, transparent 75%);
-    animation: auroraFloat1 22s ease-in-out infinite alternate;
+h1, h2, h3, h4 {
+    color: var(--text-stone);
+    letter-spacing: -0.025em;
 }
 
-.aurora-orb-cyan {
-    width: 740px;
-    height: 740px;
-    top: 18%;
-    right: -8%;
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.24) 0%, rgba(14, 165, 233, 0.06) 55%, transparent 75%);
-    animation: auroraFloat2 26s ease-in-out infinite alternate;
-}
-
-.aurora-orb-indigo {
-    width: 780px;
-    height: 780px;
-    bottom: -15%;
-    left: 22%;
-    background: radial-gradient(circle, rgba(129, 140, 248, 0.22) 0%, rgba(99, 102, 241, 0.05) 55%, transparent 75%);
-    animation: auroraFloat3 28s ease-in-out infinite alternate;
-}
-
-.aurora-orb-teal {
-    width: 560px;
-    height: 560px;
-    top: 52%;
-    left: -10%;
-    background: radial-gradient(circle, rgba(45, 212, 191, 0.18) 0%, rgba(20, 184, 166, 0.04) 55%, transparent 75%);
-    animation: auroraFloat1 24s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes auroraFloat1 {
-    0% { transform: translate3d(0, 0, 0) scale(1); }
-    50% { transform: translate3d(60px, 40px, 0) scale(1.08); }
-    100% { transform: translate3d(-40px, 70px, 0) scale(0.96); }
-}
-
-@keyframes auroraFloat2 {
-    0% { transform: translate3d(0, 0, 0) scale(1); }
-    50% { transform: translate3d(-70px, 50px, 0) scale(1.06); }
-    100% { transform: translate3d(45px, -55px, 0) scale(0.95); }
-}
-
-@keyframes auroraFloat3 {
-    0% { transform: translate3d(0, 0, 0) scale(1); }
-    50% { transform: translate3d(55px, -65px, 0) scale(1.1); }
-    100% { transform: translate3d(-65px, 35px, 0) scale(0.97); }
-}
-
-/* Top Scroll Progress Laser Bar */
+/* Top Scroll Progress Line (Minimalist Adaçayı Yeşili) */
 #scroll-progress {
     position: fixed;
     top: 0;
     left: 0;
     height: 2px;
     width: 0%;
-    background: linear-gradient(90deg, #10b981, #38bdf8, #818cf8);
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.8);
+    background: var(--accent-sage);
     z-index: 100;
     transition: width 0.08s linear;
 }
 
-/* Subtle Architectural Grid Matrix */
+/* Subtle Swiss Architectural Grid Matrix */
 .bg-grid-matrix {
     background-size: 48px 48px;
     background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
     mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, #000 55%, transparent 100%);
     -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, #000 55%, transparent 100%);
 }
@@ -172,7 +105,7 @@ body {
     }
 }
 
-/* Standardized Section Wrapper */
+/* Standardized Section Wrapper (Strict 1px Border Separation) */
 .section {
     position: relative;
     width: 100%;
@@ -185,63 +118,36 @@ body {
 }
 
 .section.hero {
-    padding-top: clamp(104px, 10vw, 136px);
-    padding-bottom: clamp(56px, 6vw, 88px);
-    background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(16, 185, 129, 0.09) 0%, rgba(56, 189, 248, 0.05) 45%, transparent 80%);
+    padding-top: clamp(120px, 12vw, 160px);
+    padding-bottom: clamp(72px, 8vw, 110px);
+    background: transparent;
 }
 
 .section.has-bg-alt {
-    background: 
-        radial-gradient(ellipse 75% 55% at 50% 0%, rgba(56, 189, 248, 0.08) 0%, rgba(99, 102, 241, 0.05) 45%, transparent 75%),
-        linear-gradient(180deg, rgba(13, 18, 30, 0.55) 0%, rgba(7, 10, 18, 0.45) 50%, rgba(5, 6, 9, 0.75) 100%);
+    background: var(--bg-inner);
 }
 
-/* Soft Luminous Horizon Glow Between Sections */
-.section::before {
-    content: "";
-    position: absolute;
-    top: -1px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(880px, 90%);
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(52, 211, 153, 0.32) 30%, rgba(56, 189, 248, 0.45) 50%, rgba(129, 140, 248, 0.32) 70%, transparent 100%);
-    pointer-events: none;
-}
-
+.section::before,
 .section::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(760px, 85%);
-    height: 140px;
-    background: radial-gradient(ellipse 60% 100% at 50% 0%, rgba(56, 189, 248, 0.065), rgba(16, 185, 129, 0.03) 55%, transparent 80%);
-    pointer-events: none;
-    z-index: 0;
+    display: none !important;
 }
 
-/* ============================================================================
-   SCROLL-TRIGGERED ENTRANCE CHOREOGRAPHY (Linear / Apple Style)
-   ============================================================================ */
-
-/* Base Reveal Element */
+/* Scroll-Triggered Entrance Choreography */
 .reveal {
     opacity: 0;
-    transform: translateY(36px) scale(0.985);
-    filter: blur(8px);
+    transform: translateY(24px);
+    filter: blur(4px);
     transition: 
-        opacity 0.85s var(--ease-spring),
-        transform 0.85s var(--ease-spring),
-        filter 0.85s var(--ease-spring);
+        opacity 0.7s var(--ease-spring),
+        transform 0.7s var(--ease-spring),
+        filter 0.7s var(--ease-spring);
     transition-delay: var(--delay, 0ms);
     will-change: opacity, transform, filter;
 }
 
 .reveal.is-visible {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
     filter: blur(0px);
 }
 
@@ -257,20 +163,17 @@ body {
 .kinetic-heading .word-inner {
     display: inline-block;
     opacity: 0;
-    transform: translateY(105%) rotateX(-20deg);
-    filter: blur(6px);
+    transform: translateY(105%);
     transition: 
-        transform 0.8s var(--ease-spring),
-        opacity 0.7s var(--ease-spring),
-        filter 0.7s var(--ease-spring);
+        transform 0.7s var(--ease-spring),
+        opacity 0.6s var(--ease-spring);
     transition-delay: var(--word-delay, 0ms);
-    will-change: transform, opacity, filter;
+    will-change: transform, opacity;
 }
 
 .kinetic-heading.is-visible .word-inner {
     opacity: 1;
-    transform: translateY(0) rotateX(0deg);
-    filter: blur(0px);
+    transform: translateY(0);
 }
 
 /* Section Divider Line Draw Animation */
@@ -283,38 +186,27 @@ body {
     transform: scaleX(1);
 }
 
-/* ============================================================================
-   3D TILT & DUAL-LAYER SPOTLIGHT CARDS
-   ============================================================================ */
+/* Solid, Matte, High-Craft Cards (Linear / Raycast Style - Zero 3D Tilt) */
 .spotlight-card {
     position: relative;
-    background: var(--bg-card);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border-subtle);
-    box-shadow: var(--inner-specular), 0 14px 34px -12px rgba(0, 0, 0, 0.65);
-    border-radius: 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-grid);
+    border-radius: 10px;
     overflow: hidden;
-    transform-style: preserve-3d;
-    transition: 
-        border-color 0.3s var(--ease-spring),
-        box-shadow 0.3s var(--ease-spring),
-        transform 0.2s ease-out;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-/* Surface Radial Glow following cursor */
 .spotlight-card::before {
     content: '';
     position: absolute;
     inset: 0;
     background: radial-gradient(
-        520px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
-        rgba(56, 189, 248, 0.11),
-        rgba(16, 185, 129, 0.04) 40%,
-        transparent 75%
+        380px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+        rgba(255, 255, 255, 0.035),
+        transparent 70%
     );
     opacity: 0;
-    transition: opacity 0.35s ease;
+    transition: opacity 0.2s ease;
     pointer-events: none;
     z-index: 1;
 }
@@ -324,117 +216,134 @@ body {
 }
 
 .spotlight-card:hover {
-    border-color: rgba(56, 189, 248, 0.28);
-    box-shadow: var(--inner-specular), 0 24px 48px -15px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(56, 189, 248, 0.12);
+    border-color: var(--border-hover);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
-/* ============================================================================
-   SEMANTIC COLORWAY ACCENTS (Distinct Visual Identities & Contrast)
-   ============================================================================ */
-
-/* Colorway 1: Cyber Emerald (RAM & Kernel Security) */
-.card-emerald {
-    border-color: rgba(16, 185, 129, 0.22);
-    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(16, 185, 129, 0.09) 0%, transparent 70%), var(--bg-card);
-}
-.card-emerald:hover {
-    border-color: rgba(16, 185, 129, 0.48);
-    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 26px -4px rgba(16, 185, 129, 0.22);
-}
-.card-emerald::before {
-    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(16, 185, 129, 0.18), transparent 70%) !important;
-}
-
-/* Colorway 2: Laser Amber (PTY Streams, Redaction & Interception) */
-.card-amber {
-    border-color: rgba(245, 158, 11, 0.22);
-    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(245, 158, 11, 0.09) 0%, transparent 70%), var(--bg-card);
-}
-.card-amber:hover {
-    border-color: rgba(245, 158, 11, 0.48);
-    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 26px -4px rgba(245, 158, 11, 0.22);
-}
-.card-amber::before {
-    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(245, 158, 11, 0.18), transparent 70%) !important;
-}
-
-/* Colorway 3: Electric Cyan (Docker, Containers & SHM Descriptors) */
-.card-cyan {
-    border-color: rgba(56, 189, 248, 0.22);
-    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(56, 189, 248, 0.09) 0%, transparent 70%), var(--bg-card);
-}
-.card-cyan:hover {
-    border-color: rgba(56, 189, 248, 0.48);
-    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 26px -4px rgba(56, 189, 248, 0.22);
-}
-.card-cyan::before {
-    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(56, 189, 248, 0.18), transparent 70%) !important;
-}
-
-/* Colorway 4: Neon Purple (Asymmetric Cryptography, SSH & Envelopes) */
-.card-purple {
-    border-color: rgba(168, 85, 247, 0.22);
-    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(168, 85, 247, 0.10) 0%, transparent 70%), var(--bg-card);
-}
-.card-purple:hover {
-    border-color: rgba(168, 85, 247, 0.48);
-    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 28px -4px rgba(168, 85, 247, 0.24);
-}
-.card-purple::before {
-    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(168, 85, 247, 0.20), transparent 70%) !important;
-}
-
-/* Colorway 5: Cobalt Indigo (RAM-Disk, Sandboxing & Storage) */
-.card-indigo {
-    border-color: rgba(99, 102, 241, 0.22);
-    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(99, 102, 241, 0.09) 0%, transparent 70%), var(--bg-card);
-}
-.card-indigo:hover {
-    border-color: rgba(99, 102, 241, 0.48);
-    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 26px -4px rgba(99, 102, 241, 0.22);
-}
-.card-indigo::before {
-    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(99, 102, 241, 0.18), transparent 70%) !important;
-}
-
-/* Colorway 6: Crimson Rose (AST Sentinel, Drift & Anomaly Detection) */
+/* Unified Cards (Removing all neon background gradients & box-shadow glows) */
+.card-emerald,
+.card-amber,
+.card-cyan,
+.card-purple,
+.card-indigo,
 .card-rose {
-    border-color: rgba(244, 63, 94, 0.22);
-    background: radial-gradient(ellipse 90% 60% at 100% 0%, rgba(244, 63, 94, 0.09) 0%, transparent 70%), var(--bg-card);
+    background: var(--bg-surface) !important;
+    border-color: var(--border-grid) !important;
+    box-shadow: none !important;
 }
+
+.card-emerald:hover,
+.card-amber:hover,
+.card-cyan:hover,
+.card-purple:hover,
+.card-indigo:hover,
 .card-rose:hover {
-    border-color: rgba(244, 63, 94, 0.48);
-    box-shadow: var(--inner-specular), 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 28px -4px rgba(244, 63, 94, 0.24);
+    border-color: var(--border-hover) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
 }
+
+.card-emerald::before,
+.card-amber::before,
+.card-cyan::before,
+.card-purple::before,
+.card-indigo::before,
 .card-rose::before {
-    background: radial-gradient(460px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(244, 63, 94, 0.20), transparent 70%) !important;
+    background: radial-gradient(
+        380px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+        rgba(255, 255, 255, 0.035),
+        transparent 70%
+    ) !important;
 }
 
-/* Animated Laser Scanline on Card Hover */
-.scanline-sweep {
+/* Floating Glass Dock Navbar (Matte Solid High-Craft) */
+.glass-dock {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-grid);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Primary High-Contrast Button (Broken Cool Stone White) */
+.btn-primary {
+    position: relative;
+    background: var(--text-stone);
+    color: var(--bg-canvas);
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-primary:hover {
+    background: #e2e8f0;
+    color: var(--bg-canvas);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-stone);
+    border: 1px solid var(--border-grid);
+    border-radius: 8px;
+    transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: var(--border-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Range Slider */
+input[type="range"].pro-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    outline: none;
+}
+
+input[type="range"].pro-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text-stone);
+    border: 2px solid var(--bg-canvas);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+input[type="range"].pro-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+/* Architectural Crosshair Marker (+) */
+.crosshair {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 0%, rgba(52, 211, 153, 0.06) 50%, rgba(52, 211, 153, 0.25) 51%, transparent 52%, transparent 100%);
-    background-size: 100% 200%;
-    background-position: 0% 100%;
-    opacity: 0;
+    width: 11px;
+    height: 11px;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    z-index: 20;
 }
-
-.spotlight-card:hover .scanline-sweep {
-    opacity: 1;
-    animation: scanSweep 3s infinite linear;
+.crosshair::before,
+.crosshair::after {
+    content: '';
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.2);
 }
+.crosshair::before { top: 5px; left: 0; width: 11px; height: 1px; }
+.crosshair::after { top: 0; left: 5px; width: 1px; height: 11px; }
 
-@keyframes scanSweep {
-    0% { background-position: 0% 120%; }
-    100% { background-position: 0% -80%; }
-}
-
-/* ============================================================================
-   SVG LASER CIRCUIT BEAMS & PULSES
-   ============================================================================ */
+/* Laser Beam Flow (Adaçayı Yeşili) */
 .laser-beam {
     stroke-dasharray: 8 12;
     animation: beamFlow 1.6s linear infinite;
@@ -457,118 +366,18 @@ body {
     100% { transform: scale(1.55); opacity: 0; }
 }
 
-/* Architectural Crosshair Marker (+) */
-.crosshair {
-    position: absolute;
-    width: 11px;
-    height: 11px;
-    pointer-events: none;
-    z-index: 20;
-}
-.crosshair::before,
-.crosshair::after {
-    content: '';
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.28);
-}
-.crosshair::before { top: 5px; left: 0; width: 11px; height: 1px; }
-.crosshair::after { top: 0; left: 5px; width: 1px; height: 11px; }
-
-/* Floating Glass Dock Navbar */
-.glass-dock {
-    background: rgba(9, 11, 16, 0.78);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.7), var(--inner-specular);
-}
-
-/* Primary High-Contrast Button with Sheen */
-.btn-primary {
-    position: relative;
-    overflow: hidden;
-    background: #ffffff;
-    color: #06070a;
-    font-weight: 600;
-    border-radius: 10px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 255, 255, 0.12);
-    transition: all 0.2s var(--ease-spring);
-}
-.btn-primary::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -75%;
-    width: 50%;
-    height: 200%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
-    transform: rotate(28deg);
-    transition: transform 0.55s ease;
-}
-.btn-primary:hover::after {
-    transform: rotate(28deg) translate(320%, 0);
-}
-.btn-primary:hover {
-    background: #f1f5f9;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), 0 0 28px rgba(255, 255, 255, 0.25);
-}
-.btn-primary:active {
-    transform: translateY(0) scale(0.98);
-}
-
-.btn-secondary {
-    background: rgba(255, 255, 255, 0.04);
-    color: #e2e8f0;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: var(--inner-specular);
-    border-radius: 10px;
-    transition: all 0.2s var(--ease-spring);
-}
-.btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-    transform: translateY(-1px);
-}
-
-/* Custom Range Slider */
-input[type="range"].pro-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 999px;
-    outline: none;
-}
-input[type="range"].pro-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #ffffff;
-    border: 2px solid #06070a;
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.4), 0 2px 8px rgba(0,0,0,0.6);
-    cursor: pointer;
-    transition: transform 0.15s ease;
-}
-input[type="range"].pro-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-}
-
 /* Footer */
 .footer {
     position: relative;
     width: 100%;
-    padding-top: 56px;
-    padding-bottom: 56px;
-    background-color: #040507;
+    padding-top: 64px;
+    padding-bottom: 64px;
+    background-color: var(--bg-canvas);
+    border-top: 1px solid var(--border-grid);
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #050609; }
-::-webkit-scrollbar-thumb { background: #1e2433; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #334155; }
+/* Minimalist Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-canvas); }
+::-webkit-scrollbar-thumb { background: #262933; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #3c4150; }
