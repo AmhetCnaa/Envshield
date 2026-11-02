@@ -1233,6 +1233,59 @@
         </div>
     </div>
 
+    <!-- ELEGANT "STAR ON GITHUB" PROMPT MODAL (Linear/Vercel Aesthetic) -->
+    <div id="star-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300" onclick="if(event.target===this) closeStarModal(true)" role="dialog" aria-modal="true" aria-labelledby="star-modal-title">
+        <div class="star-modal-card relative w-full max-w-[420px] rounded-2xl bg-[#12141A] border border-white/10 shadow-2xl p-6 sm:p-7 transform scale-95 translate-y-3 transition-all duration-300">
+            <!-- Close 'X' Button -->
+            <button onclick="closeStarModal(true)" class="absolute top-4 right-4 w-7 h-7 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition" aria-label="Close dialog">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <!-- Header with Amber Star Icon -->
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0 shadow-inner">
+                    <svg class="w-5 h-5 text-amber-400 fill-amber-400" viewBox="0 0 24 24">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                </div>
+                <div>
+                    <span data-i18n="star_modal_badge" class="inline-block text-[10px] font-mono font-semibold uppercase tracking-wider text-amber-400">OPEN SOURCE COMMUNITY</span>
+                    <h3 id="star-modal-title" data-i18n="star_modal_title" class="text-base sm:text-lg font-bold text-white tracking-tight">Love using Envshield?</h3>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <p data-i18n="star_modal_desc" class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-5">
+                Support us with a star on GitHub to help the project grow and reach more paranoid engineering teams.
+            </p>
+
+            <!-- Repository Interactive Chip -->
+            <div class="mb-5 p-2.5 rounded-xl bg-[#0D0F14] border border-white/[0.07] flex items-center justify-between text-xs font-mono">
+                <div class="flex items-center gap-2 text-slate-300">
+                    <svg class="w-4 h-4 fill-current text-slate-400" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    <span class="text-white font-medium">AmhetCnaa/Envshield</span>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-semibold flex items-center gap-1">
+                    ★ Star
+                </span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2">
+                <a href="https://github.com/AmhetCnaa/Envshield" target="_blank" rel="noopener noreferrer" onclick="handleStarModalAction('star')" class="btn-primary w-full py-2.5 px-4 text-xs font-semibold inline-flex items-center justify-center gap-2">
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    <span data-i18n="star_modal_btn_star">Star on GitHub ★</span>
+                </a>
+                <button onclick="handleStarModalAction('dismiss')" class="btn-secondary w-full py-2 px-4 text-xs font-medium text-slate-400 hover:text-white transition">
+                    <span data-i18n="star_modal_btn_later">Maybe later</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ========================================================================
          VISUAL INTERACTIVITY, MULTI-LANGUAGE (TR/EN) & MOTION ENGINE
          ======================================================================== -->
@@ -1471,6 +1524,12 @@
                 cmd_item4_sub: "Navigation",
                 cmd_item5_text: "Jump to Commercial Licensing & Pricing",
                 cmd_item5_sub: "Navigation",
+
+                star_modal_badge: "OPEN SOURCE COMMUNITY",
+                star_modal_title: "Love using Envshield?",
+                star_modal_desc: "Support us with a star on GitHub to help the project grow and reach more paranoid engineering teams.",
+                star_modal_btn_star: "Star on GitHub ★",
+                star_modal_btn_later: "Maybe later",
 
                 tier1_bullets: [
                     "Page-locked volatile RAM unsealing",
@@ -1729,6 +1788,12 @@
                 cmd_item4_sub: "Gezinme",
                 cmd_item5_text: "Ticari Lisanslama & Fiyatlandırmaya Git",
                 cmd_item5_sub: "Gezinme",
+
+                star_modal_badge: "AÇIK KAYNAK TOPLULUĞU",
+                star_modal_title: "Envshield'ı beğendiniz mi?",
+                star_modal_desc: "Projeyi büyütmemize ve daha fazla mühendislik ekibine ulaşmamıza yardımcı olmak için GitHub'da bir yıldız vererek bizi destekleyin.",
+                star_modal_btn_star: "GitHub'da Yıldızla ★",
+                star_modal_btn_later: "Belki sonra",
 
                 tier1_bullets: [
                     "Sayfa-kilitli uçucu RAM'de açma",
@@ -2506,10 +2571,62 @@
             } else if (e.key === 'Escape') {
                 const modal = document.getElementById('cmd-modal');
                 if (modal) modal.classList.add('hidden');
+                closeStarModal(true);
             }
         });
 
-        // 15. INITIALIZATION
+
+        // 15. GITHUB STAR PROMPT MODAL (Linear/Vercel Aesthetic)
+        let starModalShown = false;
+
+        function showStarModal() {
+            if (starModalShown) return;
+            if (localStorage.getItem('envshield_star_prompt_dismissed') === 'true') return;
+
+            const modal = document.getElementById('star-modal');
+            if (!modal) return;
+
+            starModalShown = true;
+            modal.classList.add('is-active');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeStarModal(dismissPermanently = true) {
+            if (dismissPermanently) {
+                try {
+                    localStorage.setItem('envshield_star_prompt_dismissed', 'true');
+                } catch (err) {}
+            }
+            const modal = document.getElementById('star-modal');
+            if (modal) {
+                modal.classList.remove('is-active');
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        function handleStarModalAction(action) {
+            closeStarModal(true);
+        }
+
+        // Trigger A: 4 seconds after page load
+        setTimeout(() => {
+            showStarModal();
+        }, 4000);
+
+        // Trigger B: When user scrolls >= 45% down the page
+        window.addEventListener('scroll', () => {
+            if (starModalShown) return;
+            if (localStorage.getItem('envshield_star_prompt_dismissed') === 'true') return;
+            const scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
+            if (scrollTotal > 0) {
+                const scrolledRatio = window.scrollY / scrollTotal;
+                if (scrolledRatio >= 0.45) {
+                    showStarModal();
+                }
+            }
+        }, { passive: true });
+
+        // 16. INITIALIZATION
         const savedLang = localStorage.getItem('envshield_lang') || ((navigator.language && navigator.language.startsWith('tr')) ? 'tr' : 'en');
         setLanguage(savedLang);
     </script>

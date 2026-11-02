@@ -381,3 +381,15 @@ input[type="range"].pro-slider::-webkit-slider-thumb:hover {
 ::-webkit-scrollbar-track { background: var(--bg-canvas); }
 ::-webkit-scrollbar-thumb { background: #262933; border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: #3c4150; }
+
+/* Star on GitHub Modal */
+#star-modal {
+    transition: opacity 0.3s var(--ease-spring), visibility 0.3s var(--ease-spring);
+}
+#star-modal.is-active {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+#star-modal.is-active .star-modal-card {
+    transform: scale(1) translateY(0) !important;
+}
