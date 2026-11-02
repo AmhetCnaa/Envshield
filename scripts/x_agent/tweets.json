@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "category": "architecture",
+    "text": "Most secret management tools fall into two extremes:\n\n1. Plaintext .env committed to git by accident\n2. Heavy enterprise vaults that take 3 weeks to deploy with 4 sidecars per pod\n\nThere has to be a middle ground where secrets live in encrypted files right next to your code.",
+    "posted": false
+  },
+  {
+    "id": 2,
+    "category": "engineering",
+    "text": "Why do engineers still leak AWS keys in git diffs in 2026?\n\nBecause .gitignore is a passive defense. It only works if people remember to type it.\n\nActive defense means: pre-commit entropy scanners that refuse to let commits pass if Shannon entropy > 4.5.",
+    "posted": false
+  },
+  {
+    "id": 3,
+    "category": "product_showcase",
+    "text": "Building Envshield: zero-dependency CLI that keeps secrets encrypted at rest using AES-256-GCM + Argon2id.\n\nYour app reads secrets in memory via an ephemeral subshell (`envshield run -- npm start`). Secrets never touch the physical disk unencrypted.",
+    "posted": false
+  },
+  {
+    "id": 4,
+    "category": "security_deep_dive",
+    "text": "A mistake many developers make with .env encryption:\n\nEncrypting with AES-CBC without HMAC authentication.\n\nCBC without integrity checks is vulnerable to padding oracle attacks. Always use authenticated encryption (AEAD) like AES-256-GCM or ChaCha20-Poly1305 with random 96-bit nonces.",
+    "posted": false
+  },
+  {
+    "id": 5,
+    "category": "build_in_public",
+    "text": "Shipped Shamir's Secret Sharing (GF(256)) into Envshield today.\n\nFor production deployments, no single human should possess the master decryption key.\n\nWith a 3-of-5 quorum, any 3 engineering leads can assemble and decrypt production configs, while any 2 cannot leak anything.",
+    "posted": false
+  },
+  {
+    "id": 6,
+    "category": "developer_pain",
+    "text": "The classic onboarding experience at a tech startup:\n\n1. Clone the repo\n2. Ask in Slack: 'Hey, who has the .env for staging?'\n3. Someone DMs you a 2-year-old expired database password in a zip file\n\nWe need to stop this madness.",
+    "posted": false
+  },
+  {
+    "id": 7,
+    "category": "k8s_devops",
+    "text": "Kubernetes Secrets are notoriously base64 encoded, not encrypted.\n\nUnless you configure KMS envelope encryption on etcd, anyone with pod exec or cluster read can dump production credentials in plain text.\n\nSecuring your CI/CD pipeline starts with encrypted payloads before git push.",
+    "posted": false
+  },
+  {
+    "id": 8,
+    "category": "architecture",
+    "text": "Why Envshield uses an envelope encryption model:\n\n- Master Key (Argon2id + Passphrase) decrypts the DEK (Data Encryption Key)\n- DEK encrypts the actual key-value payload with AES-256-GCM\n\nRotating master credentials doesn't require re-encrypting huge configs across 50 services.",
+    "posted": false
+  },
+  {
+    "id": 9,
+    "category": "security_tip",
+    "text": "Quick security audit for your repo:\n\n`git log -p -S 'BEGIN RSA PRIVATE KEY'`\n`git log -p -S 'AIzaSy'`\n\nYou'd be shocked how many 'deleted' secrets still exist in historical git commits from 3 years ago.",
+    "posted": false
+  },
+  {
+    "id": 10,
+    "category": "build_in_public",
+    "text": "Added OS Keychain integration to Envshield:\n- Windows: DPAPI (CryptProtectData)\n- macOS: Apple Keychain Services\n- Linux: SecretService / D-Bus\n\nYour CLI shouldn't ask for a passphrase 40 times a day when running local tests. Let the OS hardware security handle it safely.",
+    "posted": false
+  },
+  {
+    "id": 11,
+    "category": "engineering",
+    "text": "Microbenchmarking cryptographic primitives in Python:\n\nArgon2id with 64MB memory cost and 3 iterations takes ~42ms on an M-series / Ryzen chip.\n\nThat 42ms makes offline dictionary and brute-force attacks economically impossible for an attacker, with zero noticeable friction for the developer.",
+    "posted": false
+  },
+  {
+    "id": 12,
+    "category": "hot_take",
+    "text": "Hot take: Managing secrets shouldn't require paying $500/month to cloud vendors for an enterprise vault when you have a 5-person engineering team.\n\nCryptographic file encryption in git gives you versioning, code reviews, PR diffs, and zero cloud lock-in.",
+    "posted": false
+  },
+  {
+    "id": 13,
+    "category": "developer_pain",
+    "text": "Things developers do that make security engineers cry:\n\n1. `git commit -m 'temp fix' .`\n2. `console.log(process.env)` in production error handlers\n3. Sending API tokens over Telegram / WhatsApp to teammates\n\nLet's build tools that make the secure path the easiest path.",
+    "posted": false
+  },
+  {
+    "id": 14,
+    "category": "product_showcase",
+    "text": "How Envshield works in 10 seconds:\n\n1. `envshield init` (generates cryptographic keypair)\n2. `envshield set STRIPE_KEY=sk_live_...`\n3. `envshield run -- python app.py`\n\nThe app receives secrets as environment variables in RAM. Nothing written to disk unencrypted.",
+    "posted": false
+  },
+  {
+    "id": 15,
+    "category": "security_deep_dive",
+    "text": "Ever heard of memory scraping attacks against long-running processes?\n\nIf you leave secrets in system environment variables (`export KEY=val`), any child process or debugging dump can inspect `/proc/$PID/environ`.\n\nPassing secrets strictly to child process stdin or isolated memory pages is the true zero-trust way.",
+    "posted": false
+  },
+  {
+    "id": 16,
+    "category": "architecture",
+    "text": "Self-healing config drift: when developer A adds a new required secret `REDIS_CLUSTER_URL`, developer B's build breaks silently.\n\nEnvshield supports strict schema validation (`envshield.schema.json`). If a required key is missing or has bad format, it fails fast at startup.",
+    "posted": false
+  },
+  {
+    "id": 17,
+    "category": "build_in_public",
+    "text": "171 tests passing on Envshield across Windows, Linux, and macOS.\n\nTesting cryptography is humbling: nonces must never repeat, salt generation must use CSPRNG (`os.urandom`), and timing attacks must be avoided with constant-time comparisons (`hmac.compare_digest`).",
+    "posted": false
+  },
+  {
+    "id": 18,
+    "category": "developer_tip",
+    "text": "Pro tip for CI/CD pipelines:\n\nNever inject 40 individual secrets in GitHub Actions repo settings.\n\nInject ONE master key (`ENVSHIELD_KEY`), and decrypt your `.env.production.enc` at build time. Version-controlled, auditable, and takes 30 seconds to setup.",
+    "posted": false
+  },
+  {
+    "id": 19,
+    "category": "security_deep_dive",
+    "text": "Cryptographic TTL (Time-To-Live) slots:\n\nWhat if a staging API key automatically expired at the cryptographic level after 7 days?\n\nEnvshield implements TTL-based epoch envelopes: after expiration, the DEK cannot be decrypted even if the passphrase is known. Zero stale staging credentials.",
+    "posted": false
+  },
+  {
+    "id": 20,
+    "category": "build_in_public",
+    "text": "Building Envshield in public as an independent developer.\n\nOpen-source core, zero tracking, strict adherence to Dieter Rams' minimalism: simple CLI, clean documentation, rock-solid security invariants.\n\nCheck out the repo on GitHub: github.com/AmhetCnaa/envshield",
+    "posted": false
+  }
+]
